@@ -3,7 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <windef.h>
-#include <iostream>
+#include <iostream> // todo: remove
 
 int APIENTRY WinMain(HINSTANCE, // hInstance
 	HINSTANCE, // hPrevInstance

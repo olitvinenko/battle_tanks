@@ -1,7 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
+    <Filter Include="lua">
+      <UniqueIdentifier>{eff68341-2847-4859-985e-bf83223b996f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pluto">
+      <UniqueIdentifier>{1b5c4132-03e7-47c2-b2eb-1b4bd37bbdb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="zlib">
+      <UniqueIdentifier>{73e516a6-e246-4a1f-9dda-8706573b7bba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="oggvorbis">
+      <UniqueIdentifier>{b60e3c66-e0a7-403b-b9cc-c1ea6eea8505}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="appmain">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
@@ -10,8 +22,8 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="battle_tanks.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\appmain\battle_tanks.cpp">
+      <Filter>appmain</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
