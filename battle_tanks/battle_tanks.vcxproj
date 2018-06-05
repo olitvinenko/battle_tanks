@@ -107,7 +107,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
@@ -230,6 +230,8 @@
     <ClCompile Include="src\external\zlib\trees.c" />
     <ClCompile Include="src\external\zlib\uncompr.c" />
     <ClCompile Include="src\external\zlib\zutil.c" />
+    <ClCompile Include="src\FileSystem\FileSystem.cpp" />
+    <ClCompile Include="src\FileSystem\FileSystemWin32.cpp" />
     <ClCompile Include="src\tankmain\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -302,6 +304,9 @@
     <ClInclude Include="src\external\zlib\zconf.in.h" />
     <ClInclude Include="src\external\zlib\zlib.h" />
     <ClInclude Include="src\external\zlib\zutil.h" />
+    <ClInclude Include="src\FileSystem\FileSystem.h" />
+    <ClInclude Include="src\FileSystem\FileSystemWin32.h" />
+    <ClInclude Include="src\Platform\Platform.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

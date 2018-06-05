@@ -2,6 +2,13 @@
 #include <ctime>
 #include <algorithm>
 
+//fs tests
+#include <memory>
+#include <vector>
+#include <iostream>
+
+#include "FileSystem/FileSystem.h"
+
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -9,7 +16,7 @@
 #include <windef.h>
 
 #include <string>
-#include <stdio.h>  /* defines FILENAME_MAX */
+#include <stdio.h>  // FILENAME_MAX
 #ifdef _WIN32
 #include <direct.h>
 #define GetCurrentDir _getcwd
@@ -32,11 +39,11 @@ std::string CurrentWorkingDirectory()
 }
 
 
-int APIENTRY WinMain( HINSTANCE, // hInstance
-                      HINSTANCE, // hPrevInstance
-                      LPSTR, // lpCmdLine
-                      int) // nCmdShow
-#else
+//int APIENTRY WinMain( HINSTANCE, // hInstance
+//                      HINSTANCE, // hPrevInstance
+//                      LPSTR, // lpCmdLine
+//                      int) // nCmdShow
+//#else
 int main(int, const char**)
 #endif
 {
@@ -48,15 +55,33 @@ int main(int, const char**)
 		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-		//TODO::
-		auto path = CurrentWorkingDirectory();
+		std::string path = CurrentWorkingDirectory();
+
+		std::shared_ptr<FileSystem::IFileSystem> fs = FileSystem::CreateOSFileSystem(path);
+		std::vector<std::string> files = fs->EnumAllFiles("*.txt");
+
+		for (auto it = files.begin(); it != files.end(); ++it)
+			std::cout << (*it) << std::endl;
+
+		auto inner = fs->GetFileSystem("Dir1", true);
+
+		auto file = inner->Open("test.txt");
+		auto stream = file->QueryStream();
+		
+		char* ch = new char[11];
+		ch[10] = '\0';
+		auto s = stream->Read(ch, sizeof(char), 10);
+		std::cout << ch << std::endl;
+		delete[] ch;
+
+		stream->Seek(0, FileSystem::SeekMethod::End);
+		std::cout << stream->Tell() << std::endl;
 
 		return 0;
 	}
 	catch (const std::exception &e)
 	{
+		std::cerr << e.what() << std::endl;	
 		return 1;
 	}
 }
-
-

@@ -31,6 +31,12 @@
     <Filter Include="external\utfcpp\utf8">
       <UniqueIdentifier>{c19689a5-a5f0-4a28-8dbb-e0ba534c3f77}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{1e8a0472-1bf5-4cf1-9a60-c3b50a8d2624}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FileSystem">
+      <UniqueIdentifier>{b176600c-b872-4596-911c-e908a453ce54}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\tankmain\Main.cpp">
@@ -279,6 +285,12 @@
     <ClCompile Include="src\external\lua\loslib.c">
       <Filter>external\lua</Filter>
     </ClCompile>
+    <ClCompile Include="src\FileSystem\FileSystem.cpp">
+      <Filter>FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FileSystem\FileSystemWin32.cpp">
+      <Filter>FileSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\external\lua\lapi.h">
@@ -487,6 +499,15 @@
     </ClInclude>
     <ClInclude Include="src\external\utfcpp\utf8\unchecked.h">
       <Filter>external\utfcpp\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Platform.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FileSystem\FileSystem.h">
+      <Filter>FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FileSystem\FileSystemWin32.h">
+      <Filter>FileSystem</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
