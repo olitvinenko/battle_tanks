@@ -28,6 +28,9 @@
     <Filter Include="external\glfw">
       <UniqueIdentifier>{42973bc2-2a04-44b3-b1f6-dce6aaadcfc6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="external\utfcpp\utf8">
+      <UniqueIdentifier>{c19689a5-a5f0-4a28-8dbb-e0ba534c3f77}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\tankmain\Main.cpp">
@@ -401,15 +404,6 @@
     <ClInclude Include="src\external\pluto\pluto.h">
       <Filter>external\pluto</Filter>
     </ClInclude>
-    <ClInclude Include="src\external\utfcpp\checked.h">
-      <Filter>external\utfcpp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\external\utfcpp\core.h">
-      <Filter>external\utfcpp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\external\utfcpp\unchecked.h">
-      <Filter>external\utfcpp</Filter>
-    </ClInclude>
     <ClInclude Include="src\external\utfcpp\utf8.h">
       <Filter>external\utfcpp</Filter>
     </ClInclude>
@@ -484,6 +478,15 @@
     </ClInclude>
     <ClInclude Include="src\external\oggvorbis\window_ogg.h">
       <Filter>external\oggvorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="src\external\utfcpp\utf8\checked.h">
+      <Filter>external\utfcpp\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="src\external\utfcpp\utf8\core.h">
+      <Filter>external\utfcpp\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="src\external\utfcpp\utf8\unchecked.h">
+      <Filter>external\utfcpp\utf8</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

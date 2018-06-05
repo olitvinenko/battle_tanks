@@ -287,10 +287,10 @@
     <ClInclude Include="src\external\oggvorbis\vorbisfile.h" />
     <ClInclude Include="src\external\oggvorbis\window_ogg.h" />
     <ClInclude Include="src\external\pluto\pluto.h" />
-    <ClInclude Include="src\external\utfcpp\checked.h" />
-    <ClInclude Include="src\external\utfcpp\core.h" />
-    <ClInclude Include="src\external\utfcpp\unchecked.h" />
     <ClInclude Include="src\external\utfcpp\utf8.h" />
+    <ClInclude Include="src\external\utfcpp\utf8\checked.h" />
+    <ClInclude Include="src\external\utfcpp\utf8\core.h" />
+    <ClInclude Include="src\external\utfcpp\utf8\unchecked.h" />
     <ClInclude Include="src\external\zlib\crc32.h" />
     <ClInclude Include="src\external\zlib\deflate.h" />
     <ClInclude Include="src\external\zlib\inffast.h" />
