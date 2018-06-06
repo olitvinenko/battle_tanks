@@ -7,7 +7,8 @@
 #include <vector>
 #include <iostream>
 
-#include "FileSystem/FileSystem.h"
+#include <FileSystem.h>
+#include <Platform.h> //TODO::
 
 
 #ifdef _WIN32
@@ -39,11 +40,11 @@ std::string CurrentWorkingDirectory()
 }
 
 
-//int APIENTRY WinMain( HINSTANCE, // hInstance
-//                      HINSTANCE, // hPrevInstance
-//                      LPSTR, // lpCmdLine
-//                      int) // nCmdShow
-//#else
+int APIENTRY WinMain( HINSTANCE, // hInstance
+                      HINSTANCE, // hPrevInstance
+                      LPSTR, // lpCmdLine
+                      int) // nCmdShow
+#else
 int main(int, const char**)
 #endif
 {
@@ -65,17 +66,17 @@ int main(int, const char**)
 
 		auto inner = fs->GetFileSystem("Dir1", true);
 
-		auto file = inner->Open("test.txt");
-		auto stream = file->QueryStream();
-		
-		char* ch = new char[11];
-		ch[10] = '\0';
-		auto s = stream->Read(ch, sizeof(char), 10);
-		std::cout << ch << std::endl;
-		delete[] ch;
+		//auto file = inner->Open("test.txt");
+		//auto stream = file->QueryStream();
+		//
+		//char* ch = new char[11];
+		//ch[10] = '\0';
+		//auto s = stream->Read(ch, sizeof(char), 10);
+		//std::cout << ch << std::endl;
+		//delete[] ch;
 
-		stream->Seek(0, FileSystem::SeekMethod::End);
-		std::cout << stream->Tell() << std::endl;
+		//stream->Seek(0, FileSystem::SeekMethod::End);
+		//std::cout << stream->Tell() << std::endl;
 
 		return 0;
 	}

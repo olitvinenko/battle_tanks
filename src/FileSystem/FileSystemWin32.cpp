@@ -5,7 +5,7 @@
 #include <cassert>
 
 #include "FileSystemWin32.h"
-#include "external/utfcpp/utf8.h"
+#include <utf8.h>
 
 namespace FileSystem
 {
@@ -297,23 +297,6 @@ namespace FileSystem
 
 	//----------------------------------------------------------------------------------------------
 
-	std::shared_ptr<IFileSystem> CreateOSFileSystem(const std::string &rootDirectory)
-	{
-		// convert to absolute path
-		std::wstring tmpRel = s2w(rootDirectory);
-		if (DWORD len = GetFullPathNameW(tmpRel.c_str(), 0, nullptr, nullptr))
-		{
-			std::wstring tmpFull(len, L'\0');
-			if (DWORD len2 = GetFullPathNameW(tmpRel.c_str(), len, &tmpFull[0], nullptr))
-			{
-				tmpFull.resize(len2); // truncate terminating \0
-				return std::make_shared<FileSystemWin32>(std::move(tmpFull));
-			}
-		}
-		throw std::runtime_error(StrFromErr(GetLastError()));
-		return nullptr;
-	}
-
 	FileSystemWin32::FileSystemWin32(std::wstring &&rootDirectory)
 		: _rootDirectory(std::move(rootDirectory))
 	{
@@ -456,5 +439,22 @@ namespace FileSystem
 			ss << "Failed to open directory '" << path << "'";
 			std::throw_with_nested(std::runtime_error(ss.str()));
 		}
+	}
+
+	std::shared_ptr<IFileSystem> CreateOSFileSystem(const std::string &rootDirectory)
+	{
+		// convert to absolute path
+		std::wstring tmpRel = s2w(rootDirectory);
+		if (DWORD len = GetFullPathNameW(tmpRel.c_str(), 0, nullptr, nullptr))
+		{
+			std::wstring tmpFull(len, L'\0');
+			if (DWORD len2 = GetFullPathNameW(tmpRel.c_str(), len, &tmpFull[0], nullptr))
+			{
+				tmpFull.resize(len2); // truncate terminating \0
+				return std::make_shared<FileSystemWin32>(std::move(tmpFull));
+			}
+		}
+		throw std::runtime_error(StrFromErr(GetLastError()));
+		return nullptr;
 	}
 }

@@ -2,8 +2,6 @@
 #include <fstream>
 
 #include "FileSystem.h"
-#include "../Platform/Platform.h"
-
 #include "FileSystemWin32.h"
 
 namespace FileSystem

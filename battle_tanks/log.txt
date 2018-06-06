@@ -1,8 +1,0 @@
-Tank: Zone of Death (1.52.0)
-Mount file system
-Loading config 'config.cfg'
-Loading config 'data/lang.cfg'
-Create GL context
-Unnamed замочил своего врага Unnamed
-Saving config to 'config.cfg'
-Normal exit.
