@@ -6,18 +6,13 @@ if(APPLE OR UNIX)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 endif()
 
-if(WIN32)
-	#TODO: message()
-else()
-	#TODO: message()
-endif()
-
-# external libs
 add_subdirectory(external)
+add_subdirectory(tanks)
 
-# libs
-add_subdirectory(FileSystem)
-add_subdirectory(Platform)
+#copy to the main project folder
+set(source_dir ../data)
+set(destination_dir tanks)
 
-# top level lib - the only one the application links with
-add_subdirectory(tankmain)
+file( COPY ${source_dir}
+      DESTINATION ${destination_dir}
+)
