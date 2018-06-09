@@ -198,3 +198,5 @@ namespace math
 	}
 
 } // namespace math
+
+using namespace math;
