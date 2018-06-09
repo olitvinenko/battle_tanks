@@ -7,16 +7,23 @@ link_directories(${Boost_LIBRARY_DIR})
 include_directories(
 	${Utf8cpp_SOURCE_DIR}	
 	${GLFW_SOURCE_DIR}/include
-	${Lua_SOURCE_DIR}/src
-	
+	${Lua_SOURCE_DIR}/src	
+)
+#########################################################################
+
+############################ PLATFORM ###################################
+
+include_directories(
 	Platform
 )
 
-set(SRC_COMMON
-	Platform/Platform.h
+file(GLOB_RECURSE SRC_PLATFORM
+    "Platform/*.cpp"
+    "Platform/*.h"
 )
 
-source_group("common" FILES ${SRC_COMMON})
+source_group("platform" FILES ${SRC_PLATFORM})
+
 #########################################################################
 
 ############################ MATH UTILS ################################
@@ -91,11 +98,54 @@ endif()
 source_group("render" FILES ${SRC_RENDER})
 #########################################################################
 
+############################ UI #########################################
+include_directories(
+	UI
+)
+
+file(GLOB_RECURSE SRC_UI
+    "UI/*.cpp"
+    "UI/*.h"
+)
+
+source_group("ui" FILES ${SRC_UI})
+#########################################################################
+
+############################ GLFW #######################################
+include_directories(
+	GLFW
+)
+
+file(GLOB_RECURSE SRC_GLFW
+    "GLFW/*.cpp"
+    "GLFW/*.h"
+)
+
+source_group("glfw" FILES ${SRC_GLFW})
+#########################################################################
+
+############################ ENGINE #######################################
+include_directories(
+	Engine
+)
+
+file(GLOB_RECURSE SRC_ENGINE
+    "Engine/*.cpp"
+    "Engine/*.h"
+)
+
+source_group("engine" FILES ${SRC_ENGINE})
+#########################################################################
+
+
 set(tanks_SOURCES
 	${SRC_MATH}
-	${SRC_COMMON}
+	${SRC_PLATFORM}
 	${SRC_FILE_SYSTEM}
 	${SRC_RENDER}
+	${SRC_UI}
+	${SRC_GLFW}
+	${SRC_ENGINE}
 )
 
 if(WIN32)
