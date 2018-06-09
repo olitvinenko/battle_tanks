@@ -13,11 +13,6 @@ namespace math
 		T right;
 		T bottom;
 
-		Rect() { }
-		Rect(T left, T top, T right, T bottom)
-			: left(left), top(top), right(right), bottom(bottom)
-		{ }
-
 		Rect operator *(float m) const
 		{
 			return Rect{ left * m, top * m, right * m, bottom * m };
