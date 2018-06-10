@@ -98,6 +98,32 @@ endif()
 source_group("render" FILES ${SRC_RENDER})
 #########################################################################
 
+############################ APPLICATION ################################
+include_directories(
+	Application
+)
+
+file(GLOB_RECURSE SRC_APPLICATION
+    "Application/*.cpp"
+    "Application/*.h"
+)
+
+source_group("application" FILES ${SRC_APPLICATION})
+#########################################################################
+
+############################ SHELL ######################################
+include_directories(
+	Shell
+)
+
+file(GLOB_RECURSE SRC_SHELL
+    "Shell/*.cpp"
+    "Shell/*.h"
+)
+
+source_group("shell" FILES ${SRC_SHELL})
+#########################################################################
+
 ############################ UI #########################################
 include_directories(
 	UI
@@ -146,6 +172,8 @@ set(tanks_SOURCES
 	${SRC_UI}
 	${SRC_GLFW}
 	${SRC_ENGINE}
+	${SRC_APPLICATION}
+	${SRC_SHELL}
 )
 
 if(WIN32)

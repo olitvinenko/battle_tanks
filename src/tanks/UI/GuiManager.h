@@ -20,7 +20,8 @@ struct IClipboard;
 
 struct IWindowFactory
 {
-    virtual UIWindow* Create(LayoutManager *pManager) = 0;
+	virtual UIWindow* Create(LayoutManager *pManager) = 0;
+	virtual ~IWindowFactory() = default;
 };
 
 enum class Msg

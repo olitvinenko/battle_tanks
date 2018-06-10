@@ -6,6 +6,8 @@
 #include <exception>
 #include <iostream>
 #include "GameLoop.h"
+#include "BattleTanks.h"
+#include "View.h"
 
 namespace
 {
@@ -102,12 +104,11 @@ int main(int, const char**)
 		logger.Printf(0, "Mount file system");
 		
 
-		//Application app(*fs, logger);
-
 		logger.Printf(0, "Create GL context");
 		GlfwAppWindow appWindow(TXT_VERSION, false, 1024, 768);
 
-	//	View view(*fs, logger, app, appWindow);
+		Application app(*fs, logger);
+		View view(*fs, logger, app, appWindow);
 
 		loop.Start();
 		while (!appWindow.ShouldClose())
@@ -127,7 +128,7 @@ int main(int, const char**)
 			appWindow.Present();
 		}
 
-		//app.Exit();
+		app.Exit();
 
 		loop.Remove<IUpdatable>(&tester);
 		loop.Remove<IRenderable>(&tester);

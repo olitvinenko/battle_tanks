@@ -23,6 +23,8 @@ struct IConsoleHistory
 	virtual void Enter(std::string str) = 0;
 	virtual size_t GetItemCount() const = 0;
 	virtual const std::string& GetItem(size_t index) const = 0;
+
+	virtual ~IConsoleHistory() = default;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
