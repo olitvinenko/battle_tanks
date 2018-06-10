@@ -17,7 +17,7 @@ public:
 	void PollEvents() const;
 	static UI::LayoutManager* GetLayoutManager(GLFWwindow * window);
 
-	void Present() const;
+	void SwapBuffers() const;
 	bool ShouldClose() const;
 
 	// AppWindow

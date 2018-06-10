@@ -164,7 +164,7 @@ UI::LayoutManager* GlfwAppWindow::GetLayoutManager(GLFWwindow * window) // stati
 	return static_cast<UI::LayoutManager *>(glfwGetWindowUserPointer(window));
 }
 
-void GlfwAppWindow::Present() const
+void GlfwAppWindow::SwapBuffers() const
 {
 	glfwSwapBuffers(m_window.get());
 }

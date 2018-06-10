@@ -56,28 +56,47 @@ class LoopTester
 	, public IFixedUpdatable
 {
 public:
+	LoopTester(View& view, Application& application, AppWindow& appWindow)
+		: _view(view)
+		, _application(application)
+		, _window(appWindow)
+	{ }
+
+	//TODO: necessary??
 	void Update(float realDeltaTime) override
 	{
 		// ai update
 		// physics update
 
-		std::cout << "Update \t realDeltaTime = " << realDeltaTime << std::endl;
+		//std::cout << "Update \t realDeltaTime = " << realDeltaTime << std::endl;
 	}
 
 	void FixedUpdate(float fixedDeltaTime) override
 	{
-		std::cout << "FixedUpdate \t fixedDeltaTime = " << fixedDeltaTime << std::endl;
-		std::this_thread::sleep_for(std::chrono::milliseconds(10)); //for work simulation
+		// controller pass
+
+		_view.Step(fixedDeltaTime); // this also sends user controller state to WorldController
+		_application.Step(fixedDeltaTime);
+
+		//std::cout << "FixedUpdate \t fixedDeltaTime = " << fixedDeltaTime << std::endl;
+		//std::this_thread::sleep_for(std::chrono::milliseconds(10)); //for work simulation
 	}
 
 	void Render(float interpolation) override
 	{
-		std::cout << "Render \t interpolation = " << interpolation << std::endl;
-		std::this_thread::sleep_for(std::chrono::milliseconds(20)); //for work simulation
+		// view pass
+		_view.Render(_window);
+
+		//std::cout << "Render \t interpolation = " << interpolation << std::endl;
+		//std::this_thread::sleep_for(std::chrono::milliseconds(20)); //for work simulation
 		//view_position = position + (speed * interpolation)
 	}
-};
 
+private:
+	View& _view;
+	Application& _application;
+	AppWindow& _window;
+};
 
 int main(int, const char**)
 {
@@ -88,13 +107,6 @@ int main(int, const char**)
 #if defined(_DEBUG) && defined(_WIN32) // memory leaks detection
 		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-		GameLoop loop;
-		LoopTester tester;		
-		loop.Add<IUpdatable>(&tester);
-		loop.Add<IRenderable>(&tester);
-		loop.Add<IFixedUpdatable>(&tester);
-
-		std::shared_ptr<FileSystem::IFileSystem> fs = FileSystem::CreateOSFileSystem("data");
 
 		UI::ConsoleBuffer &logger = s_logger;
 
@@ -102,7 +114,7 @@ int main(int, const char**)
 		logger.Printf(0, "%s", TXT_VERSION);
 
 		logger.Printf(0, "Mount file system");
-		
+		std::shared_ptr<FileSystem::IFileSystem> fs = FileSystem::CreateOSFileSystem("data");
 
 		logger.Printf(0, "Create GL context");
 		GlfwAppWindow appWindow(TXT_VERSION, false, 1024, 768);
@@ -110,22 +122,22 @@ int main(int, const char**)
 		Application app(*fs, logger);
 		View view(*fs, logger, app, appWindow);
 
+		GameLoop loop;
+
+		LoopTester tester(view, app, appWindow);
+
+		loop.Add<IUpdatable>(&tester);
+		loop.Add<IRenderable>(&tester);
+		loop.Add<IFixedUpdatable>(&tester);
+
 		loop.Start();
 		while (!appWindow.ShouldClose())
 		{
-			loop.Tick();
-
 			appWindow.PollEvents();
 
-			//float dt = timer.GetDt();
+			loop.Tick();
 
-			// controller pass
-			//view.Step(dt); // this also sends user controller state to WorldController
-			//app.Step(dt);
-
-			// view pass
-			//view.Render(appWindow);
-			appWindow.Present();
+			appWindow.SwapBuffers();
 		}
 
 		app.Exit();

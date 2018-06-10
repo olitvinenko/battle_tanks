@@ -1,5 +1,7 @@
 #pragma once
-#include <memory>
+
+#include "TextureManager.h"
+#include "GuiManager.h"
 
 class Application;
 struct AppWindow;
@@ -12,7 +14,6 @@ namespace FileSystem
 
 namespace UI
 {
-	class LayoutManager;
 	class ConsoleBuffer;
 }
 
@@ -23,11 +24,13 @@ public:
 	~View();
 
 	void Step(float dt);
-	void Render(AppWindow &appWindow);
+	void Render(AppWindow &appWindow) const;
 
 	UI::LayoutManager& GetGui();
 
 private:
 	AppWindow &_appWindow;
-	std::unique_ptr<struct TzodViewImpl> _impl;
+
+	TextureManager textureManager;
+	UI::LayoutManager gui;
 };
