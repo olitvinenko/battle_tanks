@@ -23,11 +23,10 @@ struct IRenderable
 	virtual ~IRenderable() = default;
 };
 
-
 class Time
 {
 public:
-	static size_t GetTickCount()
+	static size_t GetTicksCount()
 	{
 		auto now = std::chrono::high_resolution_clock::now().time_since_epoch();
 		return std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
@@ -67,9 +66,8 @@ class GameLoop
 		std::unordered_set<T*> m_targets;
 	};
 
-	const int MS_IN_SEC = 1000;
 	const int FPS = 30;
-	const float MS_PER_UPDATE = MS_IN_SEC / FPS;
+	const double MS_PER_UPDATE = 1000.0 / FPS;
 	const int SKIP_FRAMES_MAX = 5;
 
 public:
@@ -80,32 +78,35 @@ public:
 
 	void Start()
 	{
-		m_lastTime = Time::GetTickCount();
+		m_lastTime = Time::GetTicksCount();
 		m_lag = 0.0;
 	}
 
 	void Tick()
 	{
-		float current = Time::GetTickCount();
-		float elapsed = current - m_lastTime;
+		double current = Time::GetTicksCount();
+		double elapsed = current - m_lastTime;
 
 		m_lastTime = current;
 		m_lag += elapsed;
 
-		float realElapsedSec = elapsed / MS_IN_SEC;
+		float realElapsedSec = elapsed / 1000.0;
 		m_updatables.Foreach([realElapsedSec](IUpdatable* f) { f->Update(realElapsedSec); });
 
 		int loops = 0;
 		while (m_lag >= MS_PER_UPDATE && loops < SKIP_FRAMES_MAX)
 		{
-			float fixedDeltaTime = MS_PER_UPDATE / MS_IN_SEC;
+			float fixedDeltaTime = MS_PER_UPDATE / 1000.0;
 			m_fixedUpdatables.Foreach([fixedDeltaTime](IFixedUpdatable* f) { f->FixedUpdate(fixedDeltaTime); });
 
 			m_lag -= MS_PER_UPDATE;
+
+			//std::cout << elapsed << " " << fixedDeltaTime << "  " << m_lag << "  " << loops << std::endl;
 			loops++;
 		}
 
 		float interpolation = m_lag / MS_PER_UPDATE;
+
 		m_renderables.Foreach([interpolation](IRenderable* f) { f->Render(interpolation); });
 	}
 
@@ -115,8 +116,8 @@ public:
 	template<typename T>
 	void Remove(T*) { assert(false); }
 private:
-	float m_lastTime;
-	float m_lag;
+	double m_lastTime;
+	double m_lag;
 
 	GameLoopSet<IUpdatable> m_updatables;
 	GameLoopSet<IRenderable> m_renderables;

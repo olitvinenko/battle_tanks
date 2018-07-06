@@ -9,6 +9,7 @@
 #include "ConsoleBuffer.h"
 #include "GuiManager.h"
 #include "Keys.h"
+#include <iostream>
 
 extern "C"
 {
@@ -94,6 +95,7 @@ Desktop::Desktop(UI::LayoutManager* manager,
 			ShowMainMenu();
 		}
 	};
+	ShowMainMenu();
 
 	SetTimeStep(true);
 	OnGameContextChanged();
@@ -349,7 +351,7 @@ void Desktop::PopNavStack(UI::UIWindow *wnd)
 	if (wnd)
 	{
 		_navTransitionStart = GetTransitionTarget();
-		_navTransitionTime = 10.0f;// _conf.ui_foldtime.GetFloat();
+		_navTransitionTime = .5f;// _conf.ui_foldtime.GetFloat();
 
 		auto it = std::find(_navStack.begin(), _navStack.end(), wnd);
 		assert(_navStack.end() != it);
@@ -358,7 +360,7 @@ void Desktop::PopNavStack(UI::UIWindow *wnd)
 	else if (!_navStack.empty())
 	{
 		_navTransitionStart = GetTransitionTarget();
-		_navTransitionTime = 10.0f;// _conf.ui_foldtime.GetFloat();
+		_navTransitionTime = .5f;// _conf.ui_foldtime.GetFloat();
 
 		_navStack.back()->Destroy();
 		_navStack.pop_back();
@@ -375,7 +377,7 @@ void Desktop::PopNavStack(UI::UIWindow *wnd)
 void Desktop::PushNavStack(UI::UIWindow &wnd)
 {
 	_navTransitionStart = GetTransitionTarget();
-	_navTransitionTime = 10.0f;// _conf.ui_foldtime.GetFloat();
+	_navTransitionTime = .5f;// _conf.ui_foldtime.GetFloat();
 
 	if (!_navStack.empty())
 	{
@@ -395,7 +397,7 @@ float Desktop::GetNavStackSize() const
 		{
 			navStackHeight += wnd->GetHeight();
 		}
-		navStackHeight += (float)(_navStack.size() - 1) *  10.0f; //_conf.ui_spacing.GetFloat();
+		navStackHeight += (float)(_navStack.size() - 1) *  100.0f; //_conf.ui_spacing.GetFloat();
 	}
 	return navStackHeight;
 }
@@ -479,13 +481,13 @@ void Desktop::OnSize(float width, float height)
 
 	if (!_navStack.empty())
 	{
-		float transition = (1 - std::cos(PI * _navTransitionTime / 10/*_conf.ui_foldtime.GetFloat()*/)) / 2;
+		float transition = (1 - std::cos(PI * _navTransitionTime / 0.5f/*_conf.ui_foldtime.GetFloat()*/)) / 2;
 		float top = std::floor(_navTransitionStart * transition + GetTransitionTarget() * (1 - transition));
 
 		for (auto wnd : _navStack)
 		{
 			wnd->Move(floorf((width - wnd->GetWidth()) / 2), top);
-			top += wnd->GetHeight() + 100;// _conf.ui_spacing.GetFloat();
+			top += wnd->GetHeight() + 100.0f;// _conf.ui_spacing.GetFloat();
 		}
 	}
 }

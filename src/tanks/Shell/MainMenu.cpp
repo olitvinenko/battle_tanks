@@ -222,13 +222,13 @@ void MainMenuDlg::CreatePanel()
 	switch( _ptype )
 	{
 	case PT_EDITOR:
-		//_panelTitle->SetText(_lang.editor_title.Get());
-		//UI::Button::Create(_panel, _lang.editor_new_map.Get(), 0, y)->eventClick = _commands.newMap;
-		//UI::Button::Create(_panel, _lang.editor_load_map.Get(), 100, y)->eventClick = std::bind(&MainMenuDlg::OnImportMap, this);
-		//btn = UI::Button::Create(_panel, _lang.editor_save_map.Get(), 200, y);
-		//btn->eventClick = std::bind(&MainMenuDlg::OnExportMap, this);
-		//btn = UI::Button::Create(_panel, _lang.editor_map_settings.Get(), 300, y);
-		//btn->eventClick = std::bind(&MainMenuDlg::OnMapSettings, this);
+		_panelTitle->SetText("_lang.editor_title.Get()");
+		UI::Button::Create(_panel, "_lang.editor_new_map.Get()", 0, y)->eventClick = _commands.newMap;
+		UI::Button::Create(_panel, "_lang.editor_load_map.Get()", 100, y)->eventClick = std::bind(&MainMenuDlg::OnImportMap, this);
+		btn = UI::Button::Create(_panel, "_lang.editor_save_map.Get()", 200, y);
+		btn->eventClick = std::bind(&MainMenuDlg::OnExportMap, this);
+		btn = UI::Button::Create(_panel, "_lang.editor_map_settings.Get()", 300, y);
+		btn->eventClick = std::bind(&MainMenuDlg::OnMapSettings, this);
 		break;
 	default:
 		assert(false);
