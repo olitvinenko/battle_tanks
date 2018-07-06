@@ -150,6 +150,32 @@ file(GLOB_RECURSE SRC_GLFW
 source_group("glfw" FILES ${SRC_GLFW})
 #########################################################################
 
+############################ Navigation #######################################
+include_directories(
+	Navigation
+)
+
+file(GLOB_RECURSE SRC_NAVIGATION
+    "Navigation/*.cpp"
+    "Navigation/*.h"
+)
+
+source_group("navigation" FILES ${SRC_NAVIGATION})
+#########################################################################
+
+############################ GAME #######################################
+include_directories(
+	Game
+)
+
+file(GLOB_RECURSE SRC_GAME
+    "Game/*.cpp"
+    "Game/*.h"
+)
+
+source_group("game" FILES ${SRC_GAME})
+#########################################################################
+
 ############################ ENGINE #######################################
 include_directories(
 	Engine
@@ -174,6 +200,8 @@ set(tanks_SOURCES
 	${SRC_ENGINE}
 	${SRC_APPLICATION}
 	${SRC_SHELL}
+	${SRC_NAVIGATION}
+	${SRC_GAME}
 )
 
 if(WIN32)
