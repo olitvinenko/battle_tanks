@@ -1,11 +1,7 @@
 #pragma once
 #include "GuiManager.h"
 
-
-//class AppState;
-//class AppController;
-//class ConfCache;
-//class LangCache;
+class AppState;
 
 namespace FileSystem
 {
@@ -20,20 +16,11 @@ namespace UI
 class DesktopFactory : public UI::IWindowFactory
 {
 public:
-	DesktopFactory(//AppState &appState,
-	               //AppController &appController,
-				   FileSystem::IFileSystem &fs,
-	               //ConfCache &conf,
-	               //LangCache &lang,
-	               UI::ConsoleBuffer &logger);
-
+	DesktopFactory(AppState &appState, FileSystem::IFileSystem &fs, UI::ConsoleBuffer &logger);
 	UI::UIWindow* Create(UI::LayoutManager *manager) override;
 
 private:
-	//AppState &_appState;
-	//AppController &_appController;
+	AppState &_appState;
 	FileSystem::IFileSystem &_fs;
-	//ConfCache &_conf;
-	//LangCache &_lang;
 	UI::ConsoleBuffer &_logger;
 };

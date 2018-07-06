@@ -461,7 +461,7 @@ static void DrawWindowRecursive(const UIWindow &wnd, DrawingContext &dc, bool to
 	dc.PopTransform();
 }
 
-void LayoutManager::Render(DrawingContext &dc) const
+void LayoutManager::Render(DrawingContext &dc, float interpolation) const
 {
 	dc.SetMode(RM_INTERFACE);
 

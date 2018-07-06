@@ -1,9 +1,9 @@
 #pragma once
 
-#include <unordered_set>
 #include <cassert>
 #include <chrono>
 #include <algorithm>
+#include <set>
 
 struct IUpdatable
 {
@@ -19,7 +19,7 @@ struct IFixedUpdatable
 
 struct IRenderable
 {
-	virtual void Render(float interpolation) = 0;
+	virtual void Render(float interpolation) const = 0;
 	virtual ~IRenderable() = default;
 };
 
@@ -41,7 +41,7 @@ class GameLoop
 	public:
 		void Register(T* item)
 		{
-			std::pair <typename std::unordered_set<T*>::iterator, bool> pair = m_targets.insert(item);
+			std::pair <typename std::set<T*>::iterator, bool> pair = m_targets.insert(item);
 			assert(pair.second);
 		}
 
@@ -62,8 +62,7 @@ class GameLoop
 		}
 
 	private:
-		//TODO: order?
-		std::unordered_set<T*> m_targets;
+		std::set<T*> m_targets;
 	};
 
 	const int FPS = 30;

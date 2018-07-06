@@ -26,7 +26,7 @@ MainMenuDlg::MainMenuDlg(UIWindow *parent,
   , _panel(nullptr)
   , _ptype(PT_NONE)
   , _pstate(PS_NONE)
-  //, _fileDlg(nullptr)
+  , _fileDlg(nullptr)
   , _fs(fs)
   //, _lang(lang)
   , _logger(logger)
@@ -100,63 +100,63 @@ void MainMenuDlg::OnMapSettings()
 
 void MainMenuDlg::OnImportMap()
 {
-	//GetFileNameDlg::Params param;
-	//param.title = _lang.get_file_name_load_map.Get();
-	//param.folder = _fs.GetFileSystem(DIR_MAPS);
-	//param.extension = "map";
+	GetFileNameDlg::Params param;
+	param.title = "_lang.get_file_name_load_map.Get()";
+	param.folder = _fs.GetFileSystem(DIR_MAPS);
+	param.extension = "map";
 
-	//if( !param.folder )
-	//{
-	//	static_cast<Desktop *>(GetManager().GetDesktop())->ShowConsole(true);
-	//	_logger.Printf(1, "Could not open directory '%s'", DIR_MAPS);
-	//	return;
-	//}
+	if( !param.folder )
+	{
+		static_cast<Desktop *>(GetManager().GetDesktop())->ShowConsole(true);
+		_logger.Printf(1, "Could not open directory '%s'", DIR_MAPS);
+		return;
+	}
 
-	//SetVisible(false);
-	//assert(nullptr == _fileDlg);
-	//_fileDlg = new GetFileNameDlg(GetParent(), param, _lang);
-	//_fileDlg->eventClose = std::bind(&MainMenuDlg::OnImportMapSelect, this, std::placeholders::_1);
+	SetVisible(false);
+	assert(nullptr == _fileDlg);
+	_fileDlg = new GetFileNameDlg(GetParent(), param);
+	_fileDlg->eventClose = std::bind(&MainMenuDlg::OnImportMapSelect, this, std::placeholders::_1);
 }
 
 void MainMenuDlg::OnImportMapSelect(int result)
 {
-	//assert(_fileDlg);
-	//if(UI::Dialog::_resultOK == result )
-	//{
-	//	_commands.openMap(std::string(DIR_MAPS) + "/" + _fileDlg->GetFileName());
-	//}
-	//_fileDlg = nullptr;
+	assert(_fileDlg);
+	if(UI::Dialog::_resultOK == result )
+	{
+		_commands.openMap(std::string(DIR_MAPS) + "/" + _fileDlg->GetFileName());
+	}
+	_fileDlg = nullptr;
 	OnCloseChild(result);
 }
 
 void MainMenuDlg::OnExportMap()
 {
-//	GetFileNameDlg::Params param;
-//	param.title = _lang.get_file_name_save_map.Get();
-//	param.folder = _fs.GetFileSystem(DIR_MAPS, true);
-//	param.extension = "map";
-//
-//	if( !param.folder )
-//	{
-//		static_cast<Desktop *>(GetManager().GetDesktop())->ShowConsole(true);
-//		_logger.Printf(1, "ERROR: Could not open directory '%s'", DIR_MAPS);
-//		return;
-//	}
-//
-//	SetVisible(false);
-//	assert(nullptr == _fileDlg);
-//	_fileDlg = new GetFileNameDlg(GetParent(), param, _lang);
-//	_fileDlg->eventClose = std::bind(&MainMenuDlg::OnExportMapSelect, this, std::placeholders::_1);
+	GetFileNameDlg::Params param;
+	param.title = "_lang.get_file_name_save_map.Get()";
+	param.folder = _fs.GetFileSystem(DIR_MAPS, true);
+	param.extension = "map";
+
+	if( !param.folder )
+	{
+		static_cast<Desktop *>(GetManager().GetDesktop())->ShowConsole(true);
+		_logger.Printf(1, "ERROR: Could not open directory '%s'", DIR_MAPS);
+		return;
+	}
+
+	SetVisible(false);
+	assert(nullptr == _fileDlg);
+	_fileDlg = new GetFileNameDlg(GetParent(), param);
+	_fileDlg->eventClose = std::bind(&MainMenuDlg::OnExportMapSelect, this, std::placeholders::_1);
 }
 
 void MainMenuDlg::OnExportMapSelect(int result)
 {
-	//assert(_fileDlg);
-	//if(UI::Dialog::_resultOK == result )
-	//{
-	//	_commands.exportMap(std::string(DIR_MAPS) + "/" + _fileDlg->GetFileName());
-	//}
-	//_fileDlg = nullptr;
+	assert(_fileDlg);
+	if(UI::Dialog::_resultOK == result )
+	{
+		_commands.exportMap(std::string(DIR_MAPS) + "/" + _fileDlg->GetFileName());
+	}
+	_fileDlg = nullptr;
 	OnCloseChild(result);
 }
 

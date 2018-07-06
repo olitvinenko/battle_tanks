@@ -1,12 +1,13 @@
 #pragma once
 #include "ConfigConsoleHistory.h"
 #include "DefaultCamera.h"
-//#include "../as/AppStateListener.h"
 #include "WorldView.h"
 #include "UIWindow.h"
 #include <memory>
 #include <vector>
 #include "Widgets.h"
+#include "EditorLayout.h"
+#include "AppStateListener.h"
 
 namespace FileSystem
 {
@@ -30,7 +31,7 @@ namespace UI
 
 //class AppController;
 class MainMenuDlg;
-//class EditorLayout;
+class EditorLayout;
 //class GameLayout;
 //class FpsCounter;
 //class ConfCache;
@@ -38,12 +39,11 @@ class MainMenuDlg;
 
 class Desktop
 	: public UI::UIWindow
-	//, private AppStateListener
+	, private AppStateListener
 {
 public:
 	Desktop(UI::LayoutManager* manager,
-	       // AppState &appState,
-	       // AppController &appController,
+	        AppState &appState,
 			FileSystem::IFileSystem &fs,
 	       // ConfCache &conf,
 	       // LangCache &lang,
@@ -60,14 +60,11 @@ protected:
 
 private:
 	ConfigConsoleHistory  _history;
-	//AppController &_appController;
 	FileSystem::IFileSystem &_fs;
-	//ConfCache &_conf;
-	//LangCache &_lang;
 	UI::ConsoleBuffer &_logger;
 	std::unique_ptr<lua_State, LuaStateDeleter> _globL;
 
-	//EditorLayout *_editor = nullptr;
+	EditorLayout *_editor = nullptr;
 	//GameLayout   *_game = nullptr;
 	UI::Console  *_con = nullptr;
 	FpsCounter   *_fps = nullptr;
@@ -116,6 +113,6 @@ private:
 	float GetTransitionTarget() const;
 
 	// AppStateListener
-	void OnGameContextChanging();// override;
-	void OnGameContextChanged();// override;
+	void OnGameContextChanging() override;
+	void OnGameContextChanged() override;
 };

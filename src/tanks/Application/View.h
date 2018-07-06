@@ -2,9 +2,10 @@
 
 #include "TextureManager.h"
 #include "GuiManager.h"
+#include "GameLoop.h"
 
-class Application;
-struct AppWindow;
+class AppController;
+struct AppWindowBase;
 struct IRender;
 
 namespace FileSystem
@@ -18,19 +19,22 @@ namespace UI
 }
 
 class View
+	: public IFixedUpdatable
+	, public IRenderable
 {
 public:
-	View(FileSystem::IFileSystem &fs, UI::ConsoleBuffer &logger, Application &app, AppWindow &appWindow);
+	View(GameLoop &loop, FileSystem::IFileSystem &fs, UI::ConsoleBuffer &logger, AppController &app, AppWindowBase &appWindow);
 	~View();
 
-	void Step(float dt);
-	void Render(AppWindow &appWindow) const;
+	void FixedUpdate(float fixedDeltaTime) override;
+	void Render(float interpolation) const override;
 
 	UI::LayoutManager& GetGui();
 
 private:
-	AppWindow &_appWindow;
+	GameLoop &m_loop;
+	AppWindowBase &m_appWindow;
 
-	TextureManager textureManager;
-	UI::LayoutManager gui;
+	TextureManager m_textureManager;
+	UI::LayoutManager m_gui;
 };

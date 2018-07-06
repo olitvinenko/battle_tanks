@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "AppWindow.h"
+#include "AppWindowBase.h"
 
 class GlfwClipboard;
 class GlfwInput;
@@ -8,7 +8,7 @@ struct GLFWwindow;
 
 struct IRender;
 
-class GlfwAppWindow : public AppWindow
+class GlfwAppWindow : public AppWindowBase
 {
 public:
 	GlfwAppWindow(const char *title, bool fullscreen, int width, int height);

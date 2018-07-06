@@ -2,12 +2,12 @@
 #include "FileSystem.h"
 #include "GlfwAppWindow.h"
 #include "ConsoleBuffer.h"
+#include "GameLoop.h"
+#include "AppController.h"
+#include "View.h"
 
 #include <exception>
 #include <iostream>
-#include "GameLoop.h"
-#include "BattleTanks.h"
-#include "View.h"
 
 namespace
 {
@@ -50,53 +50,6 @@ static void print_what(UI::ConsoleBuffer &logger, const std::exception &e, std::
 
 static UI::ConsoleBuffer s_logger(100, 500);
 
-class LoopTester
-	: public IUpdatable
-	, public IRenderable
-	, public IFixedUpdatable
-{
-public:
-	LoopTester(View& view, Application& application, AppWindow& appWindow)
-		: _view(view)
-		, _application(application)
-		, _window(appWindow)
-	{ }
-
-	//TODO: necessary??
-	void Update(float realDeltaTime) override
-	{
-		// ai update
-		// physics update
-
-		//std::cout << "Update \t realDeltaTime = " << realDeltaTime << std::endl;
-	}
-
-	void FixedUpdate(float fixedDeltaTime) override
-	{
-		// controller pass
-
-		_view.Step(fixedDeltaTime); // this also sends user controller state to WorldController
-		_application.Step(fixedDeltaTime);
-
-		//std::cout << "FixedUpdate \t fixedDeltaTime = " << fixedDeltaTime << std::endl;
-		//std::this_thread::sleep_for(std::chrono::milliseconds(10)); //for work simulation
-	}
-
-	void Render(float interpolation) override
-	{
-		// view pass
-		_view.Render(_window);
-
-		//std::cout << "Render \t interpolation = " << interpolation << std::endl;
-		//std::this_thread::sleep_for(std::chrono::milliseconds(20)); //for work simulation
-		//view_position = position + (speed * interpolation)
-	}
-
-private:
-	View& _view;
-	Application& _application;
-	AppWindow& _window;
-};
 
 int main(int, const char**)
 {
@@ -116,19 +69,13 @@ int main(int, const char**)
 		logger.Printf(0, "Mount file system");
 		std::shared_ptr<FileSystem::IFileSystem> fs = FileSystem::CreateOSFileSystem("data");
 
+		GameLoop loop;
+
 		logger.Printf(0, "Create GL context");
 		GlfwAppWindow appWindow(TXT_VERSION, false, 1024, 768);
 
-		Application app(*fs, logger);
-		View view(*fs, logger, app, appWindow);
-
-		GameLoop loop;
-
-		LoopTester tester(view, app, appWindow);
-
-		loop.Add<IUpdatable>(&tester);
-		loop.Add<IRenderable>(&tester);
-		loop.Add<IFixedUpdatable>(&tester);
+		AppController controller(loop, *fs, logger);
+		View view(loop, *fs, logger, controller, appWindow);
 
 		loop.Start();
 		while (!appWindow.ShouldClose())
@@ -140,11 +87,7 @@ int main(int, const char**)
 			appWindow.SwapBuffers();
 		}
 
-		app.Exit();
-
-		loop.Remove<IUpdatable>(&tester);
-		loop.Remove<IRenderable>(&tester);
-		loop.Remove<IFixedUpdatable>(&tester);
+		controller.Exit();
 
 		logger.Printf(0, "Normal exit.");
 

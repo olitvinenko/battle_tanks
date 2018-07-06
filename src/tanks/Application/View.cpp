@@ -1,6 +1,6 @@
 #include "View.h"
-#include "AppWindow.h"
-#include "BattleTanks.h"
+#include "AppWindowBase.h"
+#include "AppController.h"
 #include "Config.h"
 #include "FileSystem.h"
 #include "ConsoleBuffer.h"
@@ -22,44 +22,51 @@ static TextureManager InitTextureManager(FileSystem::IFileSystem &fs, UI::Consol
 	return textureManager;
 }
 
-View::View(FileSystem::IFileSystem &fs, UI::ConsoleBuffer &logger, Application &app, AppWindow &appWindow)
-	: _appWindow(appWindow)
-	, textureManager(InitTextureManager(fs, logger, appWindow.GetRender()))
-	, gui(appWindow.GetInput(),
-		appWindow.GetClipboard(),
-		textureManager,
-		DesktopFactory(fs, logger))
+View::View(GameLoop &loop,  FileSystem::IFileSystem &fs, UI::ConsoleBuffer &logger, AppController &controller, AppWindowBase &appWindow)
+	: m_loop(loop)
+	, m_appWindow(appWindow)
+	, m_textureManager(InitTextureManager(fs, logger, appWindow.GetRender()))
+	, m_gui(appWindow.GetInput(),
+	      appWindow.GetClipboard(),
+		m_textureManager,
+	      DesktopFactory(controller.GetAppState(), fs, logger))
 {
+	m_loop.Add<IFixedUpdatable>(this);
+	m_loop.Add<IRenderable>(this);
+
 	int width = appWindow.GetPixelWidth();
 	int height = appWindow.GetPixelHeight();
-	gui.GetDesktop()->Resize((float)width, (float)height);
+	m_gui.GetDesktop()->Resize(static_cast<float>(width), static_cast<float>(height));
 
-	_appWindow.SetUserPointer(&gui);
+	m_appWindow.SetUserPointer(&m_gui);
 }
 
 View::~View()
 {
-	_appWindow.SetUserPointer(nullptr);
+	m_loop.Remove<IRenderable>(this);
+	m_loop.Remove<IFixedUpdatable>(this);
+
+	m_appWindow.SetUserPointer(nullptr);
 }
 
-void View::Step(float dt)
+void View::FixedUpdate(float fixedDeltaTime)
 {
-	gui.TimeStep(dt); // this also sends user controller state to WorldController
+	m_gui.TimeStep(fixedDeltaTime); // this also sends user controller state to WorldController
 }
 
-void View::Render(AppWindow &appWindow) const
+void View::Render(float interpolation) const
 {
-	unsigned int width = appWindow.GetPixelWidth();
-	unsigned int height = appWindow.GetPixelHeight();
+	unsigned int width = m_appWindow.GetPixelWidth();
+	unsigned int height = m_appWindow.GetPixelHeight();
 
-	DrawingContext dc(textureManager, width, height);
-	appWindow.GetRender().Begin();
-	gui.Render(dc);
-	appWindow.GetRender().End();
+	DrawingContext dc(m_textureManager, width, height);
+	m_appWindow.GetRender().Begin();
+	m_gui.Render(dc, interpolation);
+	m_appWindow.GetRender().End();
 }
 
 UI::LayoutManager& View::GetGui()
 {
-	return gui;
+	return m_gui;
 }
 

@@ -10,6 +10,9 @@
 #include "GuiManager.h"
 #include "Keys.h"
 #include <iostream>
+#include "NewMap.h"
+#include "AppState.h"
+#include "EditorContext.h"
 
 extern "C"
 {
@@ -20,10 +23,6 @@ extern "C"
 
 #include <functional>
 
-
-//static CounterBase counterDt("dt", "dt, ms");
-
-
 void LuaStateDeleter::operator()(lua_State *L) const
 {
 	lua_close(L);
@@ -31,21 +30,15 @@ void LuaStateDeleter::operator()(lua_State *L) const
 
 
 Desktop::Desktop(UI::LayoutManager* manager,
-               /*  AppState &appState,
-                 AppController &appController,*/
+                 AppState &appState,
                  FileSystem::IFileSystem &fs,
-                 //ConfCache &conf,
-                 //LangCache &lang,
                  UI::ConsoleBuffer &logger)
   : UIWindow(nullptr, manager)
- /* , AppStateListener(appState)
-  , _history(conf)
-  , _appController(appController)*/
+  , AppStateListener(appState)
   , _fs(fs)
-  /*, _conf(conf)
-  , _lang(lang)*/
   , _logger(logger)
   , _globL(luaL_newstate())
+  , _editor(nullptr)
   , _worldView(GetManager().GetTextureManager())
 {
 	using namespace std::placeholders;
@@ -95,7 +88,6 @@ Desktop::Desktop(UI::LayoutManager* manager,
 			ShowMainMenu();
 		}
 	};
-	ShowMainMenu();
 
 	SetTimeStep(true);
 	OnGameContextChanged();
@@ -116,43 +108,42 @@ void Desktop::OnTimeStep(float dt)
 		OnSize(GetWidth(), GetHeight());
 	}
 
-//////	if( !IsGamePaused() || !IsPauseSupported() )
-	//if (GameContextBase *gc = GetAppState().GetGameContext())
-	//{
-	//	assert(dt >= 0);
-	//	counterDt.Push(dt);
+//	if( !IsGamePaused() || !IsPauseSupported() )
+	if (GameContextBase *gc = GetAppState().GetGameContext())
+	{
+		assert(dt >= 0);
+		//counterDt.Push(dt);
 
-	//	_defaultCamera.HandleMovement(GetManager().GetInput(),
-	//	                              gc->GetWorld()._sx,
-	//	                              gc->GetWorld()._sy,
-	//	                              (float) GetWidth(),
-	//	                              (float) GetHeight());
-	//}
+		_defaultCamera.HandleMovement(GetManager().GetInput(),
+		                              gc->GetWorld()._sx,
+		                              gc->GetWorld()._sy,
+		                              (float) GetWidth(),
+		                              (float) GetHeight());
+	}
 }
 
 bool Desktop::GetEditorMode() const
 {
-	return true;
-	//return _editor && _editor->GetVisible();
+	return _editor && _editor->GetVisible();
 }
 
 void Desktop::SetEditorMode(bool editorMode)
 {
-	//if( _editor )
-	//{
-	//	_editor->SetVisible(editorMode);
-	//	if( _game )
-	//		_game->SetVisible(!editorMode);
-	//	if( editorMode && !_con->GetVisible() )
-	//	{
-	//		GetManager().SetFocusWnd(_editor);
-	//	}
-	//}
+	if( _editor )
+	{
+		_editor->SetVisible(editorMode);
+		//if( _game )
+		//	_game->SetVisible(!editorMode);
+		if( editorMode && !_con->GetVisible() )
+		{
+			GetManager().SetFocusWnd(_editor);
+		}
+	}
 }
 
 bool Desktop::IsGamePaused() const
 {
-	return !_navStack.empty();// || _editor->GetVisible(); //  || _world._limitHit
+	return !_navStack.empty() || _editor->GetVisible(); //  || _world._limitHit
 }
 
 void Desktop::ShowConsole(bool show)
@@ -245,7 +236,11 @@ void Desktop::OnNewDM()
 	//	{
 	//		try
 	//		{
-	//			_appController.NewGameDM(GetAppState(), _conf.cl_map.Get(), GetDMSettingsFromConfig(_conf));
+
+			//std::string path = std::string(DIR_MAPS) + '/' + mapName + ".map";
+			//std::shared_ptr<FS::Stream> stream = _fs.Open(path)->QueryStream();
+		    //GetAppState().SetGameContext(std::make_unique<GameContext>(*stream, GetDMSettingsFromConfig(_conf)));
+
 	//			ClearNavStack();
 	//		}
 	//		catch( const std::exception &e )
@@ -259,18 +254,24 @@ void Desktop::OnNewDM()
 
 void Desktop::OnNewMap()
 {
-	//auto dlg = new NewMapDlg(this, _conf, _lang);
-	//dlg->eventClose = [=](int result)
-	//{
-	//	OnCloseChild(dlg, result);
-	//	if (UI::Dialog::_resultOK == result)
-	//	{
-	//		std::unique_ptr<GameContextBase> gc(new EditorContext(_conf.ed_width.GetInt(), _conf.ed_height.GetInt()));
-	//		GetAppState().SetGameContext(std::move(gc));
-	//		ClearNavStack();
-	//	}
-	//};
-	//PushNavStack(*dlg);
+	auto dlg = new NewMapDlg(this);
+	dlg->onOkCallback = [=](int width, int height)
+	{
+		OnCloseChild(dlg, UI::Dialog::_resultOK);
+
+		std::unique_ptr<GameContextBase> gc(new EditorContext(width, height));
+		GetAppState().SetGameContext(std::move(gc));
+
+		ClearNavStack();
+	};
+
+	dlg->eventClose = [=](int result)
+	{
+		if (result == UI::Dialog::_resultCancel)
+			OnCloseChild(dlg, result);
+	};
+
+	PushNavStack(*dlg);
 }
 
 void Desktop::OnOpenMap(std::string fileName)
@@ -324,7 +325,7 @@ void Desktop::ShowMainMenu()
 	commands.gameSettings = std::bind(&Desktop::OnGameSettings, this);
 	commands.close = [=]()
 	{
-		//if (GetAppState().GetGameContext()) // do not return to nothing
+		if (GetAppState().GetGameContext()) // do not return to nothing
 		{
 			ClearNavStack();
 		}
@@ -333,7 +334,7 @@ void Desktop::ShowMainMenu()
 	commands.onHost = std::bind(&Desktop::OnHost, this);
 	commands.onJoin = std::bind(&Desktop::OnJoin, this);
 
-	auto mainMenu = new MainMenuDlg(this, _fs,/* _conf, _lang,*/ _logger, std::move(commands));
+	auto mainMenu = new MainMenuDlg(this, _fs, _logger, std::move(commands));
 	PushNavStack(*mainMenu);
 }
 
@@ -472,8 +473,8 @@ bool Desktop::OnFocus(bool focus)
 
 void Desktop::OnSize(float width, float height)
 {
-	//if( _editor )
-	//	_editor->Resize(width, height);
+	if( _editor )
+		_editor->Resize(width, height);
 	//if( _game )
 	//	_game->Resize(width, height);
 	_con->Resize(width - 20, floorf(height * 0.5f + 0.5f));
@@ -581,36 +582,36 @@ void Desktop::OnGameContextChanging()
 	//	_game = nullptr;
 	//}
 
-	//if (_editor)
-	//{
-	//	_editor->Destroy();
-	//	_editor = nullptr;
-	//}
+	if (_editor)
+	{
+		_editor->Destroy();
+		_editor = nullptr;
+	}
 }
 
 void Desktop::OnGameContextChanged()
 {
-	/*if (auto *gameContext = dynamic_cast<GameContext*>(GetAppState().GetGameContext()))
-	{
-		assert(!_game);
-		_game = new GameLayout(this,
-		                       *gameContext,
-		                       _worldView,
-		                       gameContext->GetWorldController(),
-		                       _defaultCamera,
-		                       _conf,
-		                       _lang,
-		                       _logger);
-		_game->Resize(GetWidth(), GetHeight());
-		_game->BringToBack();
+	//if (auto *gameContext = dynamic_cast<GameContext*>(GetAppState().GetGameContext()))
+	//{
+	//	assert(!_game);
+	//	_game = new GameLayout(this,
+	//	                       *gameContext,
+	//	                       _worldView,
+	//	                       gameContext->GetWorldController(),
+	//	                       _defaultCamera,
+	//	                       _conf,
+	//	                       _lang,
+	//	                       _logger);
+	//	_game->Resize(GetWidth(), GetHeight());
+	//	_game->BringToBack();
 
-		SetEditorMode(false);
-	}
+	//	SetEditorMode(false);
+	//}
 
 	if (auto *editorContext = dynamic_cast<EditorContext*>(GetAppState().GetGameContext()))
 	{
 		assert(!_editor);
-		_editor = new EditorLayout(this, editorContext->GetWorld(), _worldView, _defaultCamera, _globL.get(), _conf, _lang, _logger);
+		_editor = new EditorLayout(this, editorContext->GetWorld(), _worldView, _defaultCamera, _globL.get(), _logger);
 		_editor->Resize(GetWidth(), GetHeight());
 		_editor->BringToBack();
 		_editor->SetVisible(false);
@@ -626,5 +627,5 @@ void Desktop::OnGameContextChanged()
 	{
 		SetDrawBackground(true);
 		ShowMainMenu();
-	}*/
+	}
 }

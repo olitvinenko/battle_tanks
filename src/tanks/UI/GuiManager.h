@@ -43,7 +43,7 @@ public:
 	~LayoutManager();
 
 	void TimeStep(float dt);
-	void Render(DrawingContext &dc) const;
+	void Render(DrawingContext &dc, float interpolation) const;
 
 	bool ProcessPointer(float x, float y, float z, Msg msg, int button, PointerType pointerType, unsigned int pointerID);
 	bool ProcessKeys(Msg msg, UI::Key key);

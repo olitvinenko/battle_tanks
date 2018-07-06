@@ -1,6 +1,7 @@
 #pragma once
 #include "../ui/UIWindow.h"
 #include <functional>
+#include "GetFileName.h"
 
 namespace FileSystem
 {
@@ -59,16 +60,14 @@ class MainMenuDlg : public UI::UIWindow
 	PanelType  _ptype;
 	PanelState _pstate;
 
+	GetFileNameDlg *_fileDlg;
 	FileSystem::IFileSystem &_fs;
-	//LangCache &_lang;
 	UI::ConsoleBuffer &_logger;
 	MainMenuCommands _commands;
 
 public:
 	MainMenuDlg(UIWindow *parent,
 				FileSystem::IFileSystem &fs,
-	            //ConfCache &conf,
-	            //LangCache &lang,
 	            UI::ConsoleBuffer &logger,
 	            MainMenuCommands commands);
 	virtual ~MainMenuDlg();

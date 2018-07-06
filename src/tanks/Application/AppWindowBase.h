@@ -9,7 +9,7 @@ namespace UI
 	class LayoutManager;
 }
 
-struct AppWindow
+struct AppWindowBase
 {
 	virtual UI::IClipboard& GetClipboard() = 0;
 	virtual UI::IInput& GetInput() = 0;
@@ -18,5 +18,5 @@ struct AppWindow
 	virtual unsigned int GetPixelHeight() = 0;
 	virtual void SetUserPointer(UI::LayoutManager *inputSink) = 0;
 
-	virtual ~AppWindow() = default;
+	virtual ~AppWindowBase() = default;
 };
