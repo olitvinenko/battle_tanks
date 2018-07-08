@@ -1,36 +1,10 @@
 #include <cassert>
-#include <fstream>
 
 #include "FileSystem.h"
 #include "FileSystemWin32.h"
 
 namespace FileSystem
 {
-	int toCppMode(FileOpenMode mode)
-	{
-		int result = 0;
-
-		if ((mode & FileOpenMode::Read) == FileOpenMode::Read)
-			result |= std::fstream::in;
-
-		if ((mode & FileOpenMode::Write) == FileOpenMode::Write)
-			result |= std::fstream::out;
-
-		if ((mode & FileOpenMode::Append) == FileOpenMode::Append)
-			result |= std::fstream::app;
-
-		if ((mode & FileOpenMode::Binary) == FileOpenMode::Binary)
-			result |= std::fstream::binary;
-
-		if ((mode & FileOpenMode::AtEnd) == FileOpenMode::AtEnd)
-			result |= std::fstream::ate;
-
-		if ((mode & FileOpenMode::Truncate) == FileOpenMode::Truncate)
-			result |= std::fstream::trunc;
-
-		return result;
-	}
-
 	FileOpenMode operator |(FileOpenMode lhs, FileOpenMode rhs)
 	{
 		return static_cast<FileOpenMode> (
@@ -47,13 +21,175 @@ namespace FileSystem
 			);
 	}
 
+	static int toCppMode(FileOpenMode mode)
+	{
+		int result = 0;
+
+		if ((mode & FileOpenMode::Read) == FileOpenMode::Read)
+			result |= std::ios::in;
+
+		if ((mode & FileOpenMode::Write) == FileOpenMode::Write)
+			result |= std::ios::out;
+
+		if ((mode & FileOpenMode::Append) == FileOpenMode::Append)
+			result |= std::ios::app;
+
+		if ((mode & FileOpenMode::Binary) == FileOpenMode::Binary)
+			result |= std::ios::binary;
+
+		if ((mode & FileOpenMode::AtEnd) == FileOpenMode::AtEnd)
+			result |= std::ios::ate;
+
+		if ((mode & FileOpenMode::Truncate) == FileOpenMode::Truncate)
+			result |= std::ios::trunc;
+
+		return result;
+	}
+
+	static int toCppSeek(SeekMethod method)
+	{
+		switch (method)
+		{
+		case SeekMethod::Begin:
+			return std::ios_base::beg;
+		case SeekMethod::Current:
+			return std::ios_base::cur;
+		case SeekMethod::End:
+			return std::ios_base::end;
+		}
+
+		assert(false && "Not supported seek method");
+		return -1;
+	}
+
+
+	File::File(const std::string& path, FileOpenMode mode)
+		: _file(path, toCppMode(mode))
+		, _mode(mode)
+	{ }
+
+	File::~File()
+	{
+		_file.close();
+	}
+
+	std::shared_ptr<File::Memory> File::AsMemory()
+	{
+		assert(!_mapped && !_streamed);
+		_mapped = true;
+		return std::make_shared<Memory>(shared_from_this());
+	}
+
+	std::shared_ptr<File::Stream> File::AsStream()
+	{
+		assert(!_mapped && !_streamed);
+		_streamed = true;
+		return std::make_shared<Stream>(shared_from_this());
+	}
+
+	void File::Unmap()
+	{
+		assert(_mapped && !_streamed);
+		_mapped = false;
+	}
+
+	void File::Unstream()
+	{
+		assert(_streamed && !_mapped);
+		_streamed = false;
+	}
+
+
+	File::Memory::Memory(std::shared_ptr<File> file)
+		: _parent(file)
+		, _data(nullptr)
+		, _size(0)
+	{
+		if (!_parent->_file.is_open())
+			return;
+
+		_parent->_file.seekg(0, std::ios::end);
+		_size = static_cast<unsigned long>(_parent->_file.tellg());
+
+		_parent->_file.seekg(0, std::ios::beg);
+		_data = new char[_size];
+		_parent->_file.read(_data, _size);
+		_parent->_file.seekg(0, std::ios::beg);
+	}
+
+	File::Memory::~Memory()
+	{
+		if (_data)
+			delete[] _data;
+
+		_parent->Unmap();
+	}
+
+	char* File::Memory::GetData() const
+	{
+		return _data;
+	}
+
+	unsigned long File::Memory::GetSize() const
+	{
+		return _size;
+	}
+
+	File::Stream::Stream(std::shared_ptr<File> file)
+		: _parent(file)
+	{
+		SeekPut(0, SeekMethod::Begin);
+		SeekGet(0, SeekMethod::Begin);
+	}
+
+	File::Stream::~Stream()
+	{
+		_parent->Unstream();
+	}
+
+	size_t File::Stream::Read(void *dst, size_t size, size_t count) const
+	{
+		_parent->_file.read((char*)dst, size * count);
+		return static_cast<size_t>(_parent->_file.gcount()) / size;
+	}
+
+	void File::Stream::Write(const void *src, size_t size) const
+	{
+		_parent->_file.write((const char*)src, size);
+	}
+
+	void File::Stream::SeekGet(long long amount, SeekMethod method) const
+	{
+		_parent->_file.seekg(amount, toCppSeek(method));
+	}
+
+	void File::Stream::SeekPut(long long amount, SeekMethod method) const
+	{
+		_parent->_file.seekp(amount, toCppSeek(method));
+	}
+
+	long long File::Stream::TellGet() const
+	{
+		return _parent->_file.tellg();
+	}
+
+	long long File::Stream::TellPut() const
+	{
+		return _parent->_file.tellp();
+	}
+
+
+	IFileSystem::IFileSystem(std::string &&rootDirectory)
+		: _rootDirectory(std::move(rootDirectory))
+	{ }
+
 	void IFileSystem::Mount(const std::string &nodeName, std::shared_ptr<IFileSystem> fs)
 	{
 		assert(!nodeName.empty() && std::string::npos == nodeName.find('/'));
 		_children[nodeName] = fs;
 	}
 
-	std::shared_ptr<IFile> FileSystem::IFileSystem::Open(const std::string &fileName, FileOpenMode mode)
+	std::shared_ptr<File> FileSystem::IFileSystem::Open(const std::string &fileName, FileOpenMode mode)
 	{
 		std::string::size_type pd = fileName.rfind('/');
 		if (pd && std::string::npos != pd) // was a path delimiter found?
@@ -61,6 +197,12 @@ namespace FileSystem
 			return GetFileSystem(fileName.substr(0, pd))->RawOpen(fileName.substr(pd + 1), mode);
 		}
 		return RawOpen(fileName, mode);
+	}
+
+	// open a file that strictly belongs to this file system
+	std::shared_ptr<File> IFileSystem::RawOpen(const std::string &fileName, FileOpenMode mode) const
+	{
+		return std::make_shared<File>(_rootDirectory + Separator() + fileName, mode);
 	}
 
 	std::shared_ptr<IFileSystem> IFileSystem::GetFileSystem(const std::string &path, bool create, bool nothrow)

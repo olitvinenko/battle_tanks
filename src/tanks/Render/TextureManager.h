@@ -8,12 +8,7 @@
 #include <map>
 #include <memory>
 #include <vector>
-
-namespace FileSystem
-{
-	struct IMemoryMap;
-	class IFileSystem;
-}
+#include "FileSystem.h"
 
 struct LogicalTexture
 {
@@ -37,7 +32,7 @@ public:
 
 	IRender& GetRender() const { return _render; }
 
-	int LoadPackage(const std::string &packageName, std::shared_ptr<FileSystem::IMemoryMap> file, FileSystem::IFileSystem &fs);
+	int LoadPackage(const std::string &packageName, std::shared_ptr<FileSystem::File::Memory> file, FileSystem::IFileSystem &fs);
 	int LoadDirectory(const std::string &dirName, const std::string &texPrefix, FileSystem::IFileSystem &fs);
 	void UnloadAllTextures();
 

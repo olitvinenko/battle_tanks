@@ -3,8 +3,12 @@
 
 #include "TGAImage.h"
 
-TgaImage::TgaImage(const void *data, unsigned long size)
+
+TgaImage::TgaImage(std::shared_ptr<FileSystem::File::Memory> file)
 {
+	const void* data = file->GetData();
+	unsigned long size = file->GetSize();
+
 	static const unsigned char signatureU[12] = { 0,0,2, 0,0,0,0,0,0,0,0,0 }; // Uncompressed
 	static const unsigned char signatureC[12] = { 0,0,10,0,0,0,0,0,0,0,0,0 }; // Compressed
 

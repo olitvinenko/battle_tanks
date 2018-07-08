@@ -71,8 +71,8 @@ void TextureManager::LoadTexture(TexDescIterator &itTexDesc, const std::string &
 	}
 	else
 	{
-		std::shared_ptr< FileSystem::IMemoryMap> file = fs.Open(fileName)->QueryMap();
-		std::unique_ptr<TgaImage> image(new TgaImage(file->GetData(), file->GetSize()));
+		std::shared_ptr<FileSystem::File::Memory> file = fs.Open(fileName)->AsMemory();
+		std::unique_ptr<TgaImage> image(new TgaImage(file));
 
 		TexDesc td;
 		if (!_render.TexCreate(td.id, *image))
@@ -180,13 +180,13 @@ static float auxgetfloat(lua_State *L, int tblidx, const char *field, float def)
 	return def;
 }
 
-int TextureManager::LoadPackage(const std::string &packageName, std::shared_ptr<FileSystem::IMemoryMap> file, FileSystem::IFileSystem &fs)
+int TextureManager::LoadPackage(const std::string &packageName, std::shared_ptr<FileSystem::File::Memory> file, FileSystem::IFileSystem &fs)
 {
 	TRACE("Loading texture package '%s'", packageName.c_str());
 
 	lua_State *L = luaL_newstate();
 
-	if (0 != (luaL_loadbuffer(L, file->GetData(), file->GetSize(), packageName.c_str()) || lua_pcall(L, 0, 1, 0)))
+	if ((luaL_loadbuffer(L, file->GetData(), file->GetSize(), packageName.c_str()) || lua_pcall(L, 0, 1, 0)) != 0)
 	{
 		TRACE("%s", lua_tostring(L, -1));
 		lua_close(L);
