@@ -64,13 +64,14 @@ namespace FileSystem
 
 			long long TellGet() const;
 			long long TellPut() const;
-
 		private:
 			std::shared_ptr<File> _parent;
 		};
 		
 		std::shared_ptr<Memory> AsMemory();
 		std::shared_ptr<Stream> AsStream();
+
+		std::fstream& AsSTDStream();
 
 	private:
 		void Unmap();	

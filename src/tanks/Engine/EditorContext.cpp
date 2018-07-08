@@ -1,9 +1,12 @@
 #include "EditorContext.h"
-#include "World.h"
 #include <stdexcept>
 
-EditorContext::EditorContext(FileSystem::IStream &stream)
+
+EditorContext::EditorContext(std::shared_ptr<FileSystem::File> stream, TextureManager& texManager)
+	: m_game(new Raven_Game(texManager))
 {
+	m_game->LoadMap(stream->AsSTDStream());
+
 	//MapFile mf(stream, false);
 
 	//int width = 0;
@@ -18,13 +21,14 @@ EditorContext::EditorContext(FileSystem::IStream &stream)
 	//_world->Import(mf);
 }
 
-EditorContext::EditorContext(int width, int height)
-	: _world(new World(width, height))
+EditorContext::EditorContext(int width, int height, TextureManager& texManager)
+	: m_game(new Raven_Game(width, height, texManager))
 {
 }
 
 
 void EditorContext::FixedUpdate(float dt)
 {
-	_world->Step(dt);
+	//TODO::
+	//m_game->Update();
 }

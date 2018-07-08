@@ -2,12 +2,8 @@
 
 //------------------------------------------------------------------------
 //
-//  Name:   MessageDispatcher.h
-//
 //  Desc:   A message dispatcher. Manages messages of the type Telegram.
 //          Instantiated as a singleton.
-//
-//  Author: Mat Buckland (fup@ai-junkie.com)
 //
 //------------------------------------------------------------------------
 

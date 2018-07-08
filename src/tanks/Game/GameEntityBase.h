@@ -1,6 +1,6 @@
 #pragma once
 
-#include "2D/Vector2D.h"
+#include "Vector2D.h"
 
 struct Telegram;
 

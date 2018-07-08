@@ -87,6 +87,11 @@ namespace FileSystem
 		return std::make_shared<Stream>(shared_from_this());
 	}
 
+	std::fstream& File::AsSTDStream()
+	{
+		return _file;
+	}
+
 	void File::Unmap()
 	{
 		assert(_mapped && !_streamed);
@@ -178,7 +183,6 @@ namespace FileSystem
 		return _parent->_file.tellp();
 	}
 
-
 	IFileSystem::IFileSystem(std::string &&rootDirectory)
 		: _rootDirectory(std::move(rootDirectory))
 	{ }
@@ -189,7 +193,7 @@ namespace FileSystem
 		_children[nodeName] = fs;
 	}
 
-	std::shared_ptr<File> FileSystem::IFileSystem::Open(const std::string &fileName, FileOpenMode mode)
+	std::shared_ptr<File> IFileSystem::Open(const std::string &fileName, FileOpenMode mode)
 	{
 		std::string::size_type pd = fileName.rfind('/');
 		if (pd && std::string::npos != pd) // was a path delimiter found?

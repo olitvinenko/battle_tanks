@@ -14,11 +14,11 @@
 #include "UIInput.h"
 #include "TextureManager.h"
 
-#include "World.h"
 
 #include <sstream>
 #include <algorithm>
 #include "Z.h"
+#include "Raven_UserOptions.h"
 
 extern "C"
 {
@@ -116,7 +116,7 @@ extern "C"
 //}
 
 
-EditorLayout::EditorLayout(UIWindow *parent, World &world, WorldView &worldView, const DefaultCamera &defaultCamera, lua_State *globL, UI::ConsoleBuffer &logger)
+EditorLayout::EditorLayout(UIWindow *parent, Raven_Game& game, WorldView &worldView, const DefaultCamera &defaultCamera, lua_State *globL, UI::ConsoleBuffer &logger)
   : UIWindow(parent)
   , _logger(logger)
   , _defaultCamera(defaultCamera)
@@ -126,11 +126,19 @@ EditorLayout::EditorLayout(UIWindow *parent, World &world, WorldView &worldView,
   , _isObjectNew(false)
   , _click(true)
   , _mbutton(0)
-  , _world(world)
+  , _game(game)
   , _worldView(worldView)
   , _globL(globL)
 {
 	SetTexture(nullptr, false);
+
+	_drawGraph = UI::CheckBox::Create(this, 10, 50, "Draw fraph");
+	_drawGraph->eventClick = [=]() { UserOptions->m_bShowGraph = _drawGraph->GetCheck(); };
+	_drawGraph->SetCheck(false);
+
+	_drawIndices = UI::CheckBox::Create(this, 10, 50, "Draw indices");
+	_drawIndices->eventClick = [=]() { UserOptions->m_bShowNodeIndices = _drawIndices->GetCheck(); };
+	_drawIndices->SetCheck(false);
 
 	_help = UI::Text::Create(this, 10, 10, "Help"/*_lang.f1_help_editor.Get()*/, alignTextLT);
 	_help->SetVisible(false);
@@ -168,12 +176,12 @@ EditorLayout::~EditorLayout()
 	//_conf.ed_uselayers.eventChange = nullptr;
 }
 
-void EditorLayout::OnKillSelected(World &world,/* GC_Object *sender,*/ void *param)
+void EditorLayout::OnKillSelected(/*World &world,/* GC_Object *sender,*/ void *param)
 {
 	//Select(sender, false);
 }
 
-void EditorLayout::OnMoveSelected(World &world,/* GC_Object *sender,*/ void *param)
+void EditorLayout::OnMoveSelected(/*World &world,/* GC_Object *sender,*/ void *param)
 {
 	//assert(_selectedObject == sender);
 }
@@ -428,8 +436,13 @@ bool EditorLayout::OnKeyPressed(UI::Key key)
 
 void EditorLayout::OnSize(float width, float height)
 {
-	_typeList->Move(width - _typeList->GetWidth() - 5, 5);
-	_layerDisp->Move(width - _typeList->GetWidth() - 5, 6);
+	float w = width - _typeList->GetWidth() - 5;
+
+	_typeList->Move(w , 5);
+	_layerDisp->Move(w, 6);
+
+	_drawGraph->Move(w, _typeList->GetHeight() + 20);
+	_drawIndices->Move(w, _typeList->GetHeight() + 40);
 }
 
 void EditorLayout::OnVisibleChange(bool visible, bool inherited)
@@ -477,7 +490,7 @@ void EditorLayout::Draw(DrawingContext &dc) const
 	RectInt viewport(0, 0, (int) GetWidth(), (int) GetHeight());
 	Vector2 eye(_defaultCamera.GetPos().x + GetWidth() / 2, _defaultCamera.GetPos().y + GetHeight() / 2);
 	float zoom = _defaultCamera.GetZoom();
-	_worldView.Render(dc, _world, viewport, eye, zoom, true, true, false);
+	_worldView.Render(dc, viewport, eye, zoom, true, false, _game);
 
 	dc.SetMode(RM_INTERFACE);
 

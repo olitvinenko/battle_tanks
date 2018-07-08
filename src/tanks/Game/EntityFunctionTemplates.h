@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GameEntityBase.h"
-#include "2d/geometry.h"
+#include "geometry.h"
 
 //////////////////////////////////////////////////////////////////////////
 //

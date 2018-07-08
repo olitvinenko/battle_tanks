@@ -1,11 +1,11 @@
 #pragma once
-
-class World;
+#include "Raven_Game.h"
 
 struct GameContextBase
 {
 	virtual ~GameContextBase() = default;
 
-	virtual World& GetWorld() = 0;
+	virtual Raven_Game& GetGame() = 0;
+
 	virtual void FixedUpdate(float dt) = 0;
 };

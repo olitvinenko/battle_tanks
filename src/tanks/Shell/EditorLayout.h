@@ -1,9 +1,10 @@
 #pragma once
 #include "UIWindow.h"
 #include <functional>
+#include "Raven_Game.h"
+#include "Button.h"
 
 class DefaultCamera;
-class World;
 class WorldView;
 struct lua_State;
 
@@ -13,6 +14,7 @@ namespace UI
 	class ListDataSourceDefault;
 	class ComboBox;
 	class ConsoleBuffer;
+	class CheckBox;
 	class Text;
 }
 
@@ -29,22 +31,25 @@ class EditorLayout : public UI::UIWindow
 	UI::Text         *_help;
 	size_t        _fontSmall;
 
+	UI::CheckBox * _drawGraph;
+	UI::CheckBox * _drawIndices;
+
 	size_t       _texSelection;
 
 	//GC_Object *_selectedObject;
 	bool _isObjectNew;
 	bool _click;
 	int  _mbutton;
-	World &_world;
 	WorldView &_worldView;
 	lua_State *_globL;
+	Raven_Game & _game;
 
 
-	void OnKillSelected(World &world, /*GC_Object *sender,*/ void *param);
-	void OnMoveSelected(World &world, /*GC_Object *sender,*/ void *param);
+	void OnKillSelected(/*World &world, /*GC_Object *sender,*/ void *param);
+	void OnMoveSelected(/*World &world, /*GC_Object *sender,*/ void *param);
 
 public:
-	EditorLayout(UI::UIWindow *parent, World &world, WorldView &worldView, const DefaultCamera &defaultCamera, lua_State *globL, UI::ConsoleBuffer &logger);
+	EditorLayout(UI::UIWindow *parent, Raven_Game& game, WorldView &worldView, const DefaultCamera &defaultCamera, lua_State *globL, UI::ConsoleBuffer &logger);
 	virtual ~EditorLayout();
 
 	//void Select(GC_Object *object, bool bSelect);

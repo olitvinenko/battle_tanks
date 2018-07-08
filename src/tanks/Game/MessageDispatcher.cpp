@@ -1,6 +1,6 @@
 #include "MessageDispatcher.h"
 #include "GameEntityBase.h"
-#include "misc/FrameCounter.h"
+#include "FrameCounter.h"
 #include "EntityManager.h"
 #include "Debug/DebugConsole.h"
 

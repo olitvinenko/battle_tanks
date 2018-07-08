@@ -2,7 +2,6 @@
 #include "MainMenu.h"
 #include "Widgets.h"
 
-#include "World.h"
 #include "FileSystem.h"
 #include "Button.h"
 #include "Console.h"
@@ -13,6 +12,9 @@
 #include "NewMap.h"
 #include "AppState.h"
 #include "EditorContext.h"
+
+#include "FileSystem.h"
+#include "Raven_Map.h"
 
 extern "C"
 {
@@ -39,7 +41,7 @@ Desktop::Desktop(UI::LayoutManager* manager,
   , _logger(logger)
   , _globL(luaL_newstate())
   , _editor(nullptr)
-  , _worldView(GetManager().GetTextureManager())
+  , _worldView()
 {
 	using namespace std::placeholders;
 
@@ -115,10 +117,10 @@ void Desktop::OnTimeStep(float dt)
 		//counterDt.Push(dt);
 
 		_defaultCamera.HandleMovement(GetManager().GetInput(),
-		                              gc->GetWorld()._sx,
-		                              gc->GetWorld()._sy,
-		                              (float) GetWidth(),
-		                              (float) GetHeight());
+			gc->GetGame().GetMap()->GetSizeX(),
+			gc->GetGame().GetMap()->GetSizeY(),
+			(float) GetWidth(),
+			(float) GetHeight());
 	}
 }
 
@@ -259,7 +261,7 @@ void Desktop::OnNewMap()
 	{
 		OnCloseChild(dlg, UI::Dialog::_resultOK);
 
-		std::unique_ptr<GameContextBase> gc(new EditorContext(width, height));
+		std::unique_ptr<GameContextBase> gc(new EditorContext(width, height, GetManager().GetTextureManager()));
 		GetAppState().SetGameContext(std::move(gc));
 
 		ClearNavStack();
@@ -276,19 +278,20 @@ void Desktop::OnNewMap()
 
 void Desktop::OnOpenMap(std::string fileName)
 {
-	/*std::unique_ptr<GameContextBase> gc(new EditorContext(*_fs.Open(fileName)->QueryStream()));
+	std::unique_ptr<GameContextBase> gc(new EditorContext(_fs.Open(fileName, FileSystem::FileOpenMode::Read), GetManager().GetTextureManager()));
 	GetAppState().SetGameContext(std::move(gc));
-	ClearNavStack();*/
+	ClearNavStack();
 }
 
 void Desktop::OnExportMap(std::string fileName)
 {
-//	if (GameContextBase *gameContext = GetAppState().GetGameContext())
-//	{
-//		gameContext->GetWorld().Export(*_fs.Open(fileName, FS::ModeWrite)->QueryStream());
-//		_logger.Printf(0, "map exported: '%s'", fileName.c_str());
-////		_conf.cl_map.Set(_fileDlg->GetFileTitle());
-//	}
+	if (GameContextBase *gameContext = GetAppState().GetGameContext())
+	{
+		std::shared_ptr<FileSystem::File> file = _fs.Open(fileName, FileSystem::FileOpenMode::Write);
+		gameContext->GetGame().SaveMap(file->AsSTDStream());// .Export(*_fs.Open(fileName, FS::ModeWrite)->QueryStream());
+		_logger.Printf(0, "map exported: '%s'", fileName.c_str());
+//		_conf.cl_map.Set(_fileDlg->GetFileTitle());
+	}
 }
 
 void Desktop::OnGameSettings()
@@ -611,7 +614,7 @@ void Desktop::OnGameContextChanged()
 	if (auto *editorContext = dynamic_cast<EditorContext*>(GetAppState().GetGameContext()))
 	{
 		assert(!_editor);
-		_editor = new EditorLayout(this, editorContext->GetWorld(), _worldView, _defaultCamera, _globL.get(), _logger);
+		_editor = new EditorLayout(this, editorContext->GetGame(), _worldView, _defaultCamera, _globL.get(), _logger);
 		_editor->Resize(GetWidth(), GetHeight());
 		_editor->BringToBack();
 		_editor->SetVisible(false);

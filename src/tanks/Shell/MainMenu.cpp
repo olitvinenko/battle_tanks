@@ -41,30 +41,30 @@ MainMenuDlg::MainMenuDlg(UIWindow *parent,
 
 	float y = GetHeight() - buttonHeight;
 
-	button = UI::Button::Create(this, "_lang.single_player_btn.Get()", 0, y);
+	button = UI::Button::Create(this, "Single player", 0, y);
 	button->SetIcon("ui/play");
 	button->Resize(buttonWidth, buttonHeight);
 	button->eventClick = _commands.newDM;
 
-	button = UI::Button::Create(this, "_lang.editor_btn.Get()", (GetWidth() - buttonWidth) / 2, y);
+	button = UI::Button::Create(this, "Editor", (GetWidth() - buttonWidth) / 2, y);
 	button->SetIcon("ui/editor");
 	button->Resize(buttonWidth, buttonHeight);
 	button->eventClick = std::bind(&MainMenuDlg::OnEditor, this);
 
-	button = UI::Button::Create(this, "_lang.settings_btn.Get()", GetWidth() - buttonWidth, y);
+	button = UI::Button::Create(this, "Settings", GetWidth() - buttonWidth, y);
 	button->SetIcon("ui/settings");
 	button->Resize(buttonWidth, buttonHeight);
 	button->eventClick = std::bind(&MainMenuDlg::OnSettings, this);
 
-	button = UI::Button::Create(this, "_lang.return_to_game_btn.Get()", (GetWidth() - buttonWidth) / 2, 0);
+	button = UI::Button::Create(this, "Return", (GetWidth() - buttonWidth) / 2, 0);
 	button->Resize(buttonWidth, buttonHeight);
 	button->eventClick = _commands.close;
 
-	button = UI::Button::Create(this, "_lang.net_host_btn.Get()", (GetWidth() - buttonWidth), y * 2);
+	button = UI::Button::Create(this, "Host", (GetWidth() - buttonWidth), y * 2);
 	button->Resize(buttonWidth, buttonHeight);
 	button->eventClick = _commands.onHost;
 
-	button = UI::Button::Create(this, "_lang.net_join_btn.Get()", (GetWidth() - buttonWidth), y * 2 + buttonHeight);
+	button = UI::Button::Create(this, "Join", (GetWidth() - buttonWidth), y * 2 + buttonHeight);
 	button->Resize(buttonWidth, buttonHeight);
 	button->eventClick = _commands.onJoin;
 
@@ -101,7 +101,7 @@ void MainMenuDlg::OnMapSettings()
 void MainMenuDlg::OnImportMap()
 {
 	GetFileNameDlg::Params param;
-	param.title = "_lang.get_file_name_load_map.Get()";
+	param.title = "Select map to load";
 	param.folder = _fs.GetFileSystem(DIR_MAPS);
 	param.extension = "map";
 
@@ -132,7 +132,7 @@ void MainMenuDlg::OnImportMapSelect(int result)
 void MainMenuDlg::OnExportMap()
 {
 	GetFileNameDlg::Params param;
-	param.title = "_lang.get_file_name_save_map.Get()";
+	param.title = "Select map to save map";
 	param.folder = _fs.GetFileSystem(DIR_MAPS, true);
 	param.extension = "map";
 
@@ -222,12 +222,12 @@ void MainMenuDlg::CreatePanel()
 	switch( _ptype )
 	{
 	case PT_EDITOR:
-		_panelTitle->SetText("_lang.editor_title.Get()");
-		UI::Button::Create(_panel, "_lang.editor_new_map.Get()", 0, y)->eventClick = _commands.newMap;
-		UI::Button::Create(_panel, "_lang.editor_load_map.Get()", 100, y)->eventClick = std::bind(&MainMenuDlg::OnImportMap, this);
-		btn = UI::Button::Create(_panel, "_lang.editor_save_map.Get()", 200, y);
+		_panelTitle->SetText("Editor");
+		UI::Button::Create(_panel, "New", 0, y)->eventClick = _commands.newMap;
+		UI::Button::Create(_panel, "Load", 100, y)->eventClick = std::bind(&MainMenuDlg::OnImportMap, this);
+		btn = UI::Button::Create(_panel, "Save", 200, y);
 		btn->eventClick = std::bind(&MainMenuDlg::OnExportMap, this);
-		btn = UI::Button::Create(_panel, "_lang.editor_map_settings.Get()", 300, y);
+		btn = UI::Button::Create(_panel, "Settings", 300, y);
 		btn->eventClick = std::bind(&MainMenuDlg::OnMapSettings, this);
 		break;
 	default:

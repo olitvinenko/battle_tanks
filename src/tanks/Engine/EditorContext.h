@@ -3,24 +3,22 @@
 #include <memory>
 #include "GameContextBase.h"
 
-class World;
-
 namespace FileSystem
 {
-	struct IStream;
+	class File;
 }
 
 class EditorContext : public GameContextBase
 {
 public:
-	explicit EditorContext(FileSystem::IStream &stream);
-	EditorContext(int width, int height);
+	EditorContext(std::shared_ptr<FileSystem::File> stream, TextureManager& texManager);
+	EditorContext(int width, int height, TextureManager& texManager);
 
 	~EditorContext() = default;
 
-	World& GetWorld() override { return *_world; }
+	Raven_Game& GetGame() override { return *m_game; };
 	void FixedUpdate(float dt) override;
 
 private:
-	std::unique_ptr<World> _world;
+	std::unique_ptr<Raven_Game> m_game;
 };

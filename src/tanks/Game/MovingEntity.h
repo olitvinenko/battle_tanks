@@ -10,9 +10,9 @@
 
 #include <cassert>
 
-#include "2D/Vector2D.h"
+#include "Vector2D.h"
 #include "GameEntityBase.h"
-#include "2d/C2DMatrix.h"
+#include "C2DMatrix.h"
 
 
 class MovingEntity : public GameEntityBase

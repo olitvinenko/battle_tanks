@@ -77,8 +77,8 @@ public:
   double     Right()const{return m_dRight;}
   double     Width()const{return fabs(m_dRight - m_dLeft);}
   double     Height()const{return fabs(m_dTop - m_dBottom);}
-  double     Length()const{return max(Width(), Height());}
-  double     Breadth()const{return min(Width(), Height());}
+  double     Length()const{return std::max(Width(), Height());}
+  double     Breadth()const{return std::min(Width(), Height());}
 
   Vector2D  Center()const{return m_vCenter;}
   int       ID()const{return m_iID;}

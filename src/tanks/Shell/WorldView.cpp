@@ -1,31 +1,22 @@
 #include "WorldView.h"
-
-#include "Macros.h"
-#include "World.h"
-#include "WorldCfg.h"
 		 
 #include "Vector2.h"
 #include "Rect.h"
 #include "DrawingContext.h"
 #include <algorithm>
 
-WorldView::WorldView(TextureManager &tm)
-	: _terrain(tm)
-{
-}
-
-WorldView::~WorldView()
-{
-}
+#include "TextureManager.h"
+#include "Raven_Map.h"
+#include "Raven_UserOptions.h"
+#include "Raven_Game.h"
 
 void WorldView::Render(DrawingContext &dc,
-					   const World &world,
 					   const RectInt &viewport,
 					   Vector2 eye,
 					   float zoom,
 					   bool editorMode,
-					   bool drawGrid,
-					   bool nightMode) const
+					   bool nightMode,
+					   Raven_Game& game) const
 {
 	eye.x = floor(eye.x * zoom) / zoom;
 	eye.y = floor(eye.y * zoom) / zoom;
@@ -45,10 +36,10 @@ void WorldView::Render(DrawingContext &dc,
 	dc.SetMode(RM_LIGHT); // this will clear the render target with the ambient set above
 	if( nightMode )
 	{
-		float xmin = std::max(0.0f, left);
-		float ymin = std::max(0.0f, top);
-		float xmax = std::min(world._sx, right);
-		float ymax = std::min(world._sy, bottom);
+		//float xmin = std::max(0.0f, left);
+		//float ymin = std::max(0.0f, top);
+		//float xmax = std::min(world._sx, right);
+		//float ymax = std::min(world._sy, bottom);
 
 		//FOREACH( world.GetList(LIST_lights), const GC_Light, pLight )
 		//{
@@ -128,7 +119,8 @@ void WorldView::Render(DrawingContext &dc,
 
 	dc.SetMode(RM_WORLD);
 
-	_terrain.Draw(dc, world._sx, world._sy, drawGrid);
+	game.Render(dc, editorMode);
+
 
    // for( int z = 0; z < Z_COUNT; ++z )
    // {
