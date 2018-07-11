@@ -33,7 +33,7 @@ public:
 
   void  Try(Raven_Bot*);
 
-  void  Render(){}
+  void  Render(DrawingContext& dc) override { }
 
 };
 

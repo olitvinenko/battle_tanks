@@ -23,10 +23,10 @@
 
 
 Raven_Map::Raven_Map(int width, int heigt, TextureManager& texManager)
-	: _lineTexture(texManager.FindSprite("lightning"))
-	, _fontTexture(texManager.FindSprite("font_small"))
-	, _texBack(texManager.FindSprite("background"))
+	: m_tm(texManager)
 {
+	FindTextures(texManager);
+
 	//TODO:: scaling
 	m_iSizeX = width;
 	m_iSizeY = heigt;
@@ -42,8 +42,10 @@ Raven_Map::Raven_Map(TextureManager& texManager)
                        m_pSpacePartition(NULL),
                        m_iSizeY(0),
                        m_iSizeX(0),
-                       m_dCellSpaceNeighborhoodRange(0)
+                       m_dCellSpaceNeighborhoodRange(0),
+                       m_tm(texManager)
 {
+	FindTextures(texManager);
 }
 //------------------------------ dtor -----------------------------------------
 //-----------------------------------------------------------------------------
@@ -52,6 +54,13 @@ Raven_Map::~Raven_Map()
   Clear();
 }
 
+void Raven_Map::FindTextures(const TextureManager& tm)
+{
+	_lineTexture = tm.FindSprite("lightning");
+	_fontTexture = tm.FindSprite("font_small");
+	_texBack = tm.FindSprite("background");
+	_spawnPointTexture = tm.FindSprite("item_mine");
+}
 
 //---------------------------- Clear ------------------------------------------
 //
@@ -92,12 +101,12 @@ void Raven_Map::Clear()
 //-----------------------------------------------------------------------------
 void Raven_Map::AddWall(std::fstream& in)
 {
-  m_Walls.push_back(new Wall2D(in));
+  m_Walls.push_back(new Wall2D(in, m_tm));
 }
 
 Wall2D* Raven_Map::AddWall(Vector2D from, Vector2D to)
 {
-  Wall2D* w = new Wall2D(from, to);
+  Wall2D* w = new Wall2D(from, to, m_tm);
 
   m_Walls.push_back(w);
 
@@ -406,6 +415,7 @@ void Raven_Map::Render(DrawingContext& dc, bool editor)
 	//back
 	dc.DrawBackground(_texBack, GetSizeX(), GetSizeY());
 
+	//TODO:: move to smth like this: m_pNavGraph->Render(dc, editor);
    //render the navgraph
 	if (editor && m_pNavGraph->NumNodes() != 0)
 	{
@@ -416,14 +426,6 @@ void Raven_Map::Render(DrawingContext& dc, bool editor)
 			!NodeItr.end();
 			pN = NodeItr.next())
 		{
-			if (UserOptions->m_bShowNodeIndices)
-			{
-				math::RectFloat dst = { (float)pN->Pos().x - 2, (float)pN->Pos().y - 2, (float)pN->Pos().x + 2, (float)pN->Pos().y + 2 };
-				dc.DrawSprite(&dst, 0U, 0xffffffff, 0U);
-
-				dc.DrawBitmapText((int)pN->Pos().x + 5, (int)pN->Pos().y - 5, _fontTexture, c, std::to_string(pN->Index()), alignTextLT);
-			}
-
 			if (UserOptions->m_bShowGraph)
 			{
 				NavGraph::ConstEdgeIterator EdgeItr(*m_pNavGraph, pN->Index());
@@ -437,35 +439,49 @@ void Raven_Map::Render(DrawingContext& dc, bool editor)
 					dc.DrawLine(_lineTexture, c, from.x, from.y, to.x, to.y, 0);
 				}
 			}
+
+			if (UserOptions->m_bShowNodeIndices)
+			{
+				math::RectFloat dst = { (float)pN->Pos().x - 2, (float)pN->Pos().y - 2, (float)pN->Pos().x + 2, (float)pN->Pos().y + 2 };
+				dc.DrawSprite(&dst, 0U, 0xffffffff, 0U);
+			}
+		}
+
+		if (UserOptions->m_bShowNodeIndices)
+		{
+			for (const NavGraph::NodeType* pN = NodeItr.begin();
+				!NodeItr.end();
+				pN = NodeItr.next())
+			{
+				dc.DrawBitmapText((int)pN->Pos().x + 5, (int)pN->Pos().y - 5, _fontTexture, c, std::to_string(pN->Index()), alignTextLT);
+			}
 		}
 	}
-	
-
-	return;
 
   //render any doors
   std::vector<Raven_Door*>::iterator curDoor = m_Doors.begin();
   for (curDoor; curDoor != m_Doors.end(); ++curDoor)
   {
-    (*curDoor)->Render();
+    (*curDoor)->Render(dc);
   }
 
+  //TODO:: implement
   //render all the triggers
-  m_TriggerSystem.Render();
+  m_TriggerSystem.Render(dc);
 
   //render all the walls
   std::vector<Wall2D*>::const_iterator curWall = m_Walls.begin();
   for (curWall; curWall != m_Walls.end(); ++curWall)
   {
-    gdi->ThickBlackPen();
-    (*curWall)->Render();
+    (*curWall)->Render(dc);
   }
 
   std::vector<Vector2D>::const_iterator curSp = m_SpawnPoints.begin();
   for (curSp; curSp != m_SpawnPoints.end(); ++curSp)
   {
-    gdi->GreyBrush();
-    gdi->GreyPen();
-    gdi->Circle(*curSp, 7);
+	  math::RectFloat dst = { (float)curSp->x - 7, (float)curSp->y - 7, (float)curSp->x + 7, (float)curSp->y + 7 };
+	  dc.DrawSprite(&dst, 0U, 0xffffffff, 0U);
+
+	//  dc.DrawSprite(_spawnPointTexture, 0, 0xffffffff, (float)curSp->x, (float)curSp->y, (float)7, (float)7, math::Vector2());
   }
 }

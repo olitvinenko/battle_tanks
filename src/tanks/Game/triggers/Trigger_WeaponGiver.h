@@ -36,7 +36,7 @@ public:
   void Try(Raven_Bot*);
   
   //draws a symbol representing the weapon type at the trigger's location
-  void Render();
+  void Render(DrawingContext& dc) override;
 
   void Read (std::fstream& is);
 };

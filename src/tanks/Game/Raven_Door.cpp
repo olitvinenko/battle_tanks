@@ -5,6 +5,8 @@
 #include "Raven_Messages.h"
 #include "Raven_Map.h"
 #include "wall2d.h"
+#include "TextureManager.h"
+#include "DrawingContext.h"
 
 //---------------------------- ctor -------------------------------------------
 //-----------------------------------------------------------------------------
@@ -12,7 +14,8 @@ Raven_Door::Raven_Door(Raven_Map* pMap,
                        std::fstream& is)
 	: GameEntityBase(GetValueFromStream<int>(is)),
                                   m_Status(closed),
-                                  m_iNumTicksStayOpen(60)                   //MGC!
+                                  m_iNumTicksStayOpen(60),                   //MGC!,
+								  m_doorTexture(pMap->GetTextureManager().FindSprite("lightning"))
 {
   Read(is);
 
@@ -181,10 +184,9 @@ bool Raven_Door::HandleMessage(const Telegram& msg)
 
 //-------------------------------- Render -------------------------------------
 //-----------------------------------------------------------------------------
-void Raven_Door::Render()
+void Raven_Door::Render(DrawingContext& dc)
 {
-  gdi->ThickBluePen();
-  gdi->Line(m_vP1, m_vP2); 
+	dc.DrawLine(m_doorTexture, SpriteColor(255.0f, 255.0f, 255.0f, 255.0f), m_vP1.x, m_vP1.y, m_vP2.x, m_vP2.y, 1);
 }
 
 

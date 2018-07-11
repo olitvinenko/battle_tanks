@@ -9,6 +9,7 @@
 
 #include "Raven_Messages.h"
 #include "MessageDispatcher.h"
+#include "DrawingContext.h"
 
 
 //-------------------------- ctor ---------------------------------------------
@@ -149,7 +150,7 @@ void Rocket::InflictDamageOnBotsWithinBlastRadius()
 
 //-------------------------- Render -------------------------------------------
 //-----------------------------------------------------------------------------
-void Rocket::Render()
+void Rocket::Render(DrawingContext& dc)
 {
   
   gdi->RedPen();

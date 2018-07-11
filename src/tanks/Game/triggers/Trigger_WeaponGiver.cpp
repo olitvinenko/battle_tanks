@@ -7,6 +7,7 @@
 #include "../Raven_ObjectEnumerations.h"
 #include "../Raven_WeaponSystem.h"
 #include "Transformations.h"
+#include "DrawingContext.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -68,7 +69,7 @@ void Trigger_WeaponGiver::Read(std::fstream& in)
 
 
 
-void Trigger_WeaponGiver::Render()
+void Trigger_WeaponGiver::Render(DrawingContext& dc)
 {
   if (isActive())
   {

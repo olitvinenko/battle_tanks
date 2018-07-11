@@ -29,6 +29,5 @@ EditorContext::EditorContext(int width, int height, TextureManager& texManager)
 
 void EditorContext::FixedUpdate(float dt)
 {
-	//TODO::
-	//m_game->Update();
+	m_game->Update();
 }

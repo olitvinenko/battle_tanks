@@ -33,7 +33,7 @@ public:
 
   Slug(Raven_Bot* shooter, Vector2D target);
   
-  void Render();
+  void Render(DrawingContext& dc) override;
 
   void Update();
   

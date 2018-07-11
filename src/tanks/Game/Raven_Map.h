@@ -69,14 +69,19 @@ private:
   //neighbors 
   double                             m_dCellSpaceNeighborhoodRange;
 
+  TextureManager& m_tm;
+
   size_t _lineTexture;
   size_t _fontTexture;
   size_t _texBack;
+  size_t _spawnPointTexture;
 
   int m_iSizeX;
   int m_iSizeY;
   
   void  PartitionNavGraph();
+
+  void FindTextures(const TextureManager& tm);
 
   //this will hold a pre-calculated lookup table of the cost to travel from
   //one node to any other.
@@ -130,7 +135,7 @@ public:
   int                                GetSizeY()const{return m_iSizeY;}
   int                                GetMaxDimension()const{return Maximum(m_iSizeX, m_iSizeY);}
   double                             GetCellSpaceNeighborhoodRange()const{return m_dCellSpaceNeighborhoodRange;}
-
+  const TextureManager&              GetTextureManager() const { return m_tm; }
 };
 
 

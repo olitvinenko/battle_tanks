@@ -33,7 +33,7 @@ public:
   void Try(Raven_Bot* pBot);
   
   //draws a box with a red cross at the trigger's location
-  void Render();
+  void Render(DrawingContext& dc) override;
 
   void Read (std::fstream& is);
 };

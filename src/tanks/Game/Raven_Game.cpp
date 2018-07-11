@@ -400,7 +400,7 @@ bool Raven_Game::LoadMap(std::fstream& stream)
   delete m_pPathManager;
 
   //in with the new
-  m_pGraveMarkers = new GraveMarkers(script->GetDouble("GraveLifetime"));
+  m_pGraveMarkers = new GraveMarkers(script->GetDouble("GraveLifetime"), m_texManager);
   m_pPathManager = new PathManager<Raven_PathPlanner>(script->GetInt("MaxSearchCyclesPerUpdateStep"));
   m_pMap = new Raven_Map(m_texManager);
 
@@ -706,39 +706,37 @@ Raven_Game::GetPosOfClosestSwitch(Vector2D botPos, unsigned int doorID)const
 //-----------------------------------------------------------------------------
 void Raven_Game::Render(DrawingContext& dc, bool editor)
 {
-
-
-	//
- // m_pGraveMarkers->Render();
+    m_pGraveMarkers->Render(dc);
 
 	m_pMap->Render(dc, editor);
 
-  ////render all the bots unless the user has selected the option to only 
- // //render those bots that are in the fov of the selected bot
- // if (m_pSelectedBot && UserOptions->m_bOnlyShowBotsInTargetsFOV)
- // {
- //   std::vector<Raven_Bot*> 
- //   VisibleBots = GetAllBotsInFOV(m_pSelectedBot);
+  //render all the bots unless the user has selected the option to only 
+  //render those bots that are in the fov of the selected bot
+  if (m_pSelectedBot && UserOptions->m_bOnlyShowBotsInTargetsFOV)
+  {
+    std::vector<Raven_Bot*> 
+    VisibleBots = GetAllBotsInFOV(m_pSelectedBot);
 
- //   std::vector<Raven_Bot*>::const_iterator it = VisibleBots.begin();
- //   for (it; it != VisibleBots.end(); ++it) (*it)->Render();
+    std::vector<Raven_Bot*>::const_iterator it = VisibleBots.begin();
+    for (it; it != VisibleBots.end(); ++it)
+		(*it)->Render(dc);
 
- //   if (m_pSelectedBot) m_pSelectedBot->Render();
- // }
+    if (m_pSelectedBot) m_pSelectedBot->Render(dc);
+  }
 
- // else
- // {
- //   //render all the entities
- //   std::list<Raven_Bot*>::const_iterator curBot = m_Bots.begin();
- //   for (curBot; curBot != m_Bots.end(); ++curBot)
- //   {
- //     if ((*curBot)->isAlive())
- //     {
- //       (*curBot)->Render();
- //     }
- //   }
- // }
- // 
+  else
+  {
+    //render all the entities
+    std::list<Raven_Bot*>::const_iterator curBot = m_Bots.begin();
+    for (curBot; curBot != m_Bots.end(); ++curBot)
+    {
+      if ((*curBot)->isAlive())
+      {
+        (*curBot)->Render(dc);
+      }
+    }
+  }
+  
  // //render any projectiles
  // std::list<Raven_Projectile*>::const_iterator curW = m_Projectiles.begin();
  // for (curW; curW != m_Projectiles.end(); ++curW)

@@ -9,6 +9,7 @@
 
 #include "Raven_Messages.h"
 #include "MessageDispatcher.h"
+#include "DrawingContext.h"
 
 
 //-------------------------- ctor ---------------------------------------------
@@ -91,7 +92,7 @@ void Bolt::Update()
 
 //-------------------------- Render -------------------------------------------
 //-----------------------------------------------------------------------------
-void Bolt::Render()
+void Bolt::Render(DrawingContext& dc)
 {
   gdi->ThickGreenPen();
   gdi->Line(Pos(), Pos()-Velocity());

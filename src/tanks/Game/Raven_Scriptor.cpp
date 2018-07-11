@@ -9,9 +9,8 @@ Raven_Scriptor* Raven_Scriptor::Instance()
 }
 
 
-
 Raven_Scriptor::Raven_Scriptor()
 	:Scriptor()
 {
-  RunScriptFile("C:\\Users\\Alex Litvinenko\\Desktop\\BUILD\\tanks\\data\\scripts\\Params.lua");
+  RunScriptFile("E:\\BattleTanks\\tanks\\data\\scripts\\Params.lua");
 }

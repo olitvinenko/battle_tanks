@@ -9,6 +9,7 @@
 
 #include "Raven_Messages.h"
 #include "MessageDispatcher.h"
+#include "DrawingContext.h"
 
 #include <list>
 
@@ -104,7 +105,7 @@ void Slug::TestForImpact()
 
 //-------------------------- Render -------------------------------------------
 //-----------------------------------------------------------------------------
-void Slug::Render()
+void Slug::Render(DrawingContext& dc)
 {
   if (isVisibleToPlayer() && m_bImpacted)
   {

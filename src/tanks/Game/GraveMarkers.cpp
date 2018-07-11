@@ -1,10 +1,14 @@
 #include "GraveMarkers.h"
 #include "misc/cgdi.h"
 #include "Transformations.h"
+#include "DrawingContext.h"
+#include "TextureManager.h"
 
 //------------------------------- ctor ----------------------------------------
 //-----------------------------------------------------------------------------
-GraveMarkers::GraveMarkers(double lifetime):m_dLifeTime(lifetime)
+GraveMarkers::GraveMarkers(double lifetime, const TextureManager& tm)
+	:m_dLifeTime(lifetime)
+	,m_fontTexture(tm.FindSprite("font_small"))
 {
       //create the vertex buffer for the graves
     const int NumripVerts = 9;
@@ -41,7 +45,7 @@ void GraveMarkers::Update()
 }
     
 
-void GraveMarkers::Render()
+void GraveMarkers::Render(DrawingContext& dc)
 {
   GraveList::iterator it = m_GraveList.begin();
   Vector2D facing(-1,0);
@@ -54,10 +58,11 @@ void GraveMarkers::Render()
                                    facing.Perp(),
                                    Vector2D(1,1));
 
-    gdi->BrownPen();
-    gdi->ClosedShape(m_vecRIPVBTrans);
-    gdi->TextColor(133,90,0);
-    gdi->TextAtPos(it->Position.x - 10, it->Position.y - 5, "RIP");
+	dc.DrawBitmapText(it->Position.x - 10, it->Position.y - 5, m_fontTexture, SpriteColor(255.0f, 255.0f, 255.0f, 255.0f), "RIP", alignTextLT);
+    //gdi->BrownPen();
+    //gdi->ClosedShape(m_vecRIPVBTrans);
+    //gdi->TextColor(133,90,0);
+    //gdi->TextAtPos(it->Position.x - 10, it->Position.y - 5, "RIP");
   }
 }
 

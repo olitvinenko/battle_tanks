@@ -129,7 +129,7 @@ public:
   virtual ~Raven_Bot();
 
   //the usual suspects
-  void         Render();
+  void         Render(DrawingContext& dc) override;
   void         Update();
   bool         HandleMessage(const Telegram& msg);
   void         Write(std::ostream&  os)const{/*not implemented*/}

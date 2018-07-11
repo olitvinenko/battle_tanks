@@ -5,6 +5,7 @@
 #include "Raven_Scriptor.h"
 #include "../constants.h"
 #include "../Raven_ObjectEnumerations.h"
+#include "DrawingContext.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -27,7 +28,7 @@ void Trigger_HealthGiver::Try(Raven_Bot* pBot)
 }
 
 
-void Trigger_HealthGiver::Render()
+void Trigger_HealthGiver::Render(DrawingContext& dc)
 {
   if (isActive())
   {

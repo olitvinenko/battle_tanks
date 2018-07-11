@@ -11,7 +11,7 @@
 
 #include "Raven_Messages.h"
 #include "MessageDispatcher.h"
-
+#include "DrawingContext.h"
 
 
 //-------------------------- ctor ---------------------------------------------
@@ -107,7 +107,7 @@ void Pellet::TestForImpact()
 
 //-------------------------- Render -------------------------------------------
 //-----------------------------------------------------------------------------
-void Pellet::Render()
+void Pellet::Render(DrawingContext& dc)
 {
   if ( isVisibleToPlayer() && m_bImpacted)
   {

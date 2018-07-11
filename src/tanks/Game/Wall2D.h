@@ -14,6 +14,8 @@
 #include "misc/Cgdi.h"
 #include "Vector2D.h"
 #include <fstream>
+#include "DrawingContext.h"
+#include "TextureManager.h"
 
 
 class Wall2D 
@@ -32,23 +34,38 @@ protected:
     m_vN.y = temp.x;
   }
 
+private:
+	size_t m_wallLine;
+
+	void FindSprite(const TextureManager& tm)
+	{
+		m_wallLine = tm.FindSprite("lightning");
+	}
+
 public:
 
   Wall2D(){}
 
-  Wall2D(Vector2D A, Vector2D B):m_vA(A), m_vB(B)
+  Wall2D(Vector2D A, Vector2D B, const TextureManager& tm):m_vA(A), m_vB(B)
   {
     CalculateNormal();
+	FindSprite(tm);
   }
 
-  Wall2D(Vector2D A, Vector2D B, Vector2D N):m_vA(A), m_vB(B), m_vN(N)
-  { }
-
-  Wall2D(std::fstream& in){Read(in);}
-
-  virtual void Render(bool RenderNormals = false)const
+  Wall2D(Vector2D A, Vector2D B, Vector2D N, const TextureManager& tm):m_vA(A), m_vB(B), m_vN(N)
   {
-    gdi->Line(m_vA, m_vB);
+	  FindSprite(tm);
+  }
+
+  Wall2D(std::fstream& in, const TextureManager& tm)
+  {
+	  Read(in);
+	  FindSprite(tm);
+  }
+
+  virtual void Render(DrawingContext& dc, bool RenderNormals = false)const
+  {
+	dc.DrawLine(m_wallLine, SpriteColor(255.0f, 255.0f, 255.0f, 255.0f), m_vA.x, m_vA.y, m_vB.x, m_vB.y, 0);
 
     //render the normals if rqd
     if (RenderNormals)
@@ -56,7 +73,7 @@ public:
       int MidX = (int)((m_vA.x+m_vB.x)/2);
       int MidY = (int)((m_vA.y+m_vB.y)/2);
 
-      gdi->Line(MidX, MidY, (int)(MidX+(m_vN.x * 5)), (int)(MidY+(m_vN.y * 5)));
+	  dc.DrawLine(m_wallLine, SpriteColor(255.0f, 255.0f, 255.0f, 255.0f), MidX, MidY, (int)(MidX + (m_vN.x * 5)), (int)(MidY + (m_vN.y * 5)), 0);
     }
   }
 

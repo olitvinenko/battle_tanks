@@ -3,6 +3,7 @@
 #include "Vector2D.h"
 
 struct Telegram;
+class DrawingContext;
 
 class GameEntityBase
 {
@@ -51,7 +52,7 @@ public:
 
 	virtual void Update() {};
 
-	virtual void Render() = 0;
+	virtual void Render(DrawingContext& dc) = 0;
 
 	virtual bool HandleMessage(const Telegram& msg) { return false; }
 

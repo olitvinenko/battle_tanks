@@ -101,7 +101,7 @@ public:
 
   //must be implemented
   virtual void Update() = 0;
-  virtual void Render() = 0;
+  virtual void Render(DrawingContext& dc) = 0;
   
   //set to true if the projectile has impacted and has finished any explosion 
   //sequence. When true the projectile will be removed from the game

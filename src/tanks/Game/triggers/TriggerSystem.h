@@ -111,12 +111,12 @@ public:
   }
 
   //some triggers are required to be rendered (like giver-triggers for example)
-  void Render()
+  void Render(DrawingContext& dc)
   {
     TriggerList::iterator curTrg;
     for (curTrg = m_Triggers.begin(); curTrg != m_Triggers.end(); ++curTrg)
     {
-      (*curTrg)->Render();
+      (*curTrg)->Render(dc);
     }
   }
 

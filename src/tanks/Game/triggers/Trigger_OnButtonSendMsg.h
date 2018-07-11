@@ -12,6 +12,7 @@
 #include "Triggers/Trigger.h"
 #include "MessageDispatcher.h"
 #include "misc/cgdi.h"
+#include "DrawingContext.h"
 
 template <class entity_type>
 class Trigger_OnButtonSendMsg : public Trigger<entity_type>
@@ -37,7 +38,7 @@ public:
 
   void Update();
   
-  void Render();
+  void Render(DrawingContext& dc) override;
 
   void Write(std::ostream&  os)const{}
   void Read (std::fstream& is);
@@ -71,7 +72,7 @@ void Trigger_OnButtonSendMsg<entity_type>::Update()
 }
 
 template <class entity_type>
-void Trigger_OnButtonSendMsg<entity_type>::Render()
+void Trigger_OnButtonSendMsg<entity_type>::Render(DrawingContext& dc)
 {
  gdi->OrangePen();
 

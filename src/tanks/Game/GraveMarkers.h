@@ -15,6 +15,9 @@
 #include "vector2d.h"
 #include "crudetimer.h"
 
+class DrawingContext;
+class TextureManager;
+
 class GraveMarkers
 {
 private:
@@ -43,13 +46,14 @@ private:
   std::vector<Vector2D>   m_vecRIPVBTrans;
   GraveList               m_GraveList;
 
+  size_t m_fontTexture;
 
 public:
 
-  GraveMarkers(double lifetime);
+  GraveMarkers(double lifetime, const TextureManager& tm);
 
   void Update();
-  void Render();
+  void Render(DrawingContext& dc);
   void AddGrave(Vector2D pos);
 
 };

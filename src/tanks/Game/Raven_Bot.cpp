@@ -21,6 +21,7 @@
 
 
 #include "Debug/DebugConsole.h"
+#include "DrawingContext.h"
 
 //-------------------------- ctor ---------------------------------------------
 Raven_Bot::Raven_Bot(Raven_Game* world,Vector2D pos):
@@ -475,7 +476,7 @@ bool Raven_Bot::canStepBackward(Vector2D& PositionOfStep)const
 //--------------------------- Render -------------------------------------
 //
 //------------------------------------------------------------------------
-void Raven_Bot::Render()                                         
+void Raven_Bot::Render(DrawingContext& dc)
 {
   //when a bot is hit by a projectile this value is set to a constant user
   //defined value which dictates how long the bot should have a thick red

@@ -22,6 +22,9 @@ struct Telegram;
 class Raven_Map;
 class Wall2D;
 
+class TextureManager;
+class DrawingContext;
+
 
 class Raven_Door : public GameEntityBase
 {
@@ -64,6 +67,8 @@ protected:
   void  Close();
   
   void ChangePosition(Vector2D newP1, Vector2D newP2);
+
+  size_t m_doorTexture;
  
 public:
   
@@ -71,7 +76,7 @@ public:
   ~Raven_Door();
 
   //the usual suspects
-  void Render();
+  void Render(DrawingContext& dc) override;
   void Update();
   bool HandleMessage(const Telegram& msg);
   void Read(std::fstream&  os);
