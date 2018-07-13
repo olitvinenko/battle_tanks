@@ -1,7 +1,7 @@
 #pragma once
 #include "UIWindow.h"
 #include <functional>
-#include "Raven_Game.h"
+//#include "Raven_Game.h"
 #include "Button.h"
 
 class DefaultCamera;
@@ -42,14 +42,14 @@ class EditorLayout : public UI::UIWindow
 	int  _mbutton;
 	WorldView &_worldView;
 	lua_State *_globL;
-	Raven_Game & _game;
+	//Raven_Game & _game;
 
 
 	void OnKillSelected(/*World &world, /*GC_Object *sender,*/ void *param);
 	void OnMoveSelected(/*World &world, /*GC_Object *sender,*/ void *param);
 
 public:
-	EditorLayout(UI::UIWindow *parent, Raven_Game& game, WorldView &worldView, const DefaultCamera &defaultCamera, lua_State *globL, UI::ConsoleBuffer &logger);
+	EditorLayout(UI::UIWindow *parent, /*Raven_Game& game,*/ WorldView &worldView, const DefaultCamera &defaultCamera, lua_State *globL, UI::ConsoleBuffer &logger);
 	virtual ~EditorLayout();
 
 	//void Select(GC_Object *object, bool bSelect);

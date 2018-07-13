@@ -1,11 +1,11 @@
 #pragma once
-#include "Raven_Game.h"
+#include "Pathfinder.h"
 
 struct GameContextBase
 {
 	virtual ~GameContextBase() = default;
 
-	virtual Raven_Game& GetGame() = 0;
+	//virtual Pathfinder& GetPathfinder() = 0;
 
 	virtual void FixedUpdate(float dt) = 0;
 };

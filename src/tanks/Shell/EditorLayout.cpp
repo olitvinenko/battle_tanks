@@ -14,11 +14,9 @@
 #include "UIInput.h"
 #include "TextureManager.h"
 
-
 #include <sstream>
 #include <algorithm>
 #include "Z.h"
-#include "Raven_UserOptions.h"
 
 extern "C"
 {
@@ -116,7 +114,7 @@ extern "C"
 //}
 
 
-EditorLayout::EditorLayout(UIWindow *parent, Raven_Game& game, WorldView &worldView, const DefaultCamera &defaultCamera, lua_State *globL, UI::ConsoleBuffer &logger)
+EditorLayout::EditorLayout(UIWindow *parent/*, Raven_Game& game*/, WorldView &worldView, const DefaultCamera &defaultCamera, lua_State *globL, UI::ConsoleBuffer &logger)
   : UIWindow(parent)
   , _logger(logger)
   , _defaultCamera(defaultCamera)
@@ -126,18 +124,18 @@ EditorLayout::EditorLayout(UIWindow *parent, Raven_Game& game, WorldView &worldV
   , _isObjectNew(false)
   , _click(true)
   , _mbutton(0)
-  , _game(game)
+  //, _game(game)
   , _worldView(worldView)
   , _globL(globL)
 {
 	SetTexture(nullptr, false);
 
 	_drawGraph = UI::CheckBox::Create(this, 10, 50, "Draw fraph");
-	_drawGraph->eventClick = [=]() { UserOptions->m_bShowGraph = _drawGraph->GetCheck(); };
+	//_drawGraph->eventClick = [=]() { UserOptions->m_bShowGraph = _drawGraph->GetCheck(); };
 	_drawGraph->SetCheck(false);
 
 	_drawIndices = UI::CheckBox::Create(this, 10, 50, "Draw indices");
-	_drawIndices->eventClick = [=]() { UserOptions->m_bShowNodeIndices = _drawIndices->GetCheck(); };
+	//_drawIndices->eventClick = [=]() { UserOptions->m_bShowNodeIndices = _drawIndices->GetCheck(); };
 	_drawIndices->SetCheck(false);
 
 	_help = UI::Text::Create(this, 10, 10, "Help"/*_lang.f1_help_editor.Get()*/, alignTextLT);
@@ -490,7 +488,7 @@ void EditorLayout::Draw(DrawingContext &dc) const
 	RectInt viewport(0, 0, (int) GetWidth(), (int) GetHeight());
 	Vector2 eye(_defaultCamera.GetPos().x + GetWidth() / 2, _defaultCamera.GetPos().y + GetHeight() / 2);
 	float zoom = _defaultCamera.GetZoom();
-	_worldView.Render(dc, viewport, eye, zoom, true, false, _game);
+	_worldView.Render(dc, viewport, eye, zoom, true, false/*, _game*/);
 
 	dc.SetMode(RM_INTERFACE);
 

@@ -3,9 +3,9 @@
 
 
 EditorContext::EditorContext(std::shared_ptr<FileSystem::File> stream, TextureManager& texManager)
-	: m_game(new Raven_Game(texManager))
+	//: m_game(new Raven_Game(texManager))
 {
-	m_game->LoadMap(stream->AsSTDStream());
+	//m_game->LoadMap(stream->AsSTDStream());
 
 	//MapFile mf(stream, false);
 
@@ -22,12 +22,12 @@ EditorContext::EditorContext(std::shared_ptr<FileSystem::File> stream, TextureMa
 }
 
 EditorContext::EditorContext(int width, int height, TextureManager& texManager)
-	: m_game(new Raven_Game(width, height, texManager))
+	//: m_game(new Raven_Game(width, height, texManager))
 {
 }
 
 
 void EditorContext::FixedUpdate(float dt)
 {
-	m_game->Update();
+	//m_game->Update();
 }

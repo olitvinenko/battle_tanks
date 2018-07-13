@@ -31,9 +31,9 @@ include_directories(
 	Math
 )
 
-set(SRC_MATH
-	Math/Vector2.h
-	Math/Rect.h
+set(GLOB_RECURSE SRC_MATH
+	"Math/*.cpp"
+	"Math/*.h"
 )
 
 source_group("mathutils" FILES ${SRC_MATH})
@@ -150,17 +150,17 @@ file(GLOB_RECURSE SRC_GLFW
 source_group("glfw" FILES ${SRC_GLFW})
 #########################################################################
 
-############################ GAME #######################################
+############################ PATHFINDING ################################
 include_directories(
-	Game
+	Pathfinding
 )
 
-file(GLOB_RECURSE SRC_GAME
-    "Game/*.cpp"
-    "Game/*.h"
+file(GLOB_RECURSE SRC_PATHFINDING
+    "Pathfinding/*.cpp"
+    "Pathfinding/*.h"
 )
 
-source_group("game" FILES ${SRC_GAME})
+source_group("pathfinding" FILES ${SRC_PATHFINDING})
 #########################################################################
 
 ############################ ENGINE #######################################
@@ -187,7 +187,7 @@ set(tanks_SOURCES
 	${SRC_ENGINE}
 	${SRC_APPLICATION}
 	${SRC_SHELL}
-	${SRC_GAME}
+	${SRC_PATHFINDING}
 )
 
 if(WIN32)

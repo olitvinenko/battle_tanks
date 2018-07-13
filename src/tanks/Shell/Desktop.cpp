@@ -14,7 +14,6 @@
 #include "EditorContext.h"
 
 #include "FileSystem.h"
-#include "Raven_Map.h"
 
 extern "C"
 {
@@ -116,11 +115,11 @@ void Desktop::OnTimeStep(float dt)
 		assert(dt >= 0);
 		//counterDt.Push(dt);
 
-		_defaultCamera.HandleMovement(GetManager().GetInput(),
-			gc->GetGame().GetMap()->GetSizeX(),
-			gc->GetGame().GetMap()->GetSizeY(),
-			(float) GetWidth(),
-			(float) GetHeight());
+		//_defaultCamera.HandleMovement(GetManager().GetInput(),
+		//	gc->GetGame().GetMap()->GetSizeX(),
+		//	gc->GetGame().GetMap()->GetSizeY(),
+		//	(float) GetWidth(),
+		//	(float) GetHeight());
 	}
 }
 
@@ -288,7 +287,7 @@ void Desktop::OnExportMap(std::string fileName)
 	if (GameContextBase *gameContext = GetAppState().GetGameContext())
 	{
 		std::shared_ptr<FileSystem::File> file = _fs.Open(fileName, FileSystem::FileOpenMode::Write);
-		gameContext->GetGame().SaveMap(file->AsSTDStream());// .Export(*_fs.Open(fileName, FS::ModeWrite)->QueryStream());
+		//gameContext->GetGame().SaveMap(file->AsSTDStream());// .Export(*_fs.Open(fileName, FS::ModeWrite)->QueryStream());
 		_logger.Printf(0, "map exported: '%s'", fileName.c_str());
 //		_conf.cl_map.Set(_fileDlg->GetFileTitle());
 	}
@@ -614,7 +613,7 @@ void Desktop::OnGameContextChanged()
 	if (auto *editorContext = dynamic_cast<EditorContext*>(GetAppState().GetGameContext()))
 	{
 		assert(!_editor);
-		_editor = new EditorLayout(this, editorContext->GetGame(), _worldView, _defaultCamera, _globL.get(), _logger);
+		_editor = new EditorLayout(this/*, editorContext->GetGame()*/, _worldView, _defaultCamera, _globL.get(), _logger);
 		_editor->Resize(GetWidth(), GetHeight());
 		_editor->BringToBack();
 		_editor->SetVisible(false);

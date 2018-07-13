@@ -3,6 +3,8 @@
 #include <memory>
 #include "GameContextBase.h"
 
+class TextureManager;
+
 namespace FileSystem
 {
 	class File;
@@ -16,9 +18,9 @@ public:
 
 	~EditorContext() = default;
 
-	Raven_Game& GetGame() override { return *m_game; };
+	//Raven_Game& GetGame() override { return *m_game; };
 	void FixedUpdate(float dt) override;
 
 private:
-	std::unique_ptr<Raven_Game> m_game;
+	//std::unique_ptr<Raven_Game> m_game;
 };
