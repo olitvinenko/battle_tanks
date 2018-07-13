@@ -31,7 +31,7 @@ include_directories(
 	Math
 )
 
-set(GLOB_RECURSE SRC_MATH
+file(GLOB_RECURSE SRC_MATH
 	"Math/*.cpp"
 	"Math/*.h"
 )
