@@ -18,9 +18,9 @@ public:
 
 	~EditorContext() = default;
 
-	//Raven_Game& GetGame() override { return *m_game; };
+	Pathfinder& GetPathfinder() override { return *m_pathfinder; };
 	void FixedUpdate(float dt) override;
 
 private:
-	//std::unique_ptr<Raven_Game> m_game;
+	std::unique_ptr<Pathfinder> m_pathfinder;
 };

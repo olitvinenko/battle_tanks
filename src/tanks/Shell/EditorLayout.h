@@ -1,8 +1,7 @@
 #pragma once
 #include "UIWindow.h"
-#include <functional>
-//#include "Raven_Game.h"
 #include "Button.h"
+#include "Pathfinder.h"
 
 class DefaultCamera;
 class WorldView;
@@ -32,7 +31,7 @@ class EditorLayout : public UI::UIWindow
 	size_t        _fontSmall;
 
 	UI::CheckBox * _drawGraph;
-	UI::CheckBox * _drawIndices;
+	UI::CheckBox * _drawTiles;
 
 	size_t       _texSelection;
 
@@ -42,14 +41,14 @@ class EditorLayout : public UI::UIWindow
 	int  _mbutton;
 	WorldView &_worldView;
 	lua_State *_globL;
-	//Raven_Game & _game;
+	Pathfinder &_pathfinder;
 
 
 	void OnKillSelected(/*World &world, /*GC_Object *sender,*/ void *param);
 	void OnMoveSelected(/*World &world, /*GC_Object *sender,*/ void *param);
 
 public:
-	EditorLayout(UI::UIWindow *parent, /*Raven_Game& game,*/ WorldView &worldView, const DefaultCamera &defaultCamera, lua_State *globL, UI::ConsoleBuffer &logger);
+	EditorLayout(UI::UIWindow *parent, Pathfinder& pathfinder, WorldView &worldView, const DefaultCamera &defaultCamera, lua_State *globL, UI::ConsoleBuffer &logger);
 	virtual ~EditorLayout();
 
 	//void Select(GC_Object *object, bool bSelect);

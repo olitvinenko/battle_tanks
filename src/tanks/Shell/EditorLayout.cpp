@@ -16,6 +16,7 @@
 
 #include <sstream>
 #include <algorithm>
+#include <functional>
 #include "Z.h"
 
 extern "C"
@@ -114,7 +115,7 @@ extern "C"
 //}
 
 
-EditorLayout::EditorLayout(UIWindow *parent/*, Raven_Game& game*/, WorldView &worldView, const DefaultCamera &defaultCamera, lua_State *globL, UI::ConsoleBuffer &logger)
+EditorLayout::EditorLayout(UIWindow *parent, Pathfinder& pathfinder , WorldView &worldView, const DefaultCamera &defaultCamera, lua_State *globL, UI::ConsoleBuffer &logger)
   : UIWindow(parent)
   , _logger(logger)
   , _defaultCamera(defaultCamera)
@@ -124,19 +125,19 @@ EditorLayout::EditorLayout(UIWindow *parent/*, Raven_Game& game*/, WorldView &wo
   , _isObjectNew(false)
   , _click(true)
   , _mbutton(0)
-  //, _game(game)
+  , _pathfinder(pathfinder)
   , _worldView(worldView)
   , _globL(globL)
 {
 	SetTexture(nullptr, false);
 
-	_drawGraph = UI::CheckBox::Create(this, 10, 50, "Draw fraph");
-	//_drawGraph->eventClick = [=]() { UserOptions->m_bShowGraph = _drawGraph->GetCheck(); };
+	_drawGraph = UI::CheckBox::Create(this, 10, 50, "Show graph");
+	_drawGraph->eventClick = [=]() { _pathfinder.ToggleShowGraph(_drawGraph->GetCheck()); };
 	_drawGraph->SetCheck(false);
 
-	_drawIndices = UI::CheckBox::Create(this, 10, 50, "Draw indices");
-	//_drawIndices->eventClick = [=]() { UserOptions->m_bShowNodeIndices = _drawIndices->GetCheck(); };
-	_drawIndices->SetCheck(false);
+	_drawTiles = UI::CheckBox::Create(this, 10, 50, "Show tiles");
+	_drawTiles->eventClick = [=]() { _pathfinder.ToggleShowTiles(_drawTiles->GetCheck()); };
+	_drawTiles->SetCheck(false);
 
 	_help = UI::Text::Create(this, 10, 10, "Help"/*_lang.f1_help_editor.Get()*/, alignTextLT);
 	_help->SetVisible(false);
@@ -151,18 +152,28 @@ EditorLayout::EditorLayout(UIWindow *parent/*, Raven_Game& game*/, WorldView &wo
 
 	_typeList = DefaultComboBox::Create(this);
 	_typeList->Resize(256);
-	//for( unsigned int i = 0; i < RTTypes::Inst().GetTypeCount(); ++i )
-	//{
-	//	if( RTTypes::Inst().GetTypeInfoByIndex(i).service ) continue;
-	//	const char *desc0 = RTTypes::Inst().GetTypeInfoByIndex(i).desc;
-	//	_typeList->GetData()->AddItem(_lang->GetStr(desc0).Get(), RTTypes::Inst().GetTypeByIndex(i));
-	//}
+	for (unsigned int i = 0; i < Pathfinder::brush_type::count; ++i )
+	{
+		switch (static_cast<Pathfinder::brush_type>(i))
+		{
+		case Pathfinder::obstacle: _typeList->GetData()->AddItem("obstacle"); break;
+		case Pathfinder::water:_typeList->GetData()->AddItem("water"); break;
+		case Pathfinder::mud:_typeList->GetData()->AddItem("mud"); break;
+		case Pathfinder::source:_typeList->GetData()->AddItem("source"); break;
+		case Pathfinder::target:_typeList->GetData()->AddItem("target"); break;
+
+		default: break;
+		}
+		//if( RTTypes::Inst().GetTypeInfoByIndex(i).service ) continue;
+		//const char *desc0 = RTTypes::Inst().GetTypeInfoByIndex(i).desc;
+		//_typeList->GetData()->AddItem(_lang->GetStr(desc0).Get(), RTTypes::Inst().GetTypeByIndex(i));
+	}
 	_typeList->GetData()->Sort();
 	UI::List *ls = _typeList->GetList();
 	ls->SetTabPos(1, 128);
 	ls->AlignHeightToContent();
 	_typeList->eventChangeCurSel = std::bind(&EditorLayout::OnChangeObjectType, this, std::placeholders::_1);
-	_typeList->SetCurSel(std::min(_typeList->GetData()->GetItemCount() - 1, std::max(0, 1/*_conf.ed_object.GetInt()*/)));
+	_typeList->SetCurSel(/*std::min(_typeList->GetData()->GetItemCount() - 1, std::max(0, 1/*_conf.ed_object.GetInt()))*/0);
 
 	//assert(!_conf.ed_uselayers.eventChange);
 	//_conf.ed_uselayers.eventChange = std::bind(&EditorLayout::OnChangeUseLayers, this);
@@ -440,7 +451,7 @@ void EditorLayout::OnSize(float width, float height)
 	_layerDisp->Move(w, 6);
 
 	_drawGraph->Move(w, _typeList->GetHeight() + 20);
-	_drawIndices->Move(w, _typeList->GetHeight() + 40);
+	_drawTiles->Move(w, _typeList->GetHeight() + 40);
 }
 
 void EditorLayout::OnVisibleChange(bool visible, bool inherited)
@@ -488,7 +499,7 @@ void EditorLayout::Draw(DrawingContext &dc) const
 	RectInt viewport(0, 0, (int) GetWidth(), (int) GetHeight());
 	Vector2 eye(_defaultCamera.GetPos().x + GetWidth() / 2, _defaultCamera.GetPos().y + GetHeight() / 2);
 	float zoom = _defaultCamera.GetZoom();
-	_worldView.Render(dc, viewport, eye, zoom, true, false/*, _game*/);
+	_worldView.Render(dc, viewport, eye, zoom, true, false, _pathfinder);
 
 	dc.SetMode(RM_INTERFACE);
 

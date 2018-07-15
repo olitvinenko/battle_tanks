@@ -11,6 +11,5 @@
 
 #define FILE_TEXTURES    DIR_SCRIPTS"/textures.lua"
 #define FILE_STARTUP     DIR_SCRIPTS"/init.lua"
-#define FILE_RAVEN		 DIR_SCRIPTS"/Params.lua"
 
 #define TXT_VERSION      "Battle tanks (v0.0.1)"

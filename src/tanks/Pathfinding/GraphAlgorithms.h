@@ -761,7 +761,3 @@ public:
   std::vector<const Edge*> GetSpanningTree()const{return m_SpanningTree;}
   
 };
-
-
-
-#endif

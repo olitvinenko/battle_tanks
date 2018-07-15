@@ -6,17 +6,15 @@
 #include <algorithm>
 
 #include "TextureManager.h"
-//#include "Raven_Map.h"
-//#include "Raven_UserOptions.h"
-//#include "Raven_Game.h"
+#include "Pathfinder.h"
 
 void WorldView::Render(DrawingContext &dc,
 					   const RectInt &viewport,
 					   Vector2 eye,
 					   float zoom,
 					   bool editorMode,
-					   bool nightMode/*,
-					   Raven_Game& game*/) const
+					   bool nightMode,
+					   Pathfinder& pathfinder) const
 {
 	eye.x = floor(eye.x * zoom) / zoom;
 	eye.y = floor(eye.y * zoom) / zoom;
@@ -118,6 +116,8 @@ void WorldView::Render(DrawingContext &dc,
 	//
 
 	dc.SetMode(RM_WORLD);
+
+	pathfinder.Render(dc);
 
 	//game.Render(dc, editorMode);
 

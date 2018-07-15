@@ -2,9 +2,9 @@
 
 #include "Rect.h"
 
+class Pathfinder;
 class DrawingContext;
 class TextureManager;
-//class Raven_Game;
 
 
 class WorldView
@@ -15,6 +15,6 @@ public:
 				Vector2 eye,
 				float zoom,
 				bool editorMode,
-				bool nightMode/*,
-				Raven_Game& game*/) const;
+				bool nightMode,
+				Pathfinder& pathfinder) const;
 };

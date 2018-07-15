@@ -1,33 +1,19 @@
 #include "EditorContext.h"
-#include <stdexcept>
-
+#include "Pathfinder.h"
+#include "FileSystem.h"
 
 EditorContext::EditorContext(std::shared_ptr<FileSystem::File> stream, TextureManager& texManager)
-	//: m_game(new Raven_Game(texManager))
+	: m_pathfinder(new Pathfinder(texManager))
 {
-	//m_game->LoadMap(stream->AsSTDStream());
-
-	//MapFile mf(stream, false);
-
-	//int width = 0;
-	//int height = 0;
-	//if (!mf.getMapAttribute("width", width) ||
-	//	!mf.getMapAttribute("height", height))
-	//{
-	//	throw std::runtime_error("unknown map size");
-	//}
-
-	//_world.reset(new World(width, height));
-	//_world->Import(mf);
+	m_pathfinder->Load(stream->AsSTDStream());
 }
 
 EditorContext::EditorContext(int width, int height, TextureManager& texManager)
-	//: m_game(new Raven_Game(width, height, texManager))
+	: m_pathfinder(new Pathfinder(texManager))
 {
+	m_pathfinder->CreateGraph(width, height);
 }
-
 
 void EditorContext::FixedUpdate(float dt)
 {
-	//m_game->Update();
 }

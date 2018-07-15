@@ -121,45 +121,6 @@ void GraphHelper_CreateGrid(graph_type& graph,
   }
 }  
 
-
-//--------------------------- GraphHelper_DrawUsingGDI ------------------------
-//
-//  draws a graph using the GDI
-//-----------------------------------------------------------------------------
-template <class graph_type>
-void GraphHelper_DrawUsingGDI(const graph_type& graph, int color, bool DrawNodeIDs = false)
-{	
-	//TODO:: custom drawer
-  //just return if the graph has no nodes
-  //if (graph.NumNodes() == 0) return;
-  //
-  //gdi->SetPenColor(color);
-
-  ////draw the nodes 
-  //graph_type::ConstNodeIterator NodeItr(graph);
-  //for (const graph_type::NodeType* pN=NodeItr.begin();
-  //    !NodeItr.end();
-  //     pN=NodeItr.next())
-  //{
-  //  gdi->Circle(pN->Pos(), 2);
-
-  //  if (DrawNodeIDs)
-  //  {
-  //    gdi->TextColor(200,200,200);
-  //    gdi->TextAtPos((int)pN->Pos().x+5, (int)pN->Pos().y-5, ttos(pN->Index()));
-  //  }
-
-  //  graph_type::ConstEdgeIterator EdgeItr(graph, pN->Index());
-  //  for (const graph_type::EdgeType* pE=EdgeItr.begin();
-  //      !EdgeItr.end();
-  //      pE=EdgeItr.next())
-  //  {
-  //    gdi->Line(pN->Pos(), graph.GetNode(pE->To()).Pos());
-  //  }
-  //}
-}
-
-
 //--------------------------- WeightNavGraphNodeEdges -------------------------
 //
 //  Given a cost value and an index to a valid node this function examines 
