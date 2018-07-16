@@ -20,6 +20,8 @@ public:
 
 	enum brush_type
 	{
+		unknown = -1,
+
 		normal = 0,
 		obstacle = 1,
 		water = 2,
@@ -143,7 +145,8 @@ public:
 
 	//converts a POINTS to an index into the graph. Returns false if p
 	//is invalid
-	bool PointToIndex(POINTS p, int& NodeIndex);
+	bool PointToIndex(const math::Vector2& point, int& NodeIndex);
+	brush_type GetTileType(const math::Vector2& point);
 
 	//returns the terrain cost of the brush type
 	double GetTerrainCost(brush_type brush);

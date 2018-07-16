@@ -57,8 +57,8 @@ void Pathfinder::CreateGraph(int x, int y)
 	GraphHelper_CreateGrid(*m_pGraph, m_icxClient, m_icyClient, x, y);
 
 	//initialize source and target indexes to mid top and bottom of grid 
-	PointToIndex(VectorToPOINTS(Vector2D(m_icxClient / 2, m_dCellHeight * 2)), m_iTargetCell);
-	PointToIndex(VectorToPOINTS(Vector2D(m_icxClient / 2, m_icyClient - m_dCellHeight * 2)), m_iSourceCell);
+	PointToIndex(math::Vector2(m_icxClient / 2, m_dCellHeight * 2), m_iTargetCell);
+	PointToIndex(math::Vector2(m_icxClient / 2, m_icyClient - m_dCellHeight * 2), m_iSourceCell);
 
 	m_Path.clear();
 	m_SubTree.clear();
@@ -70,14 +70,14 @@ void Pathfinder::CreateGraph(int x, int y)
 //
 //  converts a POINTS into an index into the graph
 //------------------------------------------------------------------------
-bool Pathfinder::PointToIndex(POINTS p, int& NodeIndex)
+bool Pathfinder::PointToIndex(const math::Vector2& point, int& NodeIndex)
 {
 	//convert p to an index into the graph
-	int x = (int)((double)(p.x) / m_dCellWidth);
-	int y = (int)((double)(p.y) / m_dCellHeight);
+	int x = (int)((double)(point.x) / m_dCellWidth);
+	int y = (int)((double)(point.y) / m_dCellHeight);
 
 	//make sure the values are legal
-	if ((x>m_iCellsX) || (y>m_iCellsY))
+	if (x < 0 || x > m_iCellsX || y < 0 || y > m_iCellsY)
 	{
 		NodeIndex = -1;
 
@@ -87,6 +87,15 @@ bool Pathfinder::PointToIndex(POINTS p, int& NodeIndex)
 	NodeIndex = y*m_iCellsX + x;
 
 	return true;
+}
+
+Pathfinder::brush_type Pathfinder::GetTileType(const math::Vector2& point)
+{
+	int nodeIndex;
+	if (!PointToIndex(point, nodeIndex))
+		return unknown;
+
+	return (Pathfinder::brush_type) m_TerrainType[nodeIndex];
 }
 
 //----------------- GetTerrainCost ---------------------------------------
@@ -120,7 +129,8 @@ void Pathfinder::PaintTerrain(const math::Vector2& point)
 	int y = (int)((double)(point.y) / m_dCellHeight);
 
 	//make sure the values are legal
-	if ((x>m_iCellsX) || (y>(m_iCellsY - 1))) return;
+	if (x < 0 || y < 0 || x > m_iCellsX || y > (m_iCellsY - 1))
+		return;
 
 	//reset path and tree records
 	m_SubTree.clear();
