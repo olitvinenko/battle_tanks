@@ -152,7 +152,7 @@ void TextureManager::CreateChecker()
 	//
 
 	tex.dev_texture = it->id;
-	tex.uvPivot = math::Vector2(0, 0);
+	tex.uvPivot = Vector2(0, 0);
 	tex.pxFrameWidth = (float)td.width * 8;
 	tex.pxFrameHeight = (float)td.height * 8;
 	tex.pxBorderSize = 0;
@@ -376,7 +376,7 @@ int TextureManager::LoadDirectory(const std::string &dirName, const std::string 
 
 		LogicalTexture tex;
 		tex.dev_texture = td->id;
-		tex.uvPivot = math::Vector2(0.5f, 0.5f);
+		tex.uvPivot = Vector2(0.5f, 0.5f);
 		tex.pxFrameWidth = (float)td->width;
 		tex.pxFrameHeight = (float)td->height;
 		tex.pxBorderSize = 0;

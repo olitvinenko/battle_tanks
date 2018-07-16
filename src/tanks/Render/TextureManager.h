@@ -14,7 +14,7 @@ struct LogicalTexture
 {
 	Texture dev_texture;
 
-	math::Vector2 uvPivot;
+	Vector2 uvPivot;
 
 	float pxFrameWidth;
 	float pxFrameHeight;

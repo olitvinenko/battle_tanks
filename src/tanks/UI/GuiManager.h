@@ -98,7 +98,7 @@ private:
 	bool _isAppActive;
 #ifndef NDEBUG
 	bool _dbgFocusIsChanging;
-    std::unordered_map<unsigned int, math::Vector2> _lastPointerLocation;
+    std::unordered_map<unsigned int, Vector2> _lastPointerLocation;
 #endif
 };
 

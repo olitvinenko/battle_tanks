@@ -346,7 +346,7 @@ bool LayoutManager::ProcessPointerInternal(UIWindow* wnd, float x, float y, floa
 bool LayoutManager::ProcessPointer(float x, float y, float z, Msg msg, int button, PointerType pointerType, unsigned int pointerID)
 {
 #ifndef NDEBUG
-    _lastPointerLocation[pointerID] = math::Vector2(x, y);
+    _lastPointerLocation[pointerID] = Vector2(x, y);
 #endif
 
 	if(UIWindow *captured = GetCapture(pointerID) )
@@ -434,7 +434,7 @@ static void DrawWindowRecursive(const UIWindow &wnd, DrawingContext &dc, bool to
     if (!wnd.GetVisible() || (insideTopMost && !topMostPass))
         return; // skip window and all its children
     
-	dc.PushTransform(math::Vector2(wnd.GetX(), wnd.GetY()));
+	dc.PushTransform(Vector2(wnd.GetX(), wnd.GetY()));
 
     if (insideTopMost == topMostPass)
         wnd.Draw(dc);

@@ -5,7 +5,7 @@
 DrawingContext::DrawingContext(const TextureManager &tm, unsigned int width, unsigned int height)
 	: _tm(tm)
 {
-	_transformStack.push(math::Vector2(0, 0));
+	_transformStack.push(Vector2(0, 0));
 	_viewport.left = 0;
 	_viewport.top = 0;
 	_viewport.right = width;
@@ -52,7 +52,7 @@ void DrawingContext::PopClippingRect()
 	}
 }
 
-void DrawingContext::PushTransform(math::Vector2 offset)
+void DrawingContext::PushTransform(Vector2 offset)
 {
 	assert(!_transformStack.empty());
 	_transformStack.push(_transformStack.top() + offset);
@@ -66,7 +66,7 @@ void DrawingContext::PopTransform()
 
 void DrawingContext::DrawSprite(const math::RectFloat *dst, size_t sprite, SpriteColor color, unsigned int frame)
 {
-	DrawSprite(sprite, frame, color, dst->left, dst->top, dst->right - dst->left, dst->bottom - dst->top, math::Vector2(1, 0));
+	DrawSprite(sprite, frame, color, dst->left, dst->top, dst->right - dst->left, dst->bottom - dst->top, Vector2(1, 0));
 }
 
 void DrawingContext::DrawBorder(const math::RectFloat &dst, size_t sprite, SpriteColor color, unsigned int frame)
@@ -355,7 +355,7 @@ void DrawingContext::DrawBitmapText(float sx, float sy, size_t tex, SpriteColor 
 	}
 }
 
-void DrawingContext::DrawSprite(size_t tex, unsigned int frame, SpriteColor color, float x, float y, math::Vector2 dir)
+void DrawingContext::DrawSprite(size_t tex, unsigned int frame, SpriteColor color, float x, float y, Vector2 dir)
 {
 	assert(frame < _tm.GetFrameCount(tex));
 	const LogicalTexture &lt = _tm.GetSpriteInfo(tex);
@@ -398,7 +398,7 @@ void DrawingContext::DrawSprite(size_t tex, unsigned int frame, SpriteColor colo
 	v[3].y = y - px * dir.y + (height - py) * dir.x;
 }
 
-void DrawingContext::DrawSprite(size_t tex, unsigned int frame, SpriteColor color, float x, float y, float width, float height, math::Vector2 dir)
+void DrawingContext::DrawSprite(size_t tex, unsigned int frame, SpriteColor color, float x, float y, float width, float height, Vector2 dir)
 {
 	const LogicalTexture &lt = _tm.GetSpriteInfo(tex);
 	const math::RectFloat &rt = lt.uvFrames[frame];
@@ -553,7 +553,7 @@ static float sintable[SINTABLE_SIZE] = {
 	-0.707106f,-0.555570f,-0.382683f,-0.195090f,
 };
 
-void DrawingContext::DrawPointLight(float intensity, float radius, math::Vector2 pos)
+void DrawingContext::DrawPointLight(float intensity, float radius, Vector2 pos)
 {
 	SpriteColor color;
 	color.color = 0x00000000;
@@ -572,7 +572,7 @@ void DrawingContext::DrawPointLight(float intensity, float radius, math::Vector2
 	}
 }
 
-void DrawingContext::DrawSpotLight(float intensity, float radius, math::Vector2 pos, math::Vector2 dir, float offset, float aspect)
+void DrawingContext::DrawSpotLight(float intensity, float radius, Vector2 pos, Vector2 dir, float offset, float aspect)
 {
 	SpriteColor color;
 	color.color = 0x00000000;
@@ -593,7 +593,7 @@ void DrawingContext::DrawSpotLight(float intensity, float radius, math::Vector2 
 	}
 }
 
-void DrawingContext::DrawDirectLight(float intensity, float radius, math::Vector2 pos, math::Vector2 dir, float length)
+void DrawingContext::DrawDirectLight(float intensity, float radius, Vector2 pos, Vector2 dir, float length)
 {
 	SpriteColor color;
 	color.color = 0x00000000;

@@ -51,8 +51,8 @@ void GraphHelper_AddAllNeighboursToGridNode(graph_type& graph,
       if (ValidNeighbour(nodeX, nodeY, NumCellsX, NumCellsY))
       {
         //calculate the distance to this node
-        Vector2D PosNode      = graph.GetNode(row*NumCellsX+col).Pos();
-        Vector2D PosNeighbour = graph.GetNode(nodeY*NumCellsX+nodeX).Pos();
+        Vector2 PosNode      = graph.GetNode(row*NumCellsX+col).Pos();
+        Vector2 PosNeighbour = graph.GetNode(nodeY*NumCellsX+nodeX).Pos();
 
         double dist = PosNode.Distance(PosNeighbour);
 
@@ -91,11 +91,11 @@ void GraphHelper_CreateGrid(graph_type& graph,
                              int NumCellsX)
 { 
   //need some temporaries to help calculate each node center
-  double CellWidth  = (double)cySize / (double)NumCellsX;
-  double CellHeight = (double)cxSize / (double)NumCellsY;
+	float CellWidth  = (float)cySize / (float)NumCellsX;
+	float CellHeight = (float)cxSize / (float)NumCellsY;
 
-  double midX = CellWidth/2;
-  double midY = CellHeight/2;
+	float midX = CellWidth/2;
+	float midY = CellHeight/2;
 
   
   //first create all the nodes
@@ -104,7 +104,7 @@ void GraphHelper_CreateGrid(graph_type& graph,
     for (int col=0; col<NumCellsX; ++col)
     {
       graph.AddNode(NavGraphNode<>(graph.GetNextFreeNodeIndex(),
-                                   Vector2D(midX + (col*CellWidth),
+                                   Vector2(midX + (col*CellWidth),
                                    midY + (row*CellHeight))));
 
     }
@@ -128,7 +128,7 @@ void GraphHelper_CreateGrid(graph_type& graph,
 //  the value with the weight. Useful for setting terrain costs.
 //------------------------------------------------------------------------
 template <class graph_type>
-void WeightNavGraphNodeEdges(graph_type& graph, int node, double weight)
+void WeightNavGraphNodeEdges(graph_type& graph, int node, float weight)
 {
   //make sure the node is present
   assert(node < graph.NumNodes());
@@ -140,7 +140,7 @@ void WeightNavGraphNodeEdges(graph_type& graph, int node, double weight)
        pE=ConstEdgeItr.next())
   {
     //calculate the distance between nodes
-    double dist = Vec2DDistance(graph.GetNode(pE->From()).Pos(),
+	float dist = Vec2DDistance(graph.GetNode(pE->From()).Pos(),
                                graph.GetNode(pE->To()).Pos());
 
     //set the cost of this edge

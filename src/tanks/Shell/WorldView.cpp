@@ -9,7 +9,7 @@
 #include "Pathfinder.h"
 
 void WorldView::Render(DrawingContext &dc,
-					   const RectInt &viewport,
+					   const math::RectInt &viewport,
 					   Vector2 eye,
 					   float zoom,
 					   bool editorMode,
@@ -22,7 +22,7 @@ void WorldView::Render(DrawingContext &dc,
 	dc.Camera(viewport, eye.x, eye.y, zoom);
 
 	float left = floor((eye.x - (float) WIDTH(viewport) / 2 / zoom) * zoom) / zoom;
-	float top = floor((eye.y - (float)HEIGHT(viewport) / 2 / zoom) * zoom) / zoom;
+	float top = floor((eye.y - (float) HEIGHT(viewport) / 2 / zoom) * zoom) / zoom;
 	float right = left + (float)WIDTH(viewport) / zoom;
 	float bottom = top + (float)HEIGHT(viewport) / zoom;
 

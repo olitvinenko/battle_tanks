@@ -9,10 +9,7 @@
 
 class DrawingContext;
 class TextureManager;
-namespace math
-{
-	class Vector2;
-}
+class Vector2;
 
 class Pathfinder final
 {
@@ -71,8 +68,8 @@ private:
 	brush_type                    m_CurrentTerrainBrush;
 
 	//the dimensions of the cells
-	double                        m_dCellWidth;
-	double                        m_dCellHeight;
+	float                        m_dCellWidth;
+	float                        m_dCellHeight;
 
 	//number of cells vertically and horizontally
 	int                           m_iCellsX,
@@ -128,7 +125,7 @@ public:
 
 	//this will paint whatever cell the cursor is currently over in the 
 	//currently selected terrain brush
-	void PaintTerrain(const math::Vector2& point);
+	void PaintTerrain(const Vector2& point);
 	void ChangeBrush(const brush_type NewBrush) { m_CurrentTerrainBrush = NewBrush; }
 
 	//the algorithms
@@ -145,11 +142,11 @@ public:
 
 	//converts a POINTS to an index into the graph. Returns false if p
 	//is invalid
-	bool PointToIndex(const math::Vector2& point, int& NodeIndex);
-	brush_type GetTileType(const math::Vector2& point);
+	bool PointToIndex(const Vector2& point, int& NodeIndex);
+	brush_type GetTileType(const Vector2& point);
 
 	//returns the terrain cost of the brush type
-	double GetTerrainCost(brush_type brush);
+	float GetTerrainCost(brush_type brush);
 
 	void Save(std::fstream& fs);
 	void Load(std::fstream& fs);

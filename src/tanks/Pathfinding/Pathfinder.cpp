@@ -45,8 +45,8 @@ void Pathfinder::CreateGraph(int x, int y)
 
 	m_iCellsX = y;
 	m_iCellsY = x;
-	m_dCellWidth = (double)m_icxClient / (double)y;
-	m_dCellHeight = (double)m_icyClient / (double)x;
+	m_dCellWidth = (float)m_icxClient / (float)y;
+	m_dCellHeight = (float)m_icyClient / (float)x;
 
 	//delete any old graph
 	delete m_pGraph;
@@ -57,8 +57,8 @@ void Pathfinder::CreateGraph(int x, int y)
 	GraphHelper_CreateGrid(*m_pGraph, m_icxClient, m_icyClient, x, y);
 
 	//initialize source and target indexes to mid top and bottom of grid 
-	PointToIndex(math::Vector2(m_icxClient / 2, m_dCellHeight * 2), m_iTargetCell);
-	PointToIndex(math::Vector2(m_icxClient / 2, m_icyClient - m_dCellHeight * 2), m_iSourceCell);
+	PointToIndex(Vector2(m_icxClient / 2, m_dCellHeight * 2), m_iTargetCell);
+	PointToIndex(Vector2(m_icxClient / 2, m_icyClient - m_dCellHeight * 2), m_iSourceCell);
 
 	m_Path.clear();
 	m_SubTree.clear();
@@ -70,11 +70,11 @@ void Pathfinder::CreateGraph(int x, int y)
 //
 //  converts a POINTS into an index into the graph
 //------------------------------------------------------------------------
-bool Pathfinder::PointToIndex(const math::Vector2& point, int& NodeIndex)
+bool Pathfinder::PointToIndex(const Vector2& point, int& NodeIndex)
 {
 	//convert p to an index into the graph
-	int x = (int)((double)(point.x) / m_dCellWidth);
-	int y = (int)((double)(point.y) / m_dCellHeight);
+	int x = (int)((float)(point.x) / m_dCellWidth);
+	int y = (int)((float)(point.y) / m_dCellHeight);
 
 	//make sure the values are legal
 	if (x < 0 || x > m_iCellsX || y < 0 || y > m_iCellsY)
@@ -89,7 +89,7 @@ bool Pathfinder::PointToIndex(const math::Vector2& point, int& NodeIndex)
 	return true;
 }
 
-Pathfinder::brush_type Pathfinder::GetTileType(const math::Vector2& point)
+Pathfinder::brush_type Pathfinder::GetTileType(const Vector2& point)
 {
 	int nodeIndex;
 	if (!PointToIndex(point, nodeIndex))
@@ -102,11 +102,11 @@ Pathfinder::brush_type Pathfinder::GetTileType(const math::Vector2& point)
 //
 //  returns the cost of the terrain represented by the current brush type
 //------------------------------------------------------------------------
-double Pathfinder::GetTerrainCost(const brush_type brush)
+float Pathfinder::GetTerrainCost(const brush_type brush)
 {
-	const double cost_normal = 1.0;
-	const double cost_water = 2.0;
-	const double cost_mud = 1.5;
+	const float cost_normal = 1.0;
+	const float cost_water = 2.0;
+	const float cost_mud = 1.5;
 
 	switch (brush)
 	{
@@ -122,11 +122,11 @@ double Pathfinder::GetTerrainCost(const brush_type brush)
 //  this either changes the terrain at position p to whatever the current
 //  terrain brush is set to, or it adjusts the source/target cell
 //------------------------------------------------------------------------
-void Pathfinder::PaintTerrain(const math::Vector2& point)
+void Pathfinder::PaintTerrain(const Vector2& point)
 {
 	//convert p to an index into the graph
-	int x = (int)((double)(point.x) / m_dCellWidth);
-	int y = (int)((double)(point.y) / m_dCellHeight);
+	int x = (int)((float)(point.x) / m_dCellWidth);
+	int y = (int)((float)(point.y) / m_dCellHeight);
 
 	//make sure the values are legal
 	if (x < 0 || y < 0 || x > m_iCellsX || y > (m_iCellsY - 1))
@@ -188,7 +188,7 @@ void Pathfinder::UpdateGraphFromBrush(int brush, int CellIndex)
 			int y = CellIndex / m_iCellsY;
 			int x = CellIndex - (y*m_iCellsY);
 
-			m_pGraph->AddNode(NavGraph::NodeType(CellIndex, Vector2D(x*m_dCellWidth + m_dCellWidth / 2.0,
+			m_pGraph->AddNode(NavGraph::NodeType(CellIndex, Vector2(x*m_dCellWidth + m_dCellWidth / 2.0,
 				y*m_dCellHeight + m_dCellHeight / 2.0)));
 
 			GraphHelper_AddAllNeighboursToGridNode(*m_pGraph, y, x, m_iCellsX, m_iCellsY);
@@ -413,7 +413,7 @@ std::string Pathfinder::GetNameOfCurrentSearchAlgorithm()const
 //------------------------------------------------------------------------
 void Pathfinder::Render(DrawingContext& dc)
 {
-	dc.DrawBackground(m_backTexture, m_icxClient, m_icyClient);
+	dc.DrawBackground(m_backTexture, (float) m_icxClient, (float) m_icyClient);
 
 	Vector2 dir(1, 0);
 	//render all the cells
@@ -425,7 +425,7 @@ void Pathfinder::Render(DrawingContext& dc)
 		int right = (int)(1 + pos.x + m_dCellWidth / 2.0);
 		int bottom = (int)(1 + pos.y + m_dCellHeight / 2.0);
 
-		RectFloat cellRect = { (float)left, (float)top, (float)right, (float)bottom };
+		math::RectFloat cellRect = { (float)left, (float)top, (float)right, (float)bottom };
 
 		switch (m_TerrainType[nd])
 		{
@@ -468,8 +468,8 @@ void Pathfinder::Render(DrawingContext& dc)
 				NavGraph::ConstEdgeIterator EdgeItr(*m_pGraph, pN->Index());
 				for (const NavGraph::EdgeType* pE = EdgeItr.begin(); !EdgeItr.end(); pE = EdgeItr.next())
 				{
-					Vector2D from = pN->Pos();
-					Vector2D to = m_pGraph->GetNode(pE->To()).Pos();
+					Vector2 from = pN->Pos();
+					Vector2 to = m_pGraph->GetNode(pE->To()).Pos();
 
 					dc.DrawLine(m_lineTexture, 0xffffffff, from.x, from.y, to.x, to.y, 0);
 				}
@@ -495,8 +495,8 @@ void Pathfinder::Render(DrawingContext& dc)
 	{
 		if (m_SubTree[e])
 		{
-			Vector2D from = m_pGraph->GetNode(m_SubTree[e]->From()).Pos();
-			Vector2D to = m_pGraph->GetNode(m_SubTree[e]->To()).Pos();
+			Vector2 from = m_pGraph->GetNode(m_SubTree[e]->From()).Pos();
+			Vector2 to = m_pGraph->GetNode(m_SubTree[e]->To()).Pos();
 
 			dc.DrawLine(m_lineTexture, SpriteColor(255, 0, 0, 127), from.x, from.y, to.x, to.y, 0);
 		}
@@ -510,8 +510,8 @@ void Pathfinder::Render(DrawingContext& dc)
 
 		for (++nxt; nxt != m_Path.end(); ++it, ++nxt)
 		{
-			Vector2D from = m_pGraph->GetNode(*it).Pos();
-			Vector2D to = m_pGraph->GetNode(*nxt).Pos();
+			Vector2 from = m_pGraph->GetNode(*it).Pos();
+			Vector2 to = m_pGraph->GetNode(*nxt).Pos();
 
 			dc.DrawLine(m_lineTexture, SpriteColor(0, 255, 0, 127), from.x, from.y, to.x, to.y, 0);
 		}

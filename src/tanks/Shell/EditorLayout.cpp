@@ -318,7 +318,7 @@ bool EditorLayout::OnPointerDown(float x, float y, int button, UI::PointerType p
 		return true;
 	}
 
-    math::Vector2 mouse(x / _defaultCamera.GetZoom() + _defaultCamera.GetPos().x,
+    Vector2 mouse(x / _defaultCamera.GetZoom() + _defaultCamera.GetPos().x,
                 y / _defaultCamera.GetZoom() + _defaultCamera.GetPos().y);
 
 	_pathfinder.PaintTerrain(mouse);
@@ -533,8 +533,8 @@ void EditorLayout::Draw(DrawingContext &dc) const
 {
 	UIWindow::Draw(dc);
 
-	RectInt viewport(0, 0, (int) GetWidth(), (int) GetHeight());
-	math::Vector2 eye(_defaultCamera.GetPos().x + GetWidth() / 2, _defaultCamera.GetPos().y + GetHeight() / 2);
+	math::RectInt viewport(0, 0, (int) GetWidth(), (int) GetHeight());
+	Vector2 eye(_defaultCamera.GetPos().x + GetWidth() / 2, _defaultCamera.GetPos().y + GetHeight() / 2);
 	float zoom = _defaultCamera.GetZoom();
 	_worldView.Render(dc, viewport, eye, zoom, true, false, _pathfinder);
 
@@ -553,7 +553,7 @@ void EditorLayout::Draw(DrawingContext &dc) const
 	//	dc.DrawSprite(&sel, _texSelection, 0xffffffff, 0);
 	//	dc.DrawBorder(sel, _texSelection, 0xffffffff, 0);
 	//}
-	math::Vector2 mouse = GetManager().GetInput().GetMousePos() / _defaultCamera.GetZoom() + _defaultCamera.GetPos();
+	Vector2 mouse = GetManager().GetInput().GetMousePos() / _defaultCamera.GetZoom() + _defaultCamera.GetPos();
 
 	std::stringstream buf;
 	buf<<"x="<<floor(mouse.x+0.5f)<<"; y="<<floor(mouse.y+0.5f);

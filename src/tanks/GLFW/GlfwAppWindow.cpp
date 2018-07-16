@@ -30,7 +30,7 @@ namespace GLFWProcessors
 				return;
 			}
 
-			math::Vector2 mousePos = GetCursorPosInPixels(window);
+			Vector2 mousePos = GetCursorPosInPixels(window);
 			gui->ProcessPointer(mousePos.x, mousePos.y, 0, msg, buttons, UI::PointerType::Mouse, 0);
 		}
 	}
@@ -39,7 +39,7 @@ namespace GLFWProcessors
 	{
 		if (auto gui = GlfwAppWindow::GetLayoutManager(window))
 		{
-			math::Vector2 mousePos = GetCursorPosInPixels(window, xpos, ypos);
+			Vector2 mousePos = GetCursorPosInPixels(window, xpos, ypos);
 			gui->ProcessPointer(mousePos.x, mousePos.y, 0, UI::Msg::PointerMove, 0, UI::PointerType::Mouse, 0);
 		}
 	}
@@ -48,8 +48,8 @@ namespace GLFWProcessors
 	{
 		if (auto gui = GlfwAppWindow::GetLayoutManager(window))
 		{
-			math::Vector2 mousePos = GetCursorPosInPixels(window);
-			math::Vector2 mouseOffset = GetCursorPosInPixels(window, xoffset, yoffset);
+			Vector2 mousePos = GetCursorPosInPixels(window);
+			Vector2 mouseOffset = GetCursorPosInPixels(window, xoffset, yoffset);
 
 			gui->ProcessPointer(mousePos.x, mousePos.y, mouseOffset.y, UI::Msg::MOUSEWHEEL, 0, UI::PointerType::Mouse, 0);
 		}

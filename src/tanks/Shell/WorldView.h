@@ -11,7 +11,7 @@ class WorldView
 {
 public:
 	void Render(DrawingContext &dc,
-				const RectInt &viewport,
+				const math::RectInt &viewport,
 				Vector2 eye,
 				float zoom,
 				bool editorMode,

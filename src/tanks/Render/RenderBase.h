@@ -25,8 +25,8 @@ struct SpriteColor
 
 struct MyLine
 {
-	math::Vector2       begin;
-	math::Vector2       end;
+	Vector2       begin;
+	Vector2       end;
 	SpriteColor color;
 };
 

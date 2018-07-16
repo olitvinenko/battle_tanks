@@ -1,8 +1,9 @@
 #include "GlfwPlatform.h"
 #include "GlfwKeys.h"
+#include "Vector2.h"
 #include <glfw/glfw3.h>
 
-math::Vector2 GetCursorPosInPixels(GLFWwindow *window, double dipX, double dipY)
+Vector2 GetCursorPosInPixels(GLFWwindow *window, double dipX, double dipY)
 {
     int pxWidth;
     int pxHeight;
@@ -12,10 +13,10 @@ math::Vector2 GetCursorPosInPixels(GLFWwindow *window, double dipX, double dipY)
     int dipHeight;
     glfwGetWindowSize(window, &dipWidth, &dipHeight);
     
-    return math::Vector2(float(dipX * pxWidth / dipWidth), float(dipY * pxHeight / dipHeight));
+    return Vector2(float(dipX * pxWidth / dipWidth), float(dipY * pxHeight / dipHeight));
 }
 
-math::Vector2 GetCursorPosInPixels(GLFWwindow *window)
+Vector2 GetCursorPosInPixels(GLFWwindow *window)
 {
     double dipX = 0;
     double dipY = 0;
@@ -39,7 +40,7 @@ bool GlfwInput::IsMousePressed(int button) const
 	return GLFW_PRESS == glfwGetMouseButton(&m_window, button - 1);
 }
 
-math::Vector2 GlfwInput::GetMousePos() const
+Vector2 GlfwInput::GetMousePos() const
 {
     return GetCursorPosInPixels(&m_window);
 }
