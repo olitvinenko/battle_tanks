@@ -9,6 +9,10 @@
 
 class DrawingContext;
 class TextureManager;
+namespace math
+{
+	class Vector2;
+}
 
 class Pathfinder final
 {
@@ -29,10 +33,13 @@ public:
 	enum algorithm_type
 	{
 		non,
-		search_astar,
-		search_bfs,
+
 		search_dfs,
-		search_dijkstra
+		search_bfs,
+		search_dijkstra,
+		search_astar,
+
+		max
 	};
 
 private:
@@ -119,7 +126,8 @@ public:
 
 	//this will paint whatever cell the cursor is currently over in the 
 	//currently selected terrain brush
-	void PaintTerrain(POINTS p);
+	void PaintTerrain(const math::Vector2& point);
+	void ChangeBrush(const brush_type NewBrush) { m_CurrentTerrainBrush = NewBrush; }
 
 	//the algorithms
 	void CreatePathDFS();
@@ -129,8 +137,6 @@ public:
 
 	void ToggleShowGraph(bool show) { m_bShowGraph = show; }
 	void ToggleShowTiles(bool show) { m_bShowTiles = show; }
-
-	void ChangeBrush(const brush_type NewBrush) { m_CurrentTerrainBrush = NewBrush; }
 
 	void ChangeSource(const int cell) { m_iSourceCell = cell; }
 	void ChangeTarget(const int cell) { m_iTargetCell = cell; }

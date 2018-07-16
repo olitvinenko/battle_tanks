@@ -3,12 +3,13 @@
 #include "DrawingContext.h"
 #include "WorldCfg.h"
 #include "TextureManager.h"
+#include "Vector2.h"
 
 Pathfinder::Pathfinder(const TextureManager& tm)
 	:m_bStart(false),
 	m_bFinish(false),
 	m_bShowGraph(false),
-	m_bShowTiles(true),
+	m_bShowTiles(false),
 	m_dCellWidth(0),
 	m_dCellHeight(0),
 	m_iCellsX(0),
@@ -112,11 +113,11 @@ double Pathfinder::GetTerrainCost(const brush_type brush)
 //  this either changes the terrain at position p to whatever the current
 //  terrain brush is set to, or it adjusts the source/target cell
 //------------------------------------------------------------------------
-void Pathfinder::PaintTerrain(POINTS p)
+void Pathfinder::PaintTerrain(const math::Vector2& point)
 {
 	//convert p to an index into the graph
-	int x = (int)((double)(p.x) / m_dCellWidth);
-	int y = (int)((double)(p.y) / m_dCellHeight);
+	int x = (int)((double)(point.x) / m_dCellWidth);
+	int y = (int)((double)(point.y) / m_dCellHeight);
 
 	//make sure the values are legal
 	if ((x>m_iCellsX) || (y>(m_iCellsY - 1))) return;
@@ -480,44 +481,29 @@ void Pathfinder::Render(DrawingContext& dc)
 	}
 
 	//draw any tree retrieved from the algorithms
-	//gdi->RedPen();
+	for (unsigned int e = 0; e < m_SubTree.size(); ++e)
+	{
+		if (m_SubTree[e])
+		{
+			Vector2D from = m_pGraph->GetNode(m_SubTree[e]->From()).Pos();
+			Vector2D to = m_pGraph->GetNode(m_SubTree[e]->To()).Pos();
 
-	//for (unsigned int e = 0; e<m_SubTree.size(); ++e)
-	//{
-	//	if (m_SubTree[e])
-	//	{
-	//		Vector2D from = m_pGraph->GetNode(m_SubTree[e]->From()).Pos();
-	//		Vector2D to = m_pGraph->GetNode(m_SubTree[e]->To()).Pos();
+			dc.DrawLine(m_lineTexture, SpriteColor(255, 0, 0, 127), from.x, from.y, to.x, to.y, 0);
+		}
+	}
 
-	//		gdi->Line(from, to);
-	//	}
-	//}
+	//draw the path (if any)  
+	if (m_Path.size() > 0)
+	{
+		std::list<int>::iterator it = m_Path.begin();
+		std::list<int>::iterator nxt = it;
 
-	////draw the path (if any)  
-	//if (m_Path.size() > 0)
-	//{
-	//	gdi->ThickBluePen();
+		for (++nxt; nxt != m_Path.end(); ++it, ++nxt)
+		{
+			Vector2D from = m_pGraph->GetNode(*it).Pos();
+			Vector2D to = m_pGraph->GetNode(*nxt).Pos();
 
-	//	std::list<int>::iterator it = m_Path.begin();
-	//	std::list<int>::iterator nxt = it; ++nxt;
-
-	//	for (it; nxt != m_Path.end(); ++it, ++nxt)
-	//	{
-	//		gdi->Line(m_pGraph->GetNode(*it).Pos(), m_pGraph->GetNode(*nxt).Pos());
-	//	}
-	//}
-
-	//if (m_dTimeTaken)
-	//{
-	//	//draw time taken to complete algorithm
-	//	string time = ttos(m_dTimeTaken, 8);
-	//	string s = "Time Elapsed for " + GetNameOfCurrentSearchAlgorithm() + " is " + time;
-	//	gdi->TextAtPos(1, m_icyClient + 3, s);
-	//}
-
-	////display the total path cost if appropriate
-	//if (m_CurrentAlgorithm == search_astar || m_CurrentAlgorithm == search_dijkstra)
-	//{
-	//	gdi->TextAtPos(m_icxClient - 110, m_icyClient + 3, "Cost is " + ttos(m_dCostToTarget));
-	//}
+			dc.DrawLine(m_lineTexture, SpriteColor(0, 255, 0, 127), from.x, from.y, to.x, to.y, 0);
+		}
+	}
 }

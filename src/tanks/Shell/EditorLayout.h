@@ -27,6 +27,7 @@ class EditorLayout : public UI::UIWindow
 	//ServiceEditor    *_serviceList;
 	UI::Text         *_layerDisp;
 	DefaultComboBox  *_typeList;
+	DefaultComboBox  *_algosList;
 	UI::Text         *_help;
 	size_t        _fontSmall;
 

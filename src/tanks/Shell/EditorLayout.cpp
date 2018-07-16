@@ -156,6 +156,7 @@ EditorLayout::EditorLayout(UIWindow *parent, Pathfinder& pathfinder , WorldView 
 	{
 		switch (static_cast<Pathfinder::brush_type>(i))
 		{
+		case Pathfinder::normal: _typeList->GetData()->AddItem("none"); break;
 		case Pathfinder::obstacle: _typeList->GetData()->AddItem("obstacle"); break;
 		case Pathfinder::water:_typeList->GetData()->AddItem("water"); break;
 		case Pathfinder::mud:_typeList->GetData()->AddItem("mud"); break;
@@ -168,12 +169,44 @@ EditorLayout::EditorLayout(UIWindow *parent, Pathfinder& pathfinder , WorldView 
 		//const char *desc0 = RTTypes::Inst().GetTypeInfoByIndex(i).desc;
 		//_typeList->GetData()->AddItem(_lang->GetStr(desc0).Get(), RTTypes::Inst().GetTypeByIndex(i));
 	}
-	_typeList->GetData()->Sort();
+	//_typeList->GetData()->Sort();
 	UI::List *ls = _typeList->GetList();
 	ls->SetTabPos(1, 128);
 	ls->AlignHeightToContent();
-	_typeList->eventChangeCurSel = std::bind(&EditorLayout::OnChangeObjectType, this, std::placeholders::_1);
+	//_typeList->eventChangeCurSel = std::bind(&EditorLayout::OnChangeObjectType, this, std::placeholders::_1);
+	_typeList->eventChangeCurSel = [=](int index)
+	{
+		_pathfinder.ChangeBrush((Pathfinder::brush_type) index);
+	};
 	_typeList->SetCurSel(/*std::min(_typeList->GetData()->GetItemCount() - 1, std::max(0, 1/*_conf.ed_object.GetInt()))*/0);
+
+	_algosList = DefaultComboBox::Create(this);
+	_algosList->Resize(256);
+	for (unsigned int i = 0; i < Pathfinder::algorithm_type::max; ++i)
+	{
+		switch (static_cast<Pathfinder::algorithm_type>(i))
+		{
+		case Pathfinder::algorithm_type::non: _algosList->GetData()->AddItem("none"); break;
+		case Pathfinder::algorithm_type::search_bfs: _algosList->GetData()->AddItem("BFS"); break;
+		case Pathfinder::algorithm_type::search_dfs: _algosList->GetData()->AddItem("DFS"); break;
+		case Pathfinder::algorithm_type::search_dijkstra: _algosList->GetData()->AddItem("Dijkstra"); break;
+		case Pathfinder::algorithm_type::search_astar: _algosList->GetData()->AddItem("AStar"); break;
+		}
+	}
+	ls = _algosList->GetList();
+	ls->SetTabPos(1, 128);
+	ls->AlignHeightToContent();
+	_algosList->eventChangeCurSel = [=](int index)
+	{
+		switch (static_cast<Pathfinder::algorithm_type>(index))
+		{
+		case Pathfinder::algorithm_type::search_dfs: _pathfinder.CreatePathDFS(); break;
+		case Pathfinder::algorithm_type::search_bfs: _pathfinder.CreatePathBFS(); break;
+		case Pathfinder::algorithm_type::search_dijkstra: _pathfinder.CreatePathDijkstra(); break;
+		case Pathfinder::algorithm_type::search_astar:_pathfinder.CreatePathAStar(); break;
+		}
+	};
+	_algosList->SetCurSel(0);
 
 	//assert(!_conf.ed_uselayers.eventChange);
 	//_conf.ed_uselayers.eventChange = std::bind(&EditorLayout::OnChangeUseLayers, this);
@@ -273,20 +306,22 @@ bool EditorLayout::OnPointerUp(float x, float y, int button, UI::PointerType poi
 
 bool EditorLayout::OnPointerDown(float x, float y, int button, UI::PointerType pointerType, unsigned int pointerID)
 {
-	//if( 0 == _mbutton )
-	//{
-	//	GetManager().SetCapture(pointerID, this);
-	//	_mbutton = button;
-	//}
-
-	//if( _mbutton != button )
-	//{
-	//	return true;
-	//}
+	if (_mbutton == 0)
+	{
+		GetManager().SetCapture(pointerID, this);
+		_mbutton = button;
+	}
 
 
- //   vec2d mouse(x / _defaultCamera.GetZoom() + _defaultCamera.GetPos().x,
- //               y / _defaultCamera.GetZoom() + _defaultCamera.GetPos().y);
+	if (_mbutton != button)
+	{
+		return true;
+	}
+
+    math::Vector2 mouse(x / _defaultCamera.GetZoom() + _defaultCamera.GetPos().x,
+                y / _defaultCamera.GetZoom() + _defaultCamera.GetPos().y);
+
+	_pathfinder.PaintTerrain(mouse);
 
  //   ObjectType type = static_cast<ObjectType>(
  //       _typeList->GetData()->GetItemData(_conf.ed_object.GetInt()) );
@@ -450,6 +485,8 @@ void EditorLayout::OnSize(float width, float height)
 	_typeList->Move(w , 5);
 	_layerDisp->Move(w, 6);
 
+	_algosList->Move(w, _typeList->GetHeight() + 2);
+
 	_drawGraph->Move(w, _typeList->GetHeight() + 20);
 	_drawTiles->Move(w, _typeList->GetHeight() + 40);
 }
@@ -497,7 +534,7 @@ void EditorLayout::Draw(DrawingContext &dc) const
 	UIWindow::Draw(dc);
 
 	RectInt viewport(0, 0, (int) GetWidth(), (int) GetHeight());
-	Vector2 eye(_defaultCamera.GetPos().x + GetWidth() / 2, _defaultCamera.GetPos().y + GetHeight() / 2);
+	math::Vector2 eye(_defaultCamera.GetPos().x + GetWidth() / 2, _defaultCamera.GetPos().y + GetHeight() / 2);
 	float zoom = _defaultCamera.GetZoom();
 	_worldView.Render(dc, viewport, eye, zoom, true, false, _pathfinder);
 
@@ -516,7 +553,7 @@ void EditorLayout::Draw(DrawingContext &dc) const
 	//	dc.DrawSprite(&sel, _texSelection, 0xffffffff, 0);
 	//	dc.DrawBorder(sel, _texSelection, 0xffffffff, 0);
 	//}
-	Vector2 mouse = GetManager().GetInput().GetMousePos() / _defaultCamera.GetZoom() + _defaultCamera.GetPos();
+	math::Vector2 mouse = GetManager().GetInput().GetMousePos() / _defaultCamera.GetZoom() + _defaultCamera.GetPos();
 
 	std::stringstream buf;
 	buf<<"x="<<floor(mouse.x+0.5f)<<"; y="<<floor(mouse.y+0.5f);
