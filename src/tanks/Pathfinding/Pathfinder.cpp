@@ -28,7 +28,8 @@ Pathfinder::Pathfinder(const TextureManager& tm)
 	m_waterTexture(tm.FindSprite("water")),
 	m_mudTexture(tm.FindSprite("brick_wall")),
 	m_startPointTexture(tm.FindSprite("editor_item")),
-	m_finishPointTexture(tm.FindSprite("editor_respawn"))
+	m_finishPointTexture(tm.FindSprite("editor_respawn")),
+	m_fontTexture(tm.FindSprite("font_small"))
 {
 }
 
@@ -455,12 +456,6 @@ void Pathfinder::Render(DrawingContext& dc)
 	{
 		if (m_pGraph->NumNodes() != 0)
 		{
-			/*  if (DrawNodeIDs)
-			{
-				gdi->TextColor(200,200,200);
-				gdi->TextAtPos((int)pN->Pos().x+5, (int)pN->Pos().y-5, ttos(pN->Index()));
-			}*/
-
 			//draw the nodes 
 			NavGraph::ConstNodeIterator NodeItr(*m_pGraph);
 			for (const NavGraph::NodeType* pN = NodeItr.begin(); !NodeItr.end(); pN = NodeItr.next())
@@ -473,6 +468,11 @@ void Pathfinder::Render(DrawingContext& dc)
 
 					dc.DrawLine(m_lineTexture, 0xffffffff, from.x, from.y, to.x, to.y, 0);
 				}
+			}
+
+			for (const NavGraph::NodeType* pN = NodeItr.begin(); !NodeItr.end(); pN = NodeItr.next())
+			{
+				dc.DrawBitmapText(pN->Pos().x, pN->Pos().y, m_fontTexture, 0xffffffff, std::to_string(pN->Index()), alignTextLC);
 			}
 		}
 	}

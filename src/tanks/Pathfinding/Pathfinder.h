@@ -110,6 +110,8 @@ private:
 
 	size_t m_startPointTexture;
 	size_t m_finishPointTexture;
+
+	size_t m_fontTexture;
 	
 public:
 
