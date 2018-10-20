@@ -13,3 +13,4 @@ endif()
 
 add_subdirectory(lua)
 add_subdirectory(utfcpp)
+add_subdirectory(box2d)

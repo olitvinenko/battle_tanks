@@ -8,6 +8,7 @@ include_directories(
 	${Utf8cpp_SOURCE_DIR}	
 	${GLFW_SOURCE_DIR}/include
 	${Lua_SOURCE_DIR}/src	
+	${Box2D_SOURCE_DIR}	
 )
 #########################################################################
 
@@ -212,5 +213,6 @@ target_link_libraries(tanks
 	opengl32
 	glfw
 	lua
+	box2d
 	${GLFW_LIBRARIES}
 )
