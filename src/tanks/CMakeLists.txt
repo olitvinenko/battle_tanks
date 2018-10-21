@@ -8,7 +8,7 @@ include_directories(
 	${Utf8cpp_SOURCE_DIR}	
 	${GLFW_SOURCE_DIR}/include
 	${Lua_SOURCE_DIR}/src	
-	${Box2D_SOURCE_DIR}	
+	${box2d_SOURCE_DIR}
 )
 #########################################################################
 

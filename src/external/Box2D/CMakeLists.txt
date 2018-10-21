@@ -3,8 +3,7 @@ cmake_minimum_required (VERSION 3.4)
 project(box2d CXX)
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
-get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
-include_directories(${PARENT_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 file(GLOB_RECURSE SRCS
     "*.c*"
@@ -17,7 +16,7 @@ if (WIN32)
 		get_filename_component(PARENT_DIR "${FILE}" DIRECTORY)
 
 		# Remove common directory prefix to make the group
-		string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "" GROUP "${PARENT_DIR}")
+		string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/Box2D" "" GROUP "${PARENT_DIR}")
 
 		# Make sure we are using windows slashes
 		string(REPLACE "/" "\\" GROUP "${GROUP}")
