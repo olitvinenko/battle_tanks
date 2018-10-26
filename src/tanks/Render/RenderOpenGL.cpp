@@ -1,7 +1,7 @@
 //#ifNdef IOS
 
 #include "RenderOpenGL.h"
-#include <glfw/glfw3.h>
+#include <GLFW/glfw3.h>
 
 #define VERTEX_ARRAY_SIZE   1024
 #define  INDEX_ARRAY_SIZE   2048
