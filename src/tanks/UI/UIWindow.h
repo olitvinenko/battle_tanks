@@ -8,13 +8,13 @@
 #include <list>
 
 class DrawingContext;
+enum class Key;
 
 namespace UI
 {
-
 class LayoutManager;
 class UIWindow;
-enum class Key;
+
 enum class PointerType;
     
 namespace detail
@@ -73,28 +73,14 @@ class UIWindow
 	StretchMode  _textureStretchMode;
 	unsigned int _frame;
 
-	struct
-	{
-		bool _isVisible      : 1;
-		bool _isEnabled      : 1;
-		bool _isTopMost      : 1;
-		bool _isTimeStep     : 1;
-		bool _drawBorder     : 1;
-		bool _drawBackground : 1;
-		bool _clipChildren   : 1;
-	};
 
-#ifndef NDEBUG
-	mutable unsigned int _debugNoDestroy;
-	class NoDestroyHelper
-	{
-	public:
-		NoDestroyHelper(const UIWindow *wnd) : _var(wnd->_debugNoDestroy) { ++_var; }
-		~NoDestroyHelper() { --_var; }
-	private:
-		unsigned int &_var;
-	};
-#endif
+	bool _isVisible      : 1;
+	bool _isEnabled      : 1;
+	bool _isTopMost      : 1;
+	bool _isTimeStep     : 1;
+	bool _drawBorder     : 1;
+	bool _drawBackground : 1;
+	bool _clipChildren   : 1;
 
 protected:
 	unsigned int GetFrameCount() const;

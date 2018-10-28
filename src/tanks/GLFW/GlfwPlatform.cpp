@@ -29,7 +29,7 @@ GlfwInput::GlfwInput(GLFWwindow &window)
 	: m_window(window)
 {}
 
-bool GlfwInput::IsKeyPressed(UI::Key key) const
+bool GlfwInput::IsKeyPressed(Key key) const
 {
 	int platformKey = UnmapGlfwKeyCode(key);
 	return GLFW_PRESS == glfwGetKey(&m_window, platformKey);

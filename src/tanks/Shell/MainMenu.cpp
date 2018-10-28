@@ -178,14 +178,14 @@ void MainMenuDlg::OnCloseChild(int result)
 	}
 }
 
-bool MainMenuDlg::OnKeyPressed(UI::Key key)
+bool MainMenuDlg::OnKeyPressed(Key key)
 {
 	switch(key)
 	{
-	case UI::Key::F12:
+	case Key::F12:
 		OnSettings();
 		break;
-	case UI::Key::Escape:
+	case Key::Escape:
 		if (_ptype != PT_NONE)
 			SwitchPanel(PT_NONE);
 		else

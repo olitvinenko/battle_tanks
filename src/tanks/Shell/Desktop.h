@@ -53,7 +53,7 @@ public:
 	void ShowConsole(bool show);
 
 protected:
-	bool OnKeyPressed(UI::Key key) override;
+	bool OnKeyPressed(Key key) override;
 	bool OnFocus(bool focus) override;
 	void OnSize(float width, float height) override;
 	void OnTimeStep(float dt) override;

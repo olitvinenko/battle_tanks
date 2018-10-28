@@ -5,7 +5,6 @@
 #include "Pointers.h"
 #include "UIWindow.h"
 #include "RenderOpenGL.h"
-#include <glfw/glfw3.h>
 
 namespace GLFWProcessors
 {
@@ -59,7 +58,7 @@ namespace GLFWProcessors
 	{
 		if (auto gui = GlfwAppWindow::GetLayoutManager(window))
 		{
-			UI::Key key = MapGlfwKeyCode(platformKey);
+			Key key = MapGlfwKeyCode(platformKey);
 			gui->ProcessKeys(GLFW_RELEASE == action ? UI::Msg::KEYUP : UI::Msg::KEYDOWN, key);
 		}
 	}
@@ -84,10 +83,6 @@ namespace GLFWProcessors
 	}
 }
 
-void GlfwAppWindow::GlfwWindowDeleter::operator()(GLFWwindow *window) const
-{
-	glfwDestroyWindow(window);
-}
 
 GlfwAppWindow::GlfwAppWindow(const char *title, bool fullscreen, int width, int height)
 {
@@ -96,32 +91,32 @@ GlfwAppWindow::GlfwAppWindow(const char *title, bool fullscreen, int width, int 
 		throw std::runtime_error("Failed to initialize OpenGL");
 	}
 
-	std::unique_ptr<GLFWwindow, GlfwWindowDeleter> window(glfwCreateWindow(
+	m_window = (glfwCreateWindow(
 		fullscreen ? glfwGetVideoMode(glfwGetPrimaryMonitor())->width : width,
 		fullscreen ? glfwGetVideoMode(glfwGetPrimaryMonitor())->height : height,
 		title,
 		fullscreen ? glfwGetPrimaryMonitor() : nullptr,
 		nullptr));
 
-	m_window = std::move(window);
 	m_clipboard.reset(new GlfwClipboard(*m_window));
 	m_input.reset(new GlfwInput(*m_window));
 	m_render = std::move(RenderCreateOpenGL());
 
-	glfwSetMouseButtonCallback(m_window.get(), GLFWProcessors::OnMouseButton);
-	glfwSetCursorPosCallback(m_window.get(), GLFWProcessors::OnCursorPos);
-	glfwSetScrollCallback(m_window.get(), GLFWProcessors::OnScroll);
-	glfwSetKeyCallback(m_window.get(), GLFWProcessors::OnKey);
-	glfwSetCharCallback(m_window.get(), GLFWProcessors::OnChar);
-	glfwSetFramebufferSizeCallback(m_window.get(), GLFWProcessors::OnFramebufferSize);
+	glfwSetMouseButtonCallback(m_window, GLFWProcessors::OnMouseButton);
+	glfwSetCursorPosCallback(m_window, GLFWProcessors::OnCursorPos);
+	glfwSetScrollCallback(m_window, GLFWProcessors::OnScroll);
+	glfwSetKeyCallback(m_window, GLFWProcessors::OnKey);
+	glfwSetCharCallback(m_window, GLFWProcessors::OnChar);
+	glfwSetFramebufferSizeCallback(m_window, GLFWProcessors::OnFramebufferSize);
 
-	glfwMakeContextCurrent(m_window.get());
+	glfwMakeContextCurrent(m_window);
 	glfwSwapInterval(1);	
 }
 
 GlfwAppWindow::~GlfwAppWindow()
 {
 	glfwMakeContextCurrent(nullptr);
+	glfwDestroyWindow(m_window);
 	glfwTerminate();
 }
 
@@ -143,20 +138,20 @@ IRender& GlfwAppWindow::GetRender()
 unsigned int GlfwAppWindow::GetPixelWidth()
 {
 	int width;
-	glfwGetFramebufferSize(m_window.get(), &width, nullptr);
+	glfwGetFramebufferSize(m_window, &width, nullptr);
 	return width;
 }
 
 unsigned int GlfwAppWindow::GetPixelHeight()
 {
 	int height;
-	glfwGetFramebufferSize(m_window.get(), nullptr, &height);
+	glfwGetFramebufferSize(m_window, nullptr, &height);
 	return height;
 }
 
 void GlfwAppWindow::SetUserPointer(UI::LayoutManager *inputSink)
 {
-	glfwSetWindowUserPointer(m_window.get(), inputSink);
+	glfwSetWindowUserPointer(m_window, inputSink);
 }
 
 UI::LayoutManager* GlfwAppWindow::GetLayoutManager(GLFWwindow * window) // static
@@ -166,12 +161,12 @@ UI::LayoutManager* GlfwAppWindow::GetLayoutManager(GLFWwindow * window) // stati
 
 void GlfwAppWindow::SwapBuffers() const
 {
-	glfwSwapBuffers(m_window.get());
+	glfwSwapBuffers(m_window);
 }
 
 bool GlfwAppWindow::ShouldClose() const
 {
-	return glfwWindowShouldClose(m_window.get());
+	return glfwWindowShouldClose(m_window);
 }
 
 void GlfwAppWindow::PollEvents() const

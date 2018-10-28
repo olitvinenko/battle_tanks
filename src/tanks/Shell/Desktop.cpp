@@ -411,11 +411,11 @@ float Desktop::GetTransitionTarget() const
 	return (GetHeight() + (_navStack.empty() ? 0 : _navStack.back()->GetHeight())) / 2 - GetNavStackSize();
 }
 
-bool Desktop::OnKeyPressed(UI::Key key)
+bool Desktop::OnKeyPressed(Key key)
 {
 	switch( key )
 	{
-	case UI::Key::GraveAccent: // '~'
+	case Key::GraveAccent: // '~'
 		if( _con->GetVisible() )
 		{
 			_con->SetVisible(false);
@@ -427,7 +427,7 @@ bool Desktop::OnKeyPressed(UI::Key key)
 		}
 		break;
 
-	case UI::Key::Escape:
+	case Key::Escape:
 		if( _con->Contains(GetManager().GetFocusWnd()) )
 		{
 			_con->SetVisible(false);
@@ -449,15 +449,15 @@ bool Desktop::OnKeyPressed(UI::Key key)
 		}
 		break;
 
-	case UI::Key::F2:
+	case Key::F2:
 		OnNewDM();
 		break;
 
-	case UI::Key::F12:
+	case Key::F12:
 		OnGameSettings();
 		break;
 
-	case UI::Key::F5:
+	case Key::F5:
 		if (_navStack.empty())
 			SetEditorMode(!GetEditorMode());
 		break;

@@ -10,7 +10,7 @@ public:
 	GlfwInput(GLFWwindow &window);
 
 	// IInput
-	bool IsKeyPressed(UI::Key key) const override;
+	bool IsKeyPressed(Key key) const override;
 	bool IsMousePressed(int button) const override;
 	Vector2 GetMousePos() const override;
 

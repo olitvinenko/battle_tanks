@@ -71,7 +71,7 @@ public:
 	            UI::ConsoleBuffer &logger,
 	            MainMenuCommands commands);
 	virtual ~MainMenuDlg();
-	bool OnKeyPressed(UI::Key key) override;
+	bool OnKeyPressed(Key key) override;
 	bool OnFocus(bool) override { return true; }
 
 protected:

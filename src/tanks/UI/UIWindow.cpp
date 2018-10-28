@@ -16,11 +16,6 @@ UIWindow* UIWindow::Create(UIWindow *parent)
 ///////////////////////////////////////////////////////////////////////////////
 // Window class implementation
 
-#ifdef NDEBUG
-#define AssertNoDestroy(x)  ((void) 0)
-#else
-#define AssertNoDestroy(x) NoDestroyHelper __dontdestroyme(x)
-#endif
 
 UIWindow::UIWindow(UIWindow *parent, LayoutManager *manager)
     : _resident(new Resident(this))
@@ -45,9 +40,6 @@ UIWindow::UIWindow(UIWindow *parent, LayoutManager *manager)
     , _drawBorder(true)
     , _drawBackground(true)
     , _clipChildren(false)
-#ifndef NDEBUG
-  , _debugNoDestroy(0)
-#endif
 {
 	if( _parent )
 	{
@@ -98,10 +90,7 @@ UIWindow::~UIWindow()
 
 void UIWindow::Destroy()
 {
-	assert(!_debugNoDestroy);
 	{
-		AssertNoDestroy(this);
-
 		// this removes focus and mouse hover if any.
 		// the window don't yet suspect that it's being destroyed
 		GetManager().ResetWindow(this);
@@ -180,7 +169,6 @@ unsigned int UIWindow::GetFrameCount() const
 
 void UIWindow::Draw(DrawingContext &dc) const
 {
-	AssertNoDestroy(this);
 	assert(_isVisible);
 
 	math::RectFloat dst = {0, 0, _width, _height};
@@ -241,7 +229,6 @@ void UIWindow::Move(float x, float y)
 
 void UIWindow::Resize(float width, float height)
 {
-	AssertNoDestroy(this);
 	if( _width != width || _height != height )
 	{
 		_width  = width;
@@ -269,7 +256,6 @@ void UIWindow::SetTimeStep(bool enable)
 
 void UIWindow::OnEnabledChangeInternal(bool enable, bool inherited)
 {
-	AssertNoDestroy(this);
 	if( enable )
 	{
 		// enable children last
@@ -295,7 +281,6 @@ void UIWindow::OnEnabledChangeInternal(bool enable, bool inherited)
 
 void UIWindow::OnVisibleChangeInternal(bool visible, bool inherited)
 {
-	AssertNoDestroy(this);
 	if( visible )
 	{
 		// show children last

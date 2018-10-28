@@ -8,7 +8,7 @@
 namespace UI
 {
 
-LayoutManager::LayoutManager(IInput &input, IClipboard &clipboard, TextureManager &texman, IWindowFactory &&desktopFactory)
+LayoutManager::LayoutManager(UI::IInput &input, IClipboard &clipboard, TextureManager &texman, IWindowFactory &&desktopFactory)
   : _input(input)
   , _clipboard(clipboard)
   , _texman(texman)
@@ -377,7 +377,7 @@ bool LayoutManager::ProcessPointer(float x, float y, float z, Msg msg, int butto
 	return false;
 }
 
-bool LayoutManager::ProcessKeys(Msg msg, UI::Key key)
+bool LayoutManager::ProcessKeys(Msg msg, Key key)
 {
 	switch( msg )
 	{

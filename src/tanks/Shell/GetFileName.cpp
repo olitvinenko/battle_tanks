@@ -86,7 +86,7 @@ void GetFileNameDlg::OnChangeName()
 	_changing = false;
 }
 
-bool GetFileNameDlg::OnKeyPressed(UI::Key key)
+bool GetFileNameDlg::OnKeyPressed(Key key)
 {
 	switch( key )
 	{
@@ -94,7 +94,7 @@ bool GetFileNameDlg::OnKeyPressed(UI::Key key)
 	//case UI::Key::Down:
 	//	static_cast<Window *>(_files)->OnKeyPressed(c);
 	//	break;
-	case UI::Key::Enter:
+	case Key::Enter:
 		OnOK();
 		break;
 	default:

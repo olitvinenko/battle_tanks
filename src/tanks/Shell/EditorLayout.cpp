@@ -423,7 +423,7 @@ bool EditorLayout::OnFocus(bool focus)
 	return true;
 }
 
-bool EditorLayout::OnKeyPressed(UI::Key key)
+bool EditorLayout::OnKeyPressed(Key key)
 {
 	//switch(key)
 	//{
@@ -556,6 +556,6 @@ void EditorLayout::Draw(DrawingContext &dc) const
 	Vector2 mouse = GetManager().GetInput().GetMousePos() / _defaultCamera.GetZoom() + _defaultCamera.GetPos();
 
 	std::stringstream buf;
-	buf<<"x="<<floor(mouse.x+0.5f)<<"; y="<<floor(mouse.y+0.5f);
+	buf << "x=" << floor(mouse.x + 0.5f) << "; y=" << floor(mouse.y + 0.5f) << "; zoom= " << _defaultCamera.GetZoom() << "; cameraPos= " << _defaultCamera.GetPos();
 	dc.DrawBitmapText(floor(GetWidth()/2+0.5f), 1, _fontSmall, 0xffffffff, buf.str(), alignTextCT);
 }

@@ -174,7 +174,23 @@ file(GLOB_RECURSE SRC_ENGINE
     "Engine/*.h"
 )
 
-source_group("engine" FILES ${SRC_ENGINE})
+if (WIN32)
+	foreach(FILE ${SRC_ENGINE}) 
+		# Get the directory of the source file
+		get_filename_component(PARENT_DIR "${FILE}" DIRECTORY)
+		
+
+		# Remove common directory prefix to make the group
+		string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "" GROUP "${PARENT_DIR}")
+
+		# Make sure we are using windows slashes
+		string(REPLACE "/" "\\" GROUP "${GROUP}")
+
+		source_group("${GROUP}" FILES "${FILE}")
+	endforeach()
+endif()
+
+#source_group("engine" FILES ${SRC_ENGINE})
 #########################################################################
 
 

@@ -1,11 +1,10 @@
 #pragma once
 
 class Vector2;
+enum class Key;
 
 namespace UI
 {
-	enum class Key;
-
 	struct IInput
 	{
 		virtual bool IsKeyPressed(Key key) const = 0;

@@ -2,7 +2,7 @@
 #include "Keys.h"
 #include <glfw/glfw3.h>
 
-UI::Key MapGlfwKeyCode(int platformKey)
+Key MapGlfwKeyCode(int platformKey)
 {
 	switch(platformKey)
 	{
@@ -13,10 +13,10 @@ UI::Key MapGlfwKeyCode(int platformKey)
 			break;
 	}
 
-	return UI::Key::Unknown;
+	return Key::Unknown;
 }
 
-int UnmapGlfwKeyCode(UI::Key key)
+int UnmapGlfwKeyCode(Key key)
 {
 	switch(key)
 	{

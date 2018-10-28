@@ -8,13 +8,14 @@
 
 class DrawingContext;
 class TextureManager;
+enum class Key;
 
 namespace UI
 {
 
 class UIWindow;
 class LayoutManager;
-enum class Key;
+
 struct IInput;
 struct IClipboard;
 
@@ -39,18 +40,18 @@ enum class Msg
 class LayoutManager
 {
 public:
-	LayoutManager(IInput &input, IClipboard &clipboard, TextureManager &texman, IWindowFactory &&desktopFactory);
+	LayoutManager(UI::IInput &input, IClipboard &clipboard, TextureManager &texman, IWindowFactory &&desktopFactory);
 	~LayoutManager();
 
 	void TimeStep(float dt);
 	void Render(DrawingContext &dc, float interpolation) const;
 
 	bool ProcessPointer(float x, float y, float z, Msg msg, int button, PointerType pointerType, unsigned int pointerID);
-	bool ProcessKeys(Msg msg, UI::Key key);
+	bool ProcessKeys(Msg msg, Key key);
 	bool ProcessText(int c) const;
 
 	IClipboard &GetClipboard() const { return _clipboard; }
-	IInput& GetInput() const { return _input; }
+	UI::IInput& GetInput() const { return _input; }
 	TextureManager& GetTextureManager() const { return _texman; }
 	UIWindow* GetDesktop() const;
 

@@ -28,13 +28,13 @@ void DefaultCamera::HandleMovement(UI::IInput &input,
 	static float levels[] = { 0.0625f, 0.125f, 0.25f, 0.5f, 1.0f, 1.5f, 2.0f };
 	static int   level    = 4;
 
-	if( !lastIn && input.IsKeyPressed(UI::Key::PageUp) )
+	if( !lastIn && input.IsKeyPressed(Key::PageUp) )
 		level = std::min(level+1, (int) (sizeof(levels) / sizeof(float)) - 1);
-	lastIn = input.IsKeyPressed(UI::Key::PageUp);
+	lastIn = input.IsKeyPressed(Key::PageUp);
 
-	if( !LastOut && input.IsKeyPressed(UI::Key::PageDown) )
+	if( !LastOut && input.IsKeyPressed(Key::PageDown) )
 		level = std::max(level - 1, 0);
-	LastOut = input.IsKeyPressed(UI::Key::PageDown);
+	LastOut = input.IsKeyPressed(Key::PageDown);
 
 	_zoom = levels[level];
 
@@ -44,7 +44,7 @@ void DefaultCamera::HandleMovement(UI::IInput &input,
 
 	Vector2 mouse = input.GetMousePos();
 
-	if( 0 == (int) mouse.x || input.IsKeyPressed(UI::Key::Left) )
+	if( 0 == (int) mouse.x || input.IsKeyPressed(Key::Left) )
 	{
 		bMove = true;
 		while( dwCurTime - _dwTimeX > dt )
@@ -54,7 +54,7 @@ void DefaultCamera::HandleMovement(UI::IInput &input,
 		}
 	}
 	else
-	if( screenWidth - 1 == (int) mouse.x || input.IsKeyPressed(UI::Key::Right) )
+	if( screenWidth - 1 == (int) mouse.x || input.IsKeyPressed(Key::Right) )
 	{
 		bMove = true;
 		while( dwCurTime - _dwTimeX > dt )
@@ -66,7 +66,7 @@ void DefaultCamera::HandleMovement(UI::IInput &input,
 	else
 		_dwTimeX = GetMilliseconds();
 	//---------------------------------------
-	if( 0 == (int) mouse.y || input.IsKeyPressed(UI::Key::Up) )
+	if( 0 == (int) mouse.y || input.IsKeyPressed(Key::Up) )
 	{
 		bMove = true;
 		while( dwCurTime - _dwTimeY > dt )
@@ -76,7 +76,7 @@ void DefaultCamera::HandleMovement(UI::IInput &input,
 		}
 	}
 	else
-	if( screenHeight - 1 == (int) mouse.y || input.IsKeyPressed(UI::Key::Down) )
+	if( screenHeight - 1 == (int) mouse.y || input.IsKeyPressed(Key::Down) )
 	{
 		bMove = true;
 		while( dwCurTime - _dwTimeY > dt )

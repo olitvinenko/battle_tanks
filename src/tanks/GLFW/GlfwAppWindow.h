@@ -1,10 +1,10 @@
 #pragma once
 #include <memory>
 #include "AppWindowBase.h"
+#include <GLFW/glfw3.h>
 
 class GlfwClipboard;
 class GlfwInput;
-struct GLFWwindow;
 
 struct IRender;
 
@@ -29,12 +29,7 @@ public:
 	void SetUserPointer(UI::LayoutManager *inputSink) override;
 
 private:
-	struct GlfwWindowDeleter
-	{
-		void operator()(GLFWwindow *window) const;
-	};
-
-	std::unique_ptr<GLFWwindow, GlfwWindowDeleter> m_window;
+	GLFWwindow* m_window;
 	std::unique_ptr<GlfwClipboard> m_clipboard;
 	std::unique_ptr<GlfwInput> m_input;
 	std::unique_ptr<IRender> m_render;
