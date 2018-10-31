@@ -1,6 +1,6 @@
 #include "GameStateBase.h"
 
-GameStateBase::GameStateBase(std::shared_ptr<GameStatesController> controller)
+GameStateBase::GameStateBase(GameStatesController* controller)
 	: m_controller(controller)
 {
 }

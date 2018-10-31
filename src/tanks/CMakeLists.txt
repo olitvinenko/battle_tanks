@@ -190,7 +190,35 @@ if (WIN32)
 	endforeach()
 endif()
 
-#source_group("engine" FILES ${SRC_ENGINE})
+#########################################################################
+
+
+############################ GAME #######################################
+include_directories(
+	Game
+)
+
+file(GLOB_RECURSE SRC_GAME
+    "Game/*.cpp"
+    "Game/*.h"
+)
+
+if (WIN32)
+	foreach(FILE ${SRC_GAME}) 
+		# Get the directory of the source file
+		get_filename_component(PARENT_DIR "${FILE}" DIRECTORY)
+		
+
+		# Remove common directory prefix to make the group
+		string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "" GROUP "${PARENT_DIR}")
+
+		# Make sure we are using windows slashes
+		string(REPLACE "/" "\\" GROUP "${GROUP}")
+
+		source_group("${GROUP}" FILES "${FILE}")
+	endforeach()
+endif()
+
 #########################################################################
 
 
@@ -202,6 +230,7 @@ set(tanks_SOURCES
 	${SRC_UI}
 	${SRC_GLFW}
 	${SRC_ENGINE}
+	${SRC_GAME}
 	${SRC_APPLICATION}
 	${SRC_SHELL}
 	${SRC_PATHFINDING}

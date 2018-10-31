@@ -52,6 +52,8 @@ public:
 
 	~Engine();
 
+	GameStatesController& GetStatesController() { return m_statesController; }
+
 private:
 	IWindow* m_window;
 	IClipboard* m_clipboard;

@@ -1,19 +1,17 @@
 #pragma once
 
-#include <memory>
-
 class GameStatesController;
 
 struct GameStateBase
 {
 protected:
-	std::weak_ptr<GameStatesController> m_controller;
+	GameStatesController* m_controller;
 
 	virtual void OnUpdate(float deltaTime);
 	virtual void OnLateUpdate(float deltaTime);
 	virtual void OnFixedUpdate(float fixedDeltaTime);
 
-	explicit GameStateBase(std::shared_ptr<GameStatesController> controller);
+	explicit GameStateBase(GameStatesController* controller);
 
 public:
 	virtual void OnEnter();

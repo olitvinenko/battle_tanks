@@ -20,6 +20,9 @@
 #include "GlfwWindow.h"
 #include "GlfwClipboard.h"
 #include "GlfwInput.h"
+#include "LoadDataState.h"
+
+#include "GameStatesController.h"
 
 namespace
 {
@@ -87,7 +90,15 @@ int main(int, const char**)
 		GlfwInput input(window);
 
 		Engine tanksEngine(&window, &clipboard, &input);
+
+		// not engine, but game!
+		tanksEngine.GetStatesController().PushState<LoadDataState>();
+
 		tanksEngine.Launch();
+
+
+
+
 		return 0;
 		//--------------------------------------------------------------------------------------------------
 

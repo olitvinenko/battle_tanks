@@ -70,6 +70,22 @@ void GameStatesController::StateUpdate(const std::function<void(GameStateBase*)>
 	}
 }
 
+void GameStatesController::PushStateImpl(GameStateBase* newState)
+{
+	if (!m_states.empty())
+	{
+		GameStateBase* oldHead = m_states.back();
+		oldHead->OnExitForeground();
+		oldHead->OnEnterBackground();
+	}
+
+	m_states.push_back(newState);
+
+	newState->OnEnter();
+	newState->OnEnterForeground();
+}
+
+
 GameStatesController::~GameStatesController()
 {
 	PopAll();
