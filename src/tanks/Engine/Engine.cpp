@@ -48,7 +48,7 @@ void Engine::Update(float realDeltaTime)
 	// read platform input
 	m_input->Read();
 
-	m_statesController.DoOnUpdate();
+	m_statesController.DoOnUpdate(realDeltaTime);
 
 
 	Vector2 pos = m_input->GetMousePosition();
@@ -66,7 +66,7 @@ void Engine::Update(float realDeltaTime)
 
 	// coroutines.. animations..
 
-	m_statesController.DoOnLateUpdate();
+	m_statesController.DoOnLateUpdate(realDeltaTime);
 
 	// clear platform input
 	m_input->Clear();
@@ -77,7 +77,7 @@ void Engine::FixedUpdate(float fixedDeltaTime)
 {
 	// physics :: update
 
-	m_statesController.DoOnFixedUpdate();
+	m_statesController.DoOnFixedUpdate(fixedDeltaTime);
 }
 
 

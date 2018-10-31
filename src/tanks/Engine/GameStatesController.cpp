@@ -33,19 +33,19 @@ void GameStatesController::PopAll()
 		PopState();
 }
 
-void GameStatesController::DoOnUpdate()
+void GameStatesController::DoOnUpdate(float deltaTime)
 {
-	StateUpdate([](GameStateBase* state) { state->OnForegroundUpdate(); }, [](GameStateBase* state) { state->OnBackgroundUpdate(); });
+	StateUpdate([deltaTime](GameStateBase* state) { state->OnForegroundUpdate(deltaTime); }, [deltaTime](GameStateBase* state) { state->OnBackgroundUpdate(deltaTime); });
 }
 
-void GameStatesController::DoOnLateUpdate()
+void GameStatesController::DoOnLateUpdate(float deltaTime)
 {
-	StateUpdate([](GameStateBase* state) { state->OnForegroundLateUpdate(); }, [](GameStateBase* state) { state->OnBackgroundLateUpdate(); });
+	StateUpdate([deltaTime](GameStateBase* state) { state->OnForegroundLateUpdate(deltaTime); }, [deltaTime](GameStateBase* state) { state->OnBackgroundLateUpdate(deltaTime); });
 }
 
-void GameStatesController::DoOnFixedUpdate()
+void GameStatesController::DoOnFixedUpdate(float fixedDeltaTime)
 {
-	StateUpdate([](GameStateBase* state) { state->OnForegroundFixedUpdate(); }, [](GameStateBase* state) { state->OnBackgroundFixedUpdate(); });
+	StateUpdate([fixedDeltaTime](GameStateBase* state) { state->OnForegroundFixedUpdate(fixedDeltaTime); }, [fixedDeltaTime](GameStateBase* state) { state->OnBackgroundFixedUpdate(fixedDeltaTime); });
 }
 
 void GameStatesController::StateUpdate(const std::function<void(GameStateBase*)>& foregroundUpdate, const std::function<void(GameStateBase*)>& backgroundUpdate)

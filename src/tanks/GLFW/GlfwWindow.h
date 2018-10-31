@@ -23,12 +23,12 @@ public:
 
 	void PollEvents() override;
 
-	inline const std::string& GetName() const override
+	const std::string& GetName() const override
 	{
 		return m_name;
 	}
 
-	inline GLFWwindow* GetWindow() const
+	GLFWwindow* GetWindow() const
 	{
 		return m_window;
 	}

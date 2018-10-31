@@ -10,9 +10,9 @@ public:
 	explicit TestState(std::shared_ptr<GameStatesController> controller);
 
 protected:
-	void OnUpdate() override;
-	void OnLateUpdate() override;
-	void OnFixedUpdate() override;
+	void OnUpdate(float deltaTime) override;
+	void OnLateUpdate(float deltaTime) override;
+	void OnFixedUpdate(float fixedDeltaTime) override;
 public:
 	void OnEnter() override;
 	void OnExit() override;

@@ -10,11 +10,11 @@
 class GameStatesController final : public std::enable_shared_from_this<GameStatesController>
 {
 public:
-	void DoOnUpdate();
+	void DoOnUpdate(float deltaTime);
 
-	void DoOnLateUpdate();
+	void DoOnLateUpdate(float deltaTime);
 
-	void DoOnFixedUpdate();
+	void DoOnFixedUpdate(float fixedDeltaTime);
 
 	template<typename State, typename ... Args>
 	void PushState(Args ... args);

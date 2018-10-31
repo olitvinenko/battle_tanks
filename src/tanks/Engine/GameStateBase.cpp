@@ -5,9 +5,9 @@ GameStateBase::GameStateBase(std::shared_ptr<GameStatesController> controller)
 {
 }
 
-void GameStateBase::OnUpdate() { }
-void GameStateBase::OnLateUpdate() { }
-void GameStateBase::OnFixedUpdate() { }
+void GameStateBase::OnUpdate(float deltaTime) { }
+void GameStateBase::OnLateUpdate(float deltaTime) { }
+void GameStateBase::OnFixedUpdate(float fixedDeltaTime) { }
 
 void GameStateBase::OnEnter() { }
 void GameStateBase::OnEnterForeground() { }
@@ -17,13 +17,13 @@ void GameStateBase::OnExit() { }
 void GameStateBase::OnExitForeground() { }
 void GameStateBase::OnExitBackground() { }
 
-void GameStateBase::OnForegroundUpdate() { OnUpdate(); }
-void GameStateBase::OnBackgroundUpdate() { OnUpdate(); }
+void GameStateBase::OnForegroundUpdate(float deltaTime) { OnUpdate(deltaTime); }
+void GameStateBase::OnBackgroundUpdate(float deltaTime) { OnUpdate(deltaTime); }
 
-void GameStateBase::OnForegroundLateUpdate() { OnLateUpdate(); }
-void GameStateBase::OnBackgroundLateUpdate() { OnLateUpdate(); }
+void GameStateBase::OnForegroundLateUpdate(float deltaTime) { OnLateUpdate(deltaTime); }
+void GameStateBase::OnBackgroundLateUpdate(float deltaTime) { OnLateUpdate(deltaTime); }
 
-void GameStateBase::OnForegroundFixedUpdate() { OnFixedUpdate(); }
-void GameStateBase::OnBackgroundFixedUpdate() { OnFixedUpdate(); }
+void GameStateBase::OnForegroundFixedUpdate(float fixedDeltaTime) { OnFixedUpdate(fixedDeltaTime); }
+void GameStateBase::OnBackgroundFixedUpdate(float fixedDeltaTime) { OnFixedUpdate(fixedDeltaTime); }
 
 GameStateBase::~GameStateBase() = default;

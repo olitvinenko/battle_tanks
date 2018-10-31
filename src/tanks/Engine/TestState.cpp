@@ -5,15 +5,15 @@ TestState::TestState(std::shared_ptr<GameStatesController> controller)
 {
 }
 
-void TestState::OnUpdate()
+void TestState::OnUpdate(float deltaTime)
 {
 }
 
-void TestState::OnLateUpdate()
+void TestState::OnLateUpdate(float deltaTime)
 {
 }
 
-void TestState::OnFixedUpdate()
+void TestState::OnFixedUpdate(float fixedDeltaTime)
 {
 }
 

@@ -9,9 +9,9 @@ struct GameStateBase
 protected:
 	std::weak_ptr<GameStatesController> m_controller;
 
-	virtual void OnUpdate();
-	virtual void OnLateUpdate();
-	virtual void OnFixedUpdate();
+	virtual void OnUpdate(float deltaTime);
+	virtual void OnLateUpdate(float deltaTime);
+	virtual void OnFixedUpdate(float fixedDeltaTime);
 
 	explicit GameStateBase(std::shared_ptr<GameStatesController> controller);
 
@@ -24,14 +24,14 @@ public:
 	virtual void OnExitForeground();
 	virtual void OnExitBackground();
 
-	virtual void OnForegroundUpdate();
-	virtual void OnBackgroundUpdate();
+	virtual void OnForegroundUpdate(float deltaTime);
+	virtual void OnBackgroundUpdate(float deltaTime);
 
-	virtual void OnForegroundLateUpdate();
-	virtual void OnBackgroundLateUpdate();
+	virtual void OnForegroundLateUpdate(float deltaTime);
+	virtual void OnBackgroundLateUpdate(float deltaTime);
 
-	virtual void OnForegroundFixedUpdate();
-	virtual void OnBackgroundFixedUpdate();
+	virtual void OnForegroundFixedUpdate(float fixedDeltaTime);
+	virtual void OnBackgroundFixedUpdate(float fixedDeltaTime);
 
 	virtual ~GameStateBase() = 0;
 };
