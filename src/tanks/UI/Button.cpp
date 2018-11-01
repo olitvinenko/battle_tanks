@@ -2,9 +2,9 @@
 
 #include "Button.h"
 #include "GuiManager.h"
-#include "TextureManager.h"
-#include "DrawingContext.h"
 #include <algorithm>
+#include "Rendering/DrawingContext.h"
+#include "Rendering/TextureManager.h"
 
 namespace UI
 {
@@ -160,7 +160,7 @@ void Button::Draw(DrawingContext &dc) const
 {
 	ButtonBase::Draw(dc);
 
-	SpriteColor c = 0;
+	Color c = 0;
 
 	switch( GetState() )
 	{
@@ -257,12 +257,12 @@ void TextButton::Draw(DrawingContext &dc) const
 	ButtonBase::Draw(dc);
 
 	// grep 'enum State'
-	SpriteColor colors[] =
+	Color colors[] =
 	{
-		SpriteColor(0xffffffff), // normal
-		SpriteColor(0xffccccff), // hottrack
-		SpriteColor(0xffccccff), // pushed
-		SpriteColor(0xAAAAAAAA), // disabled
+		Color(0xffffffff), // normal
+		Color(0xffccccff), // hottrack
+		Color(0xffccccff), // pushed
+		Color(0xAAAAAAAA), // disabled
 	};
 	if( _drawShadow && stateDisabled != GetState() )
 	{
@@ -357,12 +357,12 @@ void CheckBox::Draw(DrawingContext &dc) const
 	dc.DrawSprite(&box, _boxTexture, GetBackColor(), GetFrame());
 
 	// grep 'enum State'
-	SpriteColor colors[] =
+	Color colors[] =
 	{
-		SpriteColor(0xffffffff), // Normal
-		SpriteColor(0xffffffff), // Hottrack
-		SpriteColor(0xffffffff), // Pushed
-		SpriteColor(0xffffffff), // Disabled
+		Color(0xffffffff), // Normal
+		Color(0xffffffff), // Hottrack
+		Color(0xffffffff), // Pushed
+		Color(0xffffffff), // Disabled
 	};
 	if( _drawShadow && stateDisabled != GetState() )
 	{

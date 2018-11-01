@@ -116,15 +116,13 @@ TgaImage::TgaImage(std::shared_ptr<FileSystem::File::Memory> file)
 		_data.resize(pixelCount * 4);
 		for (unsigned int pixel = pixelCount; pixel--;)
 		{
-			*(uint32_t*)&_data[pixel * 4] = (*(uint32_t*)&_data[pixel * 3] & 0xffffff) | 0xff000000;
+			*(uint32*)&_data[pixel * 4] = (*(uint32*)&_data[pixel * 3] & 0xffffff) | 0xff000000;
 		}
 		_bpp = 32;
 	}
 }
 
-TgaImage::~TgaImage()
-{
-}
+TgaImage::~TgaImage() = default;
 
 const void* TgaImage::GetData() const
 {

@@ -53,7 +53,7 @@ public:
 
 	float GetInputHeight() const;
 
-	void SetColors(const SpriteColor *colors, size_t count);
+	void SetColors(const Color *colors, size_t count);
 	void SetHistory(IConsoleHistory *history);
 	void SetBuffer(ConsoleBuffer *buf);
 	void SetEcho(bool echo);
@@ -84,7 +84,7 @@ private:
 
 	ConsoleBuffer *_buf;
 	IConsoleHistory *_history;
-	std::vector<SpriteColor> _colors;
+	std::vector<Color> _colors;
 
 	bool _echo;
 	bool _autoScroll;

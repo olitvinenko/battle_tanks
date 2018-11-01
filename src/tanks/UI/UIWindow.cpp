@@ -1,7 +1,7 @@
 #include "UIWindow.h"
 #include "GuiManager.h"
-#include "TextureManager.h"
-#include "DrawingContext.h"
+#include "Rendering/TextureManager.h"
+#include "Rendering/DrawingContext.h"
 
 namespace UI
 {

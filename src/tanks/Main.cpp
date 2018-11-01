@@ -23,6 +23,7 @@
 #include "LoadDataState.h"
 
 #include "GameStatesController.h"
+#include "Rendering/RenderOpenGL.h"
 
 namespace
 {
@@ -47,7 +48,6 @@ namespace
 		ConsoleLog& operator= (const ConsoleLog&) = delete;
 	};
 }
-
 
 static void print_what(UI::ConsoleBuffer &logger, const std::exception &e, std::string prefix = std::string())
 {
@@ -89,15 +89,22 @@ int main(int, const char**)
 		GlfwClipboard clipboard(window);
 		GlfwInput input(window);
 
-		Engine tanksEngine(&window, &clipboard, &input);
+		RenderOpenGL render;
+
+		Engine tanksEngine(&window, &clipboard, &input, &render);
+
+		// not engine, but game!
+		TextureManager& tm = tanksEngine.GetRender().GetTextureManager();
+
+		if (tm.LoadPackage(FILE_TEXTURES, fs->Open(FILE_TEXTURES)->AsMemory(), *fs) <= 0)
+			logger.Printf(1, "WARNING: no textures loaded");
+		if (tm.LoadDirectory(DIR_SKINS, "skin/", *fs) <= 0)
+			logger.Printf(1, "WARNING: no skins found");
 
 		// not engine, but game!
 		tanksEngine.GetStatesController().PushState<LoadDataState>();
 
 		tanksEngine.Launch();
-
-
-
 
 		return 0;
 		//--------------------------------------------------------------------------------------------------

@@ -1,9 +1,8 @@
 #include "Widgets.h"
 #include "GuiManager.h"
-#include "TextureManager.h"
-#include "DrawingContext.h"
 #include <sstream>
 #include <iomanip>
+#include "Rendering/TextureManager.h"
 
 FpsCounter::FpsCounter(UIWindow *parent, float x, float y, AlignTextKind align)
   : Text(parent)

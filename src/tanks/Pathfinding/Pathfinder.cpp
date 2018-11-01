@@ -1,9 +1,10 @@
 #include "Pathfinder.h"
 #include "HandyGraphFunctions.h"
-#include "DrawingContext.h"
 #include "WorldCfg.h"
-#include "TextureManager.h"
 #include "Vector2.h"
+#include "Rendering/TextureManager.h"
+#include "Rendering/DrawingContext.h"
+#include "Rendering/Color.h"
 
 Pathfinder::Pathfinder(const TextureManager& tm)
 	:m_bStart(false),
@@ -485,7 +486,7 @@ void Pathfinder::Render(DrawingContext& dc)
 			for (const NavGraph::NodeType* pN = NodeItr.begin(); !NodeItr.end(); pN = NodeItr.next())
 			{
 				math::RectFloat dst = { (float)pN->Pos().x - 2, (float)pN->Pos().y - 2, (float)pN->Pos().x + 2, (float)pN->Pos().y + 2 };
-				dc.DrawSprite(&dst, 0U, SpriteColor(255, 0, 0, 255), 0U); // tile's center
+				dc.DrawSprite(&dst, 0U, Color(255, 0, 0, 255), 0U); // tile's center
 			}
 		}
 	}
@@ -498,7 +499,7 @@ void Pathfinder::Render(DrawingContext& dc)
 			Vector2 from = m_pGraph->GetNode(m_SubTree[e]->From()).Pos();
 			Vector2 to = m_pGraph->GetNode(m_SubTree[e]->To()).Pos();
 
-			dc.DrawLine(m_lineTexture, SpriteColor(255, 0, 0, 127), from.x, from.y, to.x, to.y, 0);
+			dc.DrawLine(m_lineTexture, Color(255, 0, 0, 127), from.x, from.y, to.x, to.y, 0);
 		}
 	}
 
@@ -513,7 +514,7 @@ void Pathfinder::Render(DrawingContext& dc)
 			Vector2 from = m_pGraph->GetNode(*it).Pos();
 			Vector2 to = m_pGraph->GetNode(*nxt).Pos();
 
-			dc.DrawLine(m_lineTexture, SpriteColor(0, 255, 0, 127), from.x, from.y, to.x, to.y, 0);
+			dc.DrawLine(m_lineTexture, Color(0, 255, 0, 127), from.x, from.y, to.x, to.y, 0);
 		}
 	}
 }

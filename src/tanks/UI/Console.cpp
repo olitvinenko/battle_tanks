@@ -6,9 +6,9 @@
 #include "ConsoleBuffer.h"
 #include "GuiManager.h"
 #include "Keys.h"
-#include "TextureManager.h"
-#include "DrawingContext.h"
 #include <algorithm>
+#include "Rendering/DrawingContext.h"
+#include "Rendering/TextureManager.h"
 
 namespace UI
 {
@@ -70,7 +70,7 @@ float Console::GetInputHeight() const
 	return _input->GetHeight();
 }
 
-void Console::SetColors(const SpriteColor *colors, size_t count)
+void Console::SetColors(const Color *colors, size_t count)
 {
 	_colors.assign(colors, colors + count);
 }
@@ -256,7 +256,7 @@ void Console::Draw(DrawingContext &dc) const
 		for( size_t line = lineMax - count; line < lineMax; ++line )
 		{
 			unsigned int sev = _buf->GetSeverity(line);
-			SpriteColor color = sev < _colors.size() ? _colors[sev] : 0xffffffff;
+			Color color = sev < _colors.size() ? _colors[sev] : 0xffffffff;
 			dc.DrawBitmapText(4, y, _font, color, _buf->GetLine(line));
 			y += h;
 		}

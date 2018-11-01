@@ -3,12 +3,12 @@
 #include "GuiManager.h"
 #include "Keys.h"
 #include "UIInput.h"
-#include "TextureManager.h"
-#include "DrawingContext.h"
 
 #include <algorithm>
 #include <cstring>
 #include <sstream>
+#include "Rendering/TextureManager.h"
+#include "Rendering/DrawingContext.h"
 
 namespace UI
 {
@@ -134,7 +134,7 @@ void Edit::Draw(DrawingContext &dc) const
 	}
 
 	// text
-	SpriteColor c = GetEnabledCombined() ? 0xffffffff : 0xaaaaaaaa;
+	Color c = GetEnabledCombined() ? 0xffffffff : 0xaaaaaaaa;
 	if( _offset < GetSelMin() )
 	{
 		dc.DrawBitmapText(0, 1, _font, c, GetText().substr(_offset, GetSelMin() - _offset));

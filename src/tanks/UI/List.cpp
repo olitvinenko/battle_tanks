@@ -2,10 +2,10 @@
 #include "Scroll.h"
 #include "GuiManager.h"
 #include "Keys.h"
-#include "TextureManager.h"
-#include "DrawingContext.h"
 
 #include <algorithm>
+#include "Rendering/TextureManager.h"
+#include "Rendering/DrawingContext.h"
 
 namespace UI
 {
@@ -257,7 +257,7 @@ void List::Draw(DrawingContext &dc) const
 
 	for( int i = std::min(_data->GetItemCount(), i_max)-1; i >= i_min; --i )
 	{
-		SpriteColor c;
+		Color c;
 		float y = floorf(((float) i - pos) * GetItemHeight() + 0.5f);
 
 		if( GetEnabledCombined() )

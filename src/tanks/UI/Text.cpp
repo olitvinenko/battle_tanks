@@ -2,8 +2,7 @@
 
 #include "Text.h"
 #include "GuiManager.h"
-#include "TextureManager.h"
-#include "DrawingContext.h"
+#include "Rendering/TextureManager.h"
 
 namespace UI
 {
@@ -56,7 +55,7 @@ void Text::SetFont(const char *fontName)
 	Resize((w - 1) * (float) _maxline, h * (float) _lineCount);
 }
 
-void Text::SetFontColor(SpriteColor color)
+void Text::SetFontColor(Color color)
 {
 	_fontColor = color;
 }

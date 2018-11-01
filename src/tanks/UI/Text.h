@@ -3,7 +3,7 @@
 #pragma once
 
 #include "UIWindow.h"
-#include "DrawingContext.h"
+#include "Rendering/DrawingContext.h"
 
 namespace UI
 {
@@ -19,7 +19,7 @@ public:
 
 	void SetAlign(AlignTextKind align);
 	void SetFont(const char *fontName);
-	void SetFontColor(SpriteColor color);
+	void SetFontColor(Color color);
 
 	float GetCharWidth();
 	float GetCharHeight();
@@ -35,7 +35,7 @@ private:
 	size_t         _maxline;
 	AlignTextKind  _align;
 	size_t         _fontTexture;
-	SpriteColor    _fontColor;
+	Color    _fontColor;
 
 	bool           _drawShadow;
 };

@@ -5,14 +5,13 @@
 #include "FileSystem.h"
 #include "ConsoleBuffer.h"
 #include "UIWindow.h"
-#include "TextureManager.h"
-#include "DrawingContext.h"
 #include "GuiManager.h"
 #include "DesktopFactory.h"
+#include "Rendering/DrawingContext.h"
 
 static TextureManager InitTextureManager(FileSystem::IFileSystem &fs, UI::ConsoleBuffer &logger, IRender &render)
 {
-	TextureManager textureManager(render);
+	TextureManager textureManager(&render);
 
 	if (textureManager.LoadPackage(FILE_TEXTURES, fs.Open(FILE_TEXTURES)->AsMemory(), fs) <= 0)
 		logger.Printf(1, "WARNING: no textures loaded");
@@ -59,7 +58,9 @@ void View::Render(float interpolation) const
 	unsigned int width = m_appWindow.GetPixelWidth();
 	unsigned int height = m_appWindow.GetPixelHeight();
 
-	DrawingContext dc(m_textureManager, width, height);
+	IRender& r = m_appWindow.GetRender();
+
+	DrawingContext dc(m_textureManager, &r, width, height);
 	m_appWindow.GetRender().Begin();
 	m_gui.Render(dc, interpolation);
 	m_appWindow.GetRender().End();

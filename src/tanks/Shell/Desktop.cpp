@@ -56,7 +56,7 @@ Desktop::Desktop(UI::LayoutManager* manager,
 	_con->eventOnRequestCompleteCommand = std::bind(&Desktop::OnCompleteCommand, this, _1, _2, _3);
 	_con->SetVisible(false);
 	_con->SetTopMost(true);
-	SpriteColor colors[] = {0xffffffff, 0xffff7fff};
+	Color colors[] = {0xffffffff, 0xffff7fff};
 	_con->SetColors(colors, sizeof(colors) / sizeof(colors[0]));
 	_con->SetHistory(&_history);
 

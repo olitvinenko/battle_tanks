@@ -4,7 +4,7 @@
 #include "GuiManager.h"
 #include "Pointers.h"
 #include "UIWindow.h"
-#include "RenderOpenGL.h"
+#include "Rendering/RenderOpenGL.h"
 
 namespace GLFWProcessors
 {
@@ -100,7 +100,7 @@ GlfwAppWindow::GlfwAppWindow(const char *title, bool fullscreen, int width, int 
 
 	m_clipboard.reset(new GlfwClipboard(*m_window));
 	m_input.reset(new GlfwInput(*m_window));
-	m_render = std::move(RenderCreateOpenGL());
+	m_render.reset(new RenderOpenGL());
 
 	glfwSetMouseButtonCallback(m_window, GLFWProcessors::OnMouseButton);
 	glfwSetCursorPosCallback(m_window, GLFWProcessors::OnCursorPos);

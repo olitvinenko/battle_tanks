@@ -3,11 +3,12 @@
 #include "Base/IWindow.h"
 #include "Vector2.h"
 
-Engine::Engine(IWindow* window, IClipboard* clipboard, IInput* input)
+Engine::Engine(IWindow* window, IClipboard* clipboard, IInput* input, IRender* render)
 	: m_window(window)
 	, m_clipboard(clipboard)
 	, m_input(input)
 	, m_running(false)
+	, m_rendering(render)
 {
 	m_loop.Add<IFixedUpdatable>(this);
 	m_loop.Add<IUpdatable>(this);

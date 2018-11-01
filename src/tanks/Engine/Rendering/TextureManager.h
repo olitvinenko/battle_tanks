@@ -1,36 +1,33 @@
-// TextureManager.h
-
 #pragma once
-
-#include "RenderBase.h"
 
 #include <list>
 #include <map>
 #include <memory>
 #include <vector>
+
 #include "FileSystem.h"
-
-struct LogicalTexture
-{
-	Texture dev_texture;
-
-	Vector2 uvPivot;
-
-	float pxFrameWidth;
-	float pxFrameHeight;
-	float pxBorderSize;
-
-	std::vector<math::RectFloat> uvFrames;
-};
+#include "IRender.h"
+#include "GlTexture.h"
 
 class TextureManager
 {
 public:
-	TextureManager(TextureManager&&) = default;
-	TextureManager(IRender &render);
-	~TextureManager();
+	struct LogicalTexture
+	{
+		GlTexture dev_texture;
 
-	IRender& GetRender() const { return _render; }
+		Vector2 uvPivot;
+
+		float pxFrameWidth;
+		float pxFrameHeight;
+		float pxBorderSize;
+
+		std::vector<math::RectFloat> uvFrames;
+	};
+
+	TextureManager(TextureManager&&) = default;
+	TextureManager(IRender* render);
+	~TextureManager();
 
 	int LoadPackage(const std::string &packageName, std::shared_ptr<FileSystem::File::Memory> file, FileSystem::IFileSystem &fs);
 	int LoadDirectory(const std::string &dirName, const std::string &texPrefix, FileSystem::IFileSystem &fs);
@@ -48,11 +45,11 @@ public:
 	float GetCharHeight(size_t fontTexture) const;
 
 protected:
-	IRender &_render;
+	IRender* _render;
 
 	struct TexDesc
 	{
-		Texture id;
+		GlTexture id;
 		int width;          // The Width Of The Entire Image.
 		int height;         // The Height Of The Entire Image.
 		int refCount;       // number of logical textures
@@ -61,7 +58,7 @@ protected:
 	typedef TexDescList::iterator    TexDescIterator;
 
 	typedef std::map<std::string, TexDescIterator> FileToTexDescMap;
-	typedef std::map<Texture, TexDescIterator> DevToTexDescMap;
+	typedef std::map<GlTexture, TexDescIterator> DevToTexDescMap;
 
 	FileToTexDescMap _mapFile_to_TexDescIter;
 	DevToTexDescMap  _mapDevTex_to_TexDescIter;

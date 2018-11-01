@@ -65,18 +65,18 @@ include_directories(
 )
 
 set(SRC_RENDER
-	Render/RenderBase.h
-	
-	Render/DrawingContext.h
-	Render/DrawingContext.cpp
-	
-	Render/TGAImage.h
-	Render/TGAImage.cpp
-	
-	Render/TextureManager.h	
-	Render/TextureManager.cpp
-	
-	Render/RenderOpenGL.h
+	#Render/RenderBase.h
+	#
+	#Render/DrawingContext.h
+	#Render/DrawingContext.cpp
+	#
+	#Render/TGAImage.h
+	#Render/TGAImage.cpp
+	#
+	#Render/TextureManager.h	
+	#Render/TextureManager.cpp
+	#
+	#Render/RenderOpenGL.h
 )
 
 if(WIN32)
@@ -84,7 +84,7 @@ if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-DNOMINMAX)
 	
-	list(APPEND SRC_RENDER Render/RenderOpenGL.cpp)
+	#list(APPEND SRC_RENDER Render/RenderOpenGL.cpp)
 elseif(IOS)
 	list(APPEND SRC_RENDER	
 		Render/GLESProgram.cpp

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "TextureManager.h"
 #include "GuiManager.h"
 #include "GameLoop.h"
+#include "Rendering/TextureManager.h"
 
 class AppController;
 struct AppWindowBase;

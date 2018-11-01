@@ -2,8 +2,8 @@
 
 #include "GuiManager.h"
 #include "UIWindow.h"
-#include "TextureManager.h"
-#include "DrawingContext.h"
+#include "Rect.h"
+#include "Rendering/DrawingContext.h"
 
 namespace UI
 {
@@ -463,7 +463,7 @@ static void DrawWindowRecursive(const UIWindow &wnd, DrawingContext &dc, bool to
 
 void LayoutManager::Render(DrawingContext &dc, float interpolation) const
 {
-	dc.SetMode(RM_INTERFACE);
+	dc.SetMode(INTERFACE);
 
     DrawWindowRecursive(*_desktop.Get(), dc, false, false);
     DrawWindowRecursive(*_desktop.Get(), dc, true, false);

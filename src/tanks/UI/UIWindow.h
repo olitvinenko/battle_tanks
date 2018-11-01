@@ -1,11 +1,10 @@
 #pragma once
 
-#include "RenderBase.h"
-
 #include <cassert>
 #include <functional>
 #include <string>
 #include <list>
+#include "Rendering/Color.h"
 
 class DrawingContext;
 enum class Key;
@@ -67,8 +66,8 @@ class UIWindow
 
 	std::string     _text;
 
-	SpriteColor  _backColor;
-	SpriteColor  _borderColor;
+	Color  _backColor;
+	Color  _borderColor;
 	size_t       _texture;
 	StretchMode  _textureStretchMode;
 	unsigned int _frame;
@@ -112,11 +111,11 @@ public:
 	// Appearance
 	//
 
-	void SetBackColor(SpriteColor color)   { _backColor = color; }
-	SpriteColor GetBackColor() const       { return _backColor;  }
+	void SetBackColor(Color color)   { _backColor = color; }
+	Color GetBackColor() const       { return _backColor;  }
 
-	void SetBorderColor(SpriteColor color) { _borderColor = color; }
-	SpriteColor GetBorderColor() const     { return _borderColor;  }
+	void SetBorderColor(Color color) { _borderColor = color; }
+	Color GetBorderColor() const     { return _borderColor;  }
 
 	void SetDrawBorder(bool enable)        { _drawBorder = enable; }
 	bool GetDrawBorder() const             { return _drawBorder;   }

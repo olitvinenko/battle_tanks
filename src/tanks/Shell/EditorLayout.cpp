@@ -12,12 +12,12 @@
 #include "DataSourceAdapters.h"
 #include "Keys.h"
 #include "UIInput.h"
-#include "TextureManager.h"
 
 #include <sstream>
 #include <algorithm>
 #include <functional>
 #include "Z.h"
+#include "Rendering/TextureManager.h"
 
 extern "C"
 {
@@ -538,7 +538,7 @@ void EditorLayout::Draw(DrawingContext &dc) const
 	float zoom = _defaultCamera.GetZoom();
 	_worldView.Render(dc, viewport, eye, zoom, true, false, _pathfinder);
 
-	dc.SetMode(RM_INTERFACE);
+	dc.SetMode(INTERFACE);
 
 	//if( auto *s = dynamic_cast<const GC_Actor *>(_selectedObject) )
 	//{

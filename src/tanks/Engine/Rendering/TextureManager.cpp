@@ -1,10 +1,11 @@
 #include "TextureManager.h"
-#include "RenderBase.h"
+#include "IRender.h"
 
 #define TRACE(...)
 
 #include "FileSystem.h"
-#include "TGAImage.h"
+#include "Images/IImage.h"
+#include "Images/TGAImage.h"
 
 extern "C"
 {
@@ -16,7 +17,7 @@ extern "C"
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class CheckerImage : public Image
+class CheckerImage : public IImage
 {
 public:
 	// Image methods
@@ -39,7 +40,7 @@ const unsigned char CheckerImage::_bytes[] = {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TextureManager::TextureManager(IRender &render)
+TextureManager::TextureManager(IRender* render)
 	: _render(render)
 {
 	CreateChecker();
@@ -54,7 +55,7 @@ void TextureManager::UnloadAllTextures()
 {
 	TexDescIterator it = _textures.begin();
 	while (it != _textures.end())
-		_render.TexFree((it++)->id);
+		_render->TexFree((it++)->id);
 	_textures.clear();
 	_mapFile_to_TexDescIter.clear();
 	_mapDevTex_to_TexDescIter.clear();
@@ -75,7 +76,7 @@ void TextureManager::LoadTexture(TexDescIterator &itTexDesc, const std::string &
 		std::unique_ptr<TgaImage> image(new TgaImage(file));
 
 		TexDesc td;
-		if (!_render.TexCreate(td.id, *image))
+		if (!_render->TexCreate(td.id, *image))
 		{
 			throw std::runtime_error("error in render device");
 		}
@@ -93,7 +94,7 @@ void TextureManager::LoadTexture(TexDescIterator &itTexDesc, const std::string &
 
 void TextureManager::Unload(TexDescIterator what)
 {
-	_render.TexFree(what->id);
+	_render->TexFree(what->id);
 
 	FileToTexDescMap::iterator it = _mapFile_to_TexDescIter.begin();
 	while (_mapFile_to_TexDescIter.end() != it)
@@ -132,7 +133,7 @@ void TextureManager::CreateChecker()
 	//
 
 	CheckerImage c;
-	if (!_render.TexCreate(td.id, c))
+	if (!_render->TexCreate(td.id, c))
 	{
 		TRACE("ERROR: error in render device");
 		assert(false);
