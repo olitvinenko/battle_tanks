@@ -20,10 +20,10 @@ Vector2 GlfwInput::m_scrollOffset;
 Vector2 GlfwInput::m_mousePosition;
 std::list<char> GlfwInput::m_characters;
 
-GlfwInput::GlfwInput(GlfwWindow& window)
+GlfwInput::GlfwInput(std::shared_ptr<GlfwWindow> window)
 	: m_window(window)
 {
-	GLFWwindow* glfwWindow = m_window.m_window;
+	GLFWwindow* glfwWindow = m_window->m_window;
 
 	glfwSetMouseButtonCallback(glfwWindow, OnMouseButton);
 	glfwSetCursorPosCallback(glfwWindow, OnCursorPos);
@@ -34,7 +34,7 @@ GlfwInput::GlfwInput(GlfwWindow& window)
 
 void GlfwInput::Read()
 {
-	m_window.PollEvents();
+	m_window->PollEvents();
 }
 
 void GlfwInput::Clear()

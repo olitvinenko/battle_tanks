@@ -3,12 +3,14 @@
 #include "Base/IWindow.h"
 #include "Vector2.h"
 
-Engine::Engine(IWindow* window, IClipboard* clipboard, IInput* input, IRender* render)
+Engine::Engine(std::shared_ptr<IWindow> window, std::shared_ptr<IClipboard> clipboard, std::shared_ptr<IInput> input, std::shared_ptr<FileSystem::IFileSystem> fileSystem, IRender* render)
 	: m_window(window)
 	, m_clipboard(clipboard)
 	, m_input(input)
 	, m_running(false)
-	, m_rendering(render)
+	, m_rendering(std::make_shared<RenderingEngine>(render))
+	, m_fileSystem(fileSystem)
+	, m_threadPool(std::make_shared<ThreadPool>())
 {
 	m_loop.Add<IFixedUpdatable>(this);
 	m_loop.Add<IUpdatable>(this);

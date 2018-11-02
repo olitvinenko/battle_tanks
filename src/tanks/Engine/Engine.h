@@ -6,6 +6,8 @@
 
 #include "Rendering/RenderingEngine.h";
 
+#include <memory>
+
 struct IClipboard;
 struct IWindow;
 struct IInput;
@@ -22,7 +24,7 @@ class Engine final
 	, public IRenderable
 {
 public:
-	explicit Engine(IWindow* window, IClipboard* clipboard, IInput* input, IRender* render);
+	Engine(std::shared_ptr<IWindow> window, std::shared_ptr<IClipboard> clipboard, std::shared_ptr<IInput> input, std::shared_ptr<FileSystem::IFileSystem> fileSystem, IRender* render);
 
 	void Update(float realDeltaTime) override;
 	void FixedUpdate(float fixedDeltaTime) override;
@@ -34,19 +36,25 @@ public:
 	~Engine();
 
 	GameStatesController& GetStatesController() { return m_statesController; }
-	RenderingEngine& GetRender() { return m_rendering; }
+	RenderingEngine& GetRender() { return *m_rendering; }
 
 private:
-	IWindow* m_window;
-	IClipboard* m_clipboard;
-	IInput* m_input;
+	// view
+	std::shared_ptr<IWindow> m_window;
+	std::shared_ptr<IClipboard> m_clipboard;
+	std::shared_ptr<IInput> m_input;
 
-	GameLoop m_loop;
+	// engines // unique?
+	std::shared_ptr<RenderingEngine> m_rendering;
 
-	ThreadPool m_threadPool;
+	// systems
+	std::shared_ptr<FileSystem::IFileSystem> m_fileSystem;
+	std::shared_ptr<ThreadPool> m_threadPool;
+
+	// game
+	GameLoop m_loop;	
 	GameStatesController m_statesController;
-
-	RenderingEngine m_rendering;
+	
 
 	bool m_running;
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/IInput.h"
+#include <memory>
 
 class GlfwWindow;
 struct GLFWwindow;
@@ -10,7 +11,7 @@ enum class MouseButton;
 class GlfwInput final : public IInput
 {
 public:
-	explicit GlfwInput(GlfwWindow& window);
+	explicit GlfwInput(std::shared_ptr<GlfwWindow> window);
 
 	void Read() override;
 
@@ -41,7 +42,7 @@ private:
 	static void OnCursorPos(GLFWwindow *window, double xpos, double ypos);
 	static void OnChar(GLFWwindow *window, unsigned int codepoint);
 
-	GlfwWindow& m_window;
+	std::shared_ptr<GlfwWindow> m_window;
 
 	static Vector2 m_scrollOffset;
 	static Vector2 m_mousePosition;

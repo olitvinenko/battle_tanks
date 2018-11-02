@@ -85,13 +85,15 @@ int main(int, const char**)
 		std::shared_ptr<FileSystem::IFileSystem> fs = FileSystem::CreateOSFileSystem("data");
 
 		//--------------------------------------------------------------------------------------------------
-		GlfwWindow window(TXT_VERSION, 1024, 768, false);
-		GlfwClipboard clipboard(window);
-		GlfwInput input(window);
+
+		std::shared_ptr<GlfwWindow> window = std::make_shared<GlfwWindow>(TXT_VERSION, 1024, 768, false);
+
+		std::shared_ptr<IClipboard> clipboard = std::make_shared<GlfwClipboard>(window);
+		std::shared_ptr<IInput> input = std::make_shared<GlfwInput>(window);
 
 		RenderOpenGL render;
 
-		Engine tanksEngine(&window, &clipboard, &input, &render);
+		Engine tanksEngine(window, clipboard, input, fs, &render);
 
 		// not engine, but game!
 		TextureManager& tm = tanksEngine.GetRender().GetTextureManager();

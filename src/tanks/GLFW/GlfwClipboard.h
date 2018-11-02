@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "Base/IClipboard.h"
 
 class GlfwWindow;
@@ -7,11 +8,11 @@ class GlfwWindow;
 class GlfwClipboard final : public IClipboard
 {
 public:
-	explicit GlfwClipboard(GlfwWindow& window);
+	explicit GlfwClipboard(std::shared_ptr<GlfwWindow> window);
 
 	std::string GetText() override;
 	void SetText(const std::string& text) override;
 
 private:
-	GlfwWindow& m_window;
+	std::shared_ptr<GlfwWindow> m_window;
 };
