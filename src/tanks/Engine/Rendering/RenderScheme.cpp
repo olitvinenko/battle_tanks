@@ -1,26 +1,28 @@
-#include "RendrerScheme.h"
+#include "RenderScheme.h"
 #include "IDrawable.h"
 
 #include <cassert>
 
-RendrerScheme::RendrerScheme(int firstLayer, int lastLayer)
+RenderScheme::RenderScheme(int firstLayer, int lastLayer)
+	: m_firstLayer(firstLayer)
+	, m_lastLayer(lastLayer)
 {
 	assert(firstLayer < lastLayer);
 
 	m_drawables = new std::set<const IDrawable*>[lastLayer - firstLayer];
 }
 
-RendrerScheme::~RendrerScheme()
+RenderScheme::~RenderScheme()
 {
 	delete[] m_drawables;
 }
 
-void RendrerScheme::RegisterDrawable(const IDrawable& drawable)
+void RenderScheme::RegisterDrawable(const IDrawable& drawable)
 {
 	m_drawables[drawable.GetOrder() - m_firstLayer].insert(&drawable);
 }
 
-void RendrerScheme::Draw(DrawingContext& dc, float interpolation) const
+void RenderScheme::Draw(DrawingContext& dc, float interpolation) const
 {
 	for (int i = m_firstLayer; i < m_lastLayer; ++i)
 	{
@@ -32,7 +34,7 @@ void RendrerScheme::Draw(DrawingContext& dc, float interpolation) const
 	}
 }
 
-void RendrerScheme::UnegisterDrawable(const IDrawable& drawable)
+void RenderScheme::UnegisterDrawable(const IDrawable& drawable)
 {
-	m_drawables[drawable.GetOrder() - m_firstLayer].erase(&drawable);
+	assert(m_drawables[drawable.GetOrder() - m_firstLayer].erase(&drawable) == 1);
 }

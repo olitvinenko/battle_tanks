@@ -20,6 +20,8 @@ public:
 	~AppController();
 
 	AppState& GetAppState();
+	FileSystem::IFileSystem& GetFs() { return m_fs; }
+	UI::ConsoleBuffer& GetLogger() { return m_logger; }
 
 	void FixedUpdate(float fixedDeltaTime) override;
 	void Exit() const;

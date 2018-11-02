@@ -8,7 +8,7 @@ Engine::Engine(std::shared_ptr<IWindow> window, std::shared_ptr<IClipboard> clip
 	, m_clipboard(clipboard)
 	, m_input(input)
 	, m_running(false)
-	, m_rendering(std::make_shared<RenderingEngine>(render, layersCount))
+	, m_rendering(std::make_shared<RenderingEngine>(render, layersCount, window))
 	, m_fileSystem(fileSystem)
 	, m_threadPool(std::make_shared<ThreadPool>())
 {
@@ -88,7 +88,7 @@ void Engine::Render(float interpolation) const
 {
 	m_rendering->PreRender();
 
-	m_rendering->Render(m_window->GetPixelWidth(), m_window->GetPixelHeight(), interpolation);
+	m_rendering->Render(interpolation);
 
 	m_rendering->PostRender();
 

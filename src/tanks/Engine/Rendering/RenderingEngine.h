@@ -1,7 +1,8 @@
 #pragma once
 
 #include "TextureManager.h"
-#include "RendrerScheme.h"
+#include "RenderScheme.h"
+#include "Base/IWindow.h"
 
 
 struct IRender;
@@ -10,23 +11,29 @@ class DrawingContext;
 class RenderingEngine
 {
 public:
-	explicit RenderingEngine(IRender* render, int layersCount);
+	explicit RenderingEngine(IRender* render, int layersCount, std::shared_ptr<IWindow> window);
 
 	TextureManager& GetTextureManager() { return m_textures; }
 	const TextureManager& GetTextureManager() const { return m_textures; }
 
-	RendrerScheme& GetScheme()
+	RenderScheme& GetScheme()
 	{
 		return m_scheme;
 	}
 
+	void SetMode(RenderMode mode);
+
 	void PreRender();
-	void Render(unsigned int width, unsigned int height, float interpolation);
+	void Render(float interpolation);
 	void PostRender();
+
+	unsigned int GetPixelWidth() const { return m_window->GetPixelWidth(); }
+	unsigned int GetPixelHeight() const { return m_window->GetPixelHeight(); }
 
 private:
 
+	std::shared_ptr<IWindow> m_window;
 	IRender* m_render;
 	TextureManager m_textures;
-	RendrerScheme m_scheme;
+	RenderScheme m_scheme;
 };

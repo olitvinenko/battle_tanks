@@ -5,22 +5,22 @@
 class DrawingContext;
 struct IDrawable;
 
-class RendrerScheme
+class RenderScheme
 {
 public:
-	RendrerScheme(int firstLayer, int lastLayer);
+	RenderScheme(int firstLayer, int lastLayer);
 
-	~RendrerScheme();
+	~RenderScheme();
 
 	void RegisterDrawable(const IDrawable& drawable);
 	void Draw(DrawingContext& dc, float interpolation) const;
 	void UnegisterDrawable(const IDrawable& drawable);
 
-	RendrerScheme(const RendrerScheme& rs) = delete;
-	RendrerScheme(RendrerScheme&& rs) = delete;
+	RenderScheme(const RenderScheme& rs) = delete;
+	RenderScheme(RenderScheme&& rs) = delete;
 
-	RendrerScheme& operator=(const RendrerScheme& rs) = delete;
-	RendrerScheme& operator=(RendrerScheme&& rs) = delete;
+	RenderScheme& operator=(const RenderScheme& rs) = delete;
+	RenderScheme& operator=(RenderScheme&& rs) = delete;
 
 private:
 	int m_lastLayer;

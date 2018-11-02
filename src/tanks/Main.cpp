@@ -29,6 +29,9 @@
 #include "LayoutManager.h"
 
 #include "MainMenu.h"
+#include "Button.h"
+#include "RenderOrder.h"
+#include "WidgetBase.h"
 
 namespace
 {
@@ -92,24 +95,25 @@ int main(int, const char**)
 		//--------------------------------------------------------------------------------------------------
 
 		std::shared_ptr<GlfwWindow> window = std::make_shared<GlfwWindow>(TXT_VERSION, 1024, 768, false);
-
 		std::shared_ptr<IClipboard> clipboard = std::make_shared<GlfwClipboard>(window);
 		std::shared_ptr<IInput> input = std::make_shared<GlfwInput>(window);
 
 		RenderOpenGL render;
 
-		Engine tanksEngine(window, clipboard, input, fs, &render, (int)DrawingOrder::Last);
+		Engine tanksEngine(window, clipboard, input, fs, &render, static_cast<int>(RenderOrder::Last));
 
 		GameController game(tanksEngine);
 		game.Launch();
 
-		//std::shared_ptr<MainMenuDlg> d = std::make_shared<MainMenuDlg>(nullptr, *fs, logger, MainMenuCommands());
+		//TODO: remove
+		game.GetLayoutManager().Test();
 
 		// engine loop
 		tanksEngine.Launch();
 
 		game.Shutdown();
 		return 0;
+
 		//--------------------------------------------------------------------------------------------------
 
 

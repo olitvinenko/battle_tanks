@@ -6,7 +6,6 @@
 #include "ConsoleBuffer.h"
 #include "UIWindow.h"
 #include "GuiManager.h"
-#include "DesktopFactory.h"
 #include "Rendering/DrawingContext.h"
 
 static TextureManager InitTextureManager(FileSystem::IFileSystem &fs, UI::ConsoleBuffer &logger, IRender &render)
@@ -25,10 +24,7 @@ View::View(GameLoop &loop,  FileSystem::IFileSystem &fs, UI::ConsoleBuffer &logg
 	: m_loop(loop)
 	, m_appWindow(appWindow)
 	, m_textureManager(InitTextureManager(fs, logger, appWindow.GetRender()))
-	, m_gui(appWindow.GetInput(),
-	      appWindow.GetClipboard(),
-		m_textureManager,
-	      DesktopFactory(controller.GetAppState(), fs, logger))
+	, m_gui(appWindow.GetInput(), appWindow.GetClipboard(),	m_textureManager, controller)
 {
 	m_loop.Add<IFixedUpdatable>(this);
 	m_loop.Add<IRenderable>(this);

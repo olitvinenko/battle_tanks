@@ -138,6 +138,19 @@ file(GLOB_RECURSE SRC_UI
 source_group("ui" FILES ${SRC_UI})
 #########################################################################
 
+############################ GUI #########################################
+include_directories(
+	GUI
+)
+
+file(GLOB_RECURSE SRC_GUI
+    "GUI/*.cpp"
+    "GUI/*.h"
+)
+
+source_group("gui" FILES ${SRC_GUI})
+#########################################################################
+
 ############################ GLFW #######################################
 include_directories(
 	GLFW
@@ -229,6 +242,7 @@ set(tanks_SOURCES
 	${SRC_FILE_SYSTEM}
 	${SRC_RENDER}
 	${SRC_UI}
+	${SRC_GUI}
 	${SRC_GLFW}
 	${SRC_ENGINE}
 	${SRC_GAME}

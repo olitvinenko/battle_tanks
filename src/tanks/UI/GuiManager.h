@@ -9,6 +9,7 @@
 class DrawingContext;
 class TextureManager;
 enum class Key;
+class AppController;
 
 namespace UI
 {
@@ -16,14 +17,9 @@ namespace UI
 class UIWindow;
 class LayoutManager;
 
+
 struct IInput;
 struct IClipboard;
-
-struct IWindowFactory
-{
-	virtual UIWindow* Create(LayoutManager *pManager) = 0;
-	virtual ~IWindowFactory() = default;
-};
 
 enum class Msg
 {
@@ -40,7 +36,7 @@ enum class Msg
 class LayoutManager
 {
 public:
-	LayoutManager(UI::IInput &input, IClipboard &clipboard, TextureManager &texman, IWindowFactory &&desktopFactory);
+	LayoutManager(UI::IInput &input, IClipboard &clipboard, TextureManager &texman, AppController& desktopFactory);
 	~LayoutManager();
 
 	void TimeStep(float dt);

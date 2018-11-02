@@ -3,12 +3,14 @@
 #include "GuiManager.h"
 #include "UIWindow.h"
 #include "Rect.h"
+#include "AppController.h"
 #include "Rendering/DrawingContext.h"
+#include "Desktop.h"
 
 namespace UI
 {
 
-LayoutManager::LayoutManager(UI::IInput &input, IClipboard &clipboard, TextureManager &texman, IWindowFactory &&desktopFactory)
+LayoutManager::LayoutManager(UI::IInput &input, IClipboard &clipboard, TextureManager &texman, AppController& controller)
   : _input(input)
   , _clipboard(clipboard)
   , _texman(texman)
@@ -21,10 +23,9 @@ LayoutManager::LayoutManager(UI::IInput &input, IClipboard &clipboard, TextureMa
   , _isAppActive(false)
 #ifndef NDEBUG
   , _dbgFocusIsChanging(false)
-  , _lastPointerLocation()
 #endif
 {
-	_desktop.Set(desktopFactory.Create(this));
+	_desktop.Set(new Desktop(this, controller.GetAppState(), controller.GetFs(), controller.GetLogger()));
 }
 
 LayoutManager::~LayoutManager()

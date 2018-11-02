@@ -23,7 +23,6 @@ MainMenuDlg::MainMenuDlg(UIWindow *parent,
                          UI::ConsoleBuffer &logger,
                          MainMenuCommands commands)
   : UIWindow(parent)
-  , _panel(nullptr)
   , _ptype(PT_NONE)
   , _pstate(PS_NONE)
   , _fileDlg(nullptr)
