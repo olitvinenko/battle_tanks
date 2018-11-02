@@ -2,10 +2,10 @@
 		 
 #include "Vector2.h"
 #include "Rect.h"
-#include "DrawingContext.h"
+#include "Rendering/DrawingContext.h"
 #include <algorithm>
 
-#include "TextureManager.h"
+#include "Rendering/TextureManager.h"
 #include "Pathfinder.h"
 
 void WorldView::Render(DrawingContext &dc,
@@ -31,7 +31,7 @@ void WorldView::Render(DrawingContext &dc,
 	//
 
 	dc.SetAmbient(nightMode ? (editorMode ? 0.5f : 0) : 1);
-	dc.SetMode(RM_LIGHT); // this will clear the render target with the ambient set above
+	dc.SetMode(LIGHT); // this will clear the render target with the ambient set above
 	if( nightMode )
 	{
 		//float xmin = std::max(0.0f, left);
@@ -115,7 +115,7 @@ void WorldView::Render(DrawingContext &dc,
 	// draw world to rgb
 	//
 
-	dc.SetMode(RM_WORLD);
+	dc.SetMode(WORLD);
 
 	pathfinder.Render(dc);
 
