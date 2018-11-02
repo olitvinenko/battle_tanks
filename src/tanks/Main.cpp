@@ -25,6 +25,8 @@
 #include "GameStatesController.h"
 #include "Rendering/RenderOpenGL.h"
 
+#include "GameController.h"
+
 namespace
 {
 	class ConsoleLog final
@@ -95,19 +97,13 @@ int main(int, const char**)
 
 		Engine tanksEngine(window, clipboard, input, fs, &render);
 
-		// not engine, but game!
-		TextureManager& tm = tanksEngine.GetRender().GetTextureManager();
+		GameController game(tanksEngine);
+		game.Launch();
 
-		if (tm.LoadPackage(FILE_TEXTURES, fs->Open(FILE_TEXTURES)->AsMemory(), *fs) <= 0)
-			logger.Printf(1, "WARNING: no textures loaded");
-		if (tm.LoadDirectory(DIR_SKINS, "skin/", *fs) <= 0)
-			logger.Printf(1, "WARNING: no skins found");
-
-		// not engine, but game!
-		tanksEngine.GetStatesController().PushState<LoadDataState>();
-
+		// engine loop
 		tanksEngine.Launch();
 
+		game.Shutdown();
 		return 0;
 		//--------------------------------------------------------------------------------------------------
 

@@ -208,6 +208,7 @@ if (WIN32)
 		# Get the directory of the source file
 		get_filename_component(PARENT_DIR "${FILE}" DIRECTORY)
 		
+		include_directories(${PARENT_DIR})		
 
 		# Remove common directory prefix to make the group
 		string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "" GROUP "${PARENT_DIR}")

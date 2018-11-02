@@ -38,6 +38,8 @@ public:
 	GameStatesController& GetStatesController() { return m_statesController; }
 	RenderingEngine& GetRender() { return *m_rendering; }
 
+	std::shared_ptr<FileSystem::IFileSystem> GetFileSystem() { return m_fileSystem; }
+
 private:
 	// view
 	std::shared_ptr<IWindow> m_window;
