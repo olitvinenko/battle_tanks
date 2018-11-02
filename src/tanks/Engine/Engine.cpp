@@ -3,12 +3,12 @@
 #include "Base/IWindow.h"
 #include "Vector2.h"
 
-Engine::Engine(std::shared_ptr<IWindow> window, std::shared_ptr<IClipboard> clipboard, std::shared_ptr<IInput> input, std::shared_ptr<FileSystem::IFileSystem> fileSystem, IRender* render)
+Engine::Engine(std::shared_ptr<IWindow> window, std::shared_ptr<IClipboard> clipboard, std::shared_ptr<IInput> input, std::shared_ptr<FileSystem::IFileSystem> fileSystem, IRender* render, int layersCount)
 	: m_window(window)
 	, m_clipboard(clipboard)
 	, m_input(input)
 	, m_running(false)
-	, m_rendering(std::make_shared<RenderingEngine>(render))
+	, m_rendering(std::make_shared<RenderingEngine>(render, layersCount))
 	, m_fileSystem(fileSystem)
 	, m_threadPool(std::make_shared<ThreadPool>())
 {
@@ -86,13 +86,11 @@ void Engine::FixedUpdate(float fixedDeltaTime)
 
 void Engine::Render(float interpolation) const
 {
-	// preRender ( collect renderables and order  )
+	m_rendering->PreRender();
 
-	// render ( interpolation )
+	m_rendering->Render(m_window->GetPixelWidth(), m_window->GetPixelHeight(), interpolation);
 
-	// postRender
-
-
+	m_rendering->PostRender();
 
 	// renderEngine::render(interpolation)
 	// uiEngine :: render(interpolation)

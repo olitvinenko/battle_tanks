@@ -26,6 +26,9 @@
 #include "Rendering/RenderOpenGL.h"
 
 #include "GameController.h"
+#include "LayoutManager.h"
+
+#include "MainMenu.h"
 
 namespace
 {
@@ -95,10 +98,12 @@ int main(int, const char**)
 
 		RenderOpenGL render;
 
-		Engine tanksEngine(window, clipboard, input, fs, &render);
+		Engine tanksEngine(window, clipboard, input, fs, &render, (int)DrawingOrder::Last);
 
 		GameController game(tanksEngine);
 		game.Launch();
+
+		//std::shared_ptr<MainMenuDlg> d = std::make_shared<MainMenuDlg>(nullptr, *fs, logger, MainMenuCommands());
 
 		// engine loop
 		tanksEngine.Launch();

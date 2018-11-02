@@ -24,7 +24,7 @@ class Engine final
 	, public IRenderable
 {
 public:
-	Engine(std::shared_ptr<IWindow> window, std::shared_ptr<IClipboard> clipboard, std::shared_ptr<IInput> input, std::shared_ptr<FileSystem::IFileSystem> fileSystem, IRender* render);
+	Engine(std::shared_ptr<IWindow> window, std::shared_ptr<IClipboard> clipboard, std::shared_ptr<IInput> input, std::shared_ptr<FileSystem::IFileSystem> fileSystem, IRender* render, int layersCount);
 
 	void Update(float realDeltaTime) override;
 	void FixedUpdate(float fixedDeltaTime) override;
@@ -36,9 +36,9 @@ public:
 	~Engine();
 
 	GameStatesController& GetStatesController() { return m_statesController; }
-	RenderingEngine& GetRender() { return *m_rendering; }
 
 	std::shared_ptr<FileSystem::IFileSystem> GetFileSystem() { return m_fileSystem; }
+	std::shared_ptr<RenderingEngine> GetRenderingEngine() { return m_rendering; }
 
 private:
 	// view

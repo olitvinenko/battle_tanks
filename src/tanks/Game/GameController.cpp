@@ -7,6 +7,7 @@
 
 GameController::GameController(Engine& engine)
 	: m_engine(engine)
+	, m_layoutManager(engine.GetRenderingEngine())
 {
 }
 
@@ -14,7 +15,7 @@ void GameController::Launch()
 {
 	// init file system
 	// init texture manager
-	TextureManager& tm = m_engine.GetRender().GetTextureManager();
+	TextureManager& tm = m_engine.GetRenderingEngine()->GetTextureManager();
 	std::shared_ptr<FileSystem::IFileSystem> fs = m_engine.GetFileSystem();
 
 	if (tm.LoadPackage(FILE_TEXTURES, fs->Open(FILE_TEXTURES)->AsMemory(), *fs) <= 0)
