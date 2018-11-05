@@ -39,6 +39,7 @@ public:
 
 	std::shared_ptr<FileSystem::IFileSystem> GetFileSystem() { return m_fileSystem; }
 	std::shared_ptr<RenderingEngine> GetRenderingEngine() { return m_rendering; }
+	std::shared_ptr<IInput> GetInput() { return m_input; }
 
 	GameLoop& GetLoop() { return m_loop; }
 

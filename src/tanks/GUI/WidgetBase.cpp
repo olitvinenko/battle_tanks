@@ -67,9 +67,21 @@ float WidgetBase::GetTextureHeight() const
 
 void WidgetBase::Draw(DrawingContext& dc, float interpolation) const
 {
-	assert(_isVisible);
+	if (!_isVisible)
+		return;
+
+	dc.PushTransform(Vector2(GetX(), GetY()));
+
+	bool clipChildren = GetClipChildren();
 
 	math::RectFloat dst = { 0, 0, m_width, m_height };
+
+	if (clipChildren)
+	{
+		math::RectInt clip;
+		math::FRectToRect(&clip, &dst);
+		dc.PushClippingRect(clip);
+	}
 
 	if (_texture != -1 )
 	{
@@ -114,13 +126,13 @@ void WidgetBase::Draw(DrawingContext& dc, float interpolation) const
 		}
 	}
 
-	//TODO:: skip if not visible! clipping rect?
-	for(std::list<WidgetBase*>::const_iterator it = m_children.begin(); it != m_children.end(); ++it)
-	{
-		dc.PushTransform(Vector2((*it)->GetX(), (*it)->GetY()));
-		(*it)->Draw(dc, interpolation);
-		dc.PopTransform();
-	}
+	for (auto it : m_children)
+		it->Draw(dc, interpolation);
+
+	if (clipChildren)
+		dc.PopClippingRect();
+
+	dc.PopTransform();
 }
 
 void WidgetBase::Update(float deltaTime)

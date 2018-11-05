@@ -7,7 +7,7 @@
 
 GameController::GameController(Engine& engine)
 	: m_engine(engine)
-	, m_layoutManager(engine.GetRenderingEngine())
+	, m_layoutManager(engine.GetRenderingEngine(), engine.GetInput())
 {
 }
 

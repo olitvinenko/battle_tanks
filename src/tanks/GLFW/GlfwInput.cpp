@@ -8,17 +8,17 @@
 
 #include <GLFW/glfw3.h>
 
+static GlfwInput* GetInput(GLFWwindow* window)
+{
+	void* pointer = glfwGetWindowUserPointer(window);
+	assert(pointer);
+	return static_cast<GlfwInput*>(pointer);
+}
+
 bool GlfwInput::m_mouseButtons[static_cast<int>(MouseButton::Last)] = { false };
-bool GlfwInput::m_mouseButtonsUp[static_cast<int>(MouseButton::Last)] = { false };
-bool GlfwInput::m_mouseButtonsDown[static_cast<int>(MouseButton::Last)] = { false };
-
 bool GlfwInput::m_keyboardButtons[static_cast<int>(Key::Last)] = { false };
-bool GlfwInput::m_keyboardButtonsUp[static_cast<int>(Key::Last)] = { false };
-bool GlfwInput::m_keyboardButtonsDown[static_cast<int>(Key::Last)] = { false };
 
-Vector2 GlfwInput::m_scrollOffset;
 Vector2 GlfwInput::m_mousePosition;
-std::list<char> GlfwInput::m_characters;
 
 GlfwInput::GlfwInput(std::shared_ptr<GlfwWindow> window)
 	: m_window(window)
@@ -30,6 +30,18 @@ GlfwInput::GlfwInput(std::shared_ptr<GlfwWindow> window)
 	glfwSetScrollCallback(glfwWindow, OnScroll);
 	glfwSetKeyCallback(glfwWindow, OnKey);
 	glfwSetCharCallback(glfwWindow, OnChar);
+
+	glfwSetWindowUserPointer(glfwWindow, this);
+}
+
+void GlfwInput::AddListener(IInputListener* listener)
+{
+	m_listeners.insert(listener);
+}
+
+void GlfwInput::RemoveListener(IInputListener* listener)
+{
+	m_listeners.erase(listener);
 }
 
 void GlfwInput::Read()
@@ -37,22 +49,15 @@ void GlfwInput::Read()
 	m_window->PollEvents();
 }
 
-void GlfwInput::Clear()
+
+GlfwInput::~GlfwInput()
 {
-	memset(m_mouseButtonsUp, 0, static_cast<int>(MouseButton::Last) * sizeof(*m_mouseButtonsUp));
-	memset(m_mouseButtonsDown, 0, static_cast<int>(MouseButton::Last) * sizeof(*m_mouseButtonsDown));
-
-	memset(m_keyboardButtons, 0, static_cast<int>(Key::Last) * sizeof(*m_keyboardButtons));
-	memset(m_keyboardButtonsUp, 0, static_cast<int>(Key::Last) * sizeof(*m_keyboardButtonsUp));
-	memset(m_keyboardButtonsDown, 0, static_cast<int>(Key::Last) * sizeof(*m_keyboardButtonsDown));
-
-	m_scrollOffset.set(.0f, .0f);
-	m_characters.clear();
+	glfwSetWindowUserPointer(m_window->m_window, nullptr);
 }
 
-bool GlfwInput::GetKeyDown(Key key) const
+void GlfwInput::Clear()
 {
-	return m_keyboardButtonsDown[static_cast<int>(key)];
+	memset(m_keyboardButtons, 0, static_cast<int>(Key::Last) * sizeof(*m_keyboardButtons));
 }
 
 bool GlfwInput::GetKey(Key key) const
@@ -60,29 +65,9 @@ bool GlfwInput::GetKey(Key key) const
 	return m_keyboardButtons[static_cast<int>(key)];
 }
 
-bool GlfwInput::GetKeyUp(Key key) const
-{
-	return m_keyboardButtonsUp[static_cast<int>(key)];
-}
-
 bool GlfwInput::GetMouseButton(MouseButton button) const
 {
 	return m_mouseButtons[static_cast<int>(button)];
-}
-
-bool GlfwInput::GetMouseButtonUp(MouseButton button) const
-{
-	return m_mouseButtonsUp[static_cast<int>(button)];
-}
-
-bool GlfwInput::GetMouseButtonDown(MouseButton button) const
-{
-	return m_mouseButtonsDown[static_cast<int>(button)];
-}
-
-const Vector2& GlfwInput::GetMouseScrollOffset() const
-{
-	return m_scrollOffset;
 }
 
 const Vector2& GlfwInput::GetMousePosition() const
@@ -90,10 +75,6 @@ const Vector2& GlfwInput::GetMousePosition() const
 	return m_mousePosition;
 }
 
-const std::list<char>& GlfwInput::GetCharacters() const
-{
-	return m_characters;
-}
 
 // static members
 
@@ -116,9 +97,20 @@ void GlfwInput::OnMouseButton(GLFWwindow *window, int button, int action, int mo
 
 	const int index = static_cast<int>(unmapped);
 
-	m_mouseButtonsDown[index] = action == GLFW_PRESS;
-	m_mouseButtonsUp[index] = action == GLFW_RELEASE;
 	m_mouseButtons[index] = action == GLFW_PRESS;
+
+	switch (action)
+	{
+	case GLFW_RELEASE:
+		for (auto listener : GetInput(window)->m_listeners)
+			listener->OnMouseButtonUp(unmapped);
+		break;
+
+	case GLFW_PRESS:
+		for (auto listener : GetInput(window)->m_listeners)
+			listener->OnMouseButtonDown(unmapped);
+		break;
+	}
 }
 
 void GlfwInput::OnKey(GLFWwindow *window, int platformKey, int scancode, int action, int mods)
@@ -127,8 +119,24 @@ void GlfwInput::OnKey(GLFWwindow *window, int platformKey, int scancode, int act
 	const int index = static_cast<int>(key);
 
 	m_keyboardButtons[index] = action == GLFW_REPEAT;
-	m_keyboardButtonsUp[index] = action == GLFW_RELEASE;
-	m_keyboardButtonsDown[index] = action == GLFW_PRESS;
+
+	switch (action)
+	{
+	case GLFW_REPEAT:
+		for (auto listener : GetInput(window)->m_listeners)
+			listener->OnKey(key);
+		break;
+
+	case GLFW_RELEASE:
+		for (auto listener : GetInput(window)->m_listeners)
+			listener->OnKeyUp(key);
+		break;
+
+	case GLFW_PRESS:
+		for (auto listener : GetInput(window)->m_listeners)
+			listener->OnKeyDown(key);
+		break;
+	}
 }
 
 void GlfwInput::OnScroll(GLFWwindow *window, double xOffset, double yOffset)
@@ -141,7 +149,8 @@ void GlfwInput::OnScroll(GLFWwindow *window, double xOffset, double yOffset)
 	int dipHeight;
 	glfwGetWindowSize(window, &dipWidth, &dipHeight);
 
-	m_scrollOffset.set(float(xOffset * pxWidth / dipWidth), float(yOffset * pxHeight / dipHeight));
+	for (auto listener : GetInput(window)->m_listeners)
+		listener->OnMouseScrollOffset(float(xOffset * pxWidth / dipWidth), float(yOffset * pxHeight / dipHeight));
 }
 
 void GlfwInput::OnCursorPos(GLFWwindow *window, double xpos, double ypos)
@@ -154,7 +163,13 @@ void GlfwInput::OnCursorPos(GLFWwindow *window, double xpos, double ypos)
 	int dipHeight;
 	glfwGetWindowSize(window, &dipWidth, &dipHeight);
 
-	m_mousePosition.set(float(xpos * pxWidth / dipWidth), float(ypos * pxHeight / dipHeight));
+	float xPos = float(xpos * pxWidth / dipWidth);
+	float yPos = float(ypos * pxHeight / dipHeight);
+
+	m_mousePosition.set(xPos, yPos);
+
+	for (auto listener : GetInput(window)->m_listeners)
+		listener->OnMousePosition(xPos, yPos);
 }
 
 void GlfwInput::OnChar(GLFWwindow *window, unsigned int codepoint)
@@ -163,7 +178,8 @@ void GlfwInput::OnChar(GLFWwindow *window, unsigned int codepoint)
 
 	if ((character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z') || (character >= '0' && character <= '9'))
 	{
-		m_characters.push_back(character);
+		for (auto listener : GetInput(window)->m_listeners)
+			listener->OnCharacter(character);
 		return;
 	}
 
@@ -172,7 +188,8 @@ void GlfwInput::OnChar(GLFWwindow *window, unsigned int codepoint)
 	case ' ':
 	case '_':
 	case '-':
-		m_characters.push_back(character);
+		for (auto listener : GetInput(window)->m_listeners)
+			listener->OnCharacter(character);
 		break;
 
 	default: break;

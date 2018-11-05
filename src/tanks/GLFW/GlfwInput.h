@@ -2,6 +2,7 @@
 
 #include "Base/IInput.h"
 #include <memory>
+#include <set>
 
 class GlfwWindow;
 struct GLFWwindow;
@@ -15,25 +16,17 @@ public:
 
 	void Read() override;
 
-	void Clear() override;
+	void AddListener(IInputListener *listener) override;
 
-	bool GetKeyDown(Key key) const override;
+	void RemoveListener(IInputListener *listener) override;
 
 	bool GetKey(Key key) const override;
-
-	bool GetKeyUp(Key key) const override;
-
 	bool GetMouseButton(MouseButton button) const override;
-
-	bool GetMouseButtonUp(MouseButton button) const override;
-
-	bool GetMouseButtonDown(MouseButton button) const override;
-
-	const Vector2& GetMouseScrollOffset() const override;
-
 	const Vector2& GetMousePosition() const override;
 
-	const std::list<char>& GetCharacters() const override;
+	~GlfwInput();
+
+	void Clear() override;
 
 private:
 	static void OnMouseButton(GLFWwindow *window, int button, int action, int mods);
@@ -43,16 +36,9 @@ private:
 	static void OnChar(GLFWwindow *window, unsigned int codepoint);
 
 	std::shared_ptr<GlfwWindow> m_window;
+	std::set<IInputListener*> m_listeners;
 
-	static Vector2 m_scrollOffset;
 	static Vector2 m_mousePosition;
-	static std::list<char> m_characters;
-
 	static bool m_mouseButtons[];
-	static bool m_mouseButtonsUp[];
-	static bool m_mouseButtonsDown[];
-
 	static bool m_keyboardButtons[];
-	static bool m_keyboardButtonsUp[];
-	static bool m_keyboardButtonsDown[];
 };

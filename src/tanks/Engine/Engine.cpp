@@ -1,7 +1,6 @@
 #include "Engine.h"
 #include "Base/IInput.h"
 #include "Base/IWindow.h"
-#include "Vector2.h"
 
 Engine::Engine(std::shared_ptr<IWindow> window, std::shared_ptr<IClipboard> clipboard, std::shared_ptr<IInput> input, std::shared_ptr<FileSystem::IFileSystem> fileSystem, IRender* render, int layersCount)
 	: m_window(window)
@@ -52,20 +51,6 @@ void Engine::Update(float realDeltaTime)
 	m_input->Read();
 
 	m_statesController.DoOnUpdate(realDeltaTime);
-
-
-	Vector2 pos = m_input->GetMousePosition();
-
-	auto& l = m_input->GetCharacters();
-
-	if (!l.empty())
-	{
-		for (auto& c : l)
-			std::cout << c << " ";
-
-		std::cout << std::endl;
-	}
-
 
 	// coroutines.. animations..
 
