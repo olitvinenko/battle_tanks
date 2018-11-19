@@ -8,12 +8,7 @@
 
 #include <GLFW/glfw3.h>
 
-static GlfwInput* GetInput(GLFWwindow* window)
-{
-	void* pointer = glfwGetWindowUserPointer(window);
-	assert(pointer);
-	return static_cast<GlfwInput*>(pointer);
-}
+GlfwInput* GlfwInput::m_instance = nullptr;
 
 bool GlfwInput::m_mouseButtons[static_cast<int>(MouseButton::Last)] = { false };
 bool GlfwInput::m_keyboardButtons[static_cast<int>(Key::Last)] = { false };
@@ -31,7 +26,7 @@ GlfwInput::GlfwInput(std::shared_ptr<GlfwWindow> window)
 	glfwSetKeyCallback(glfwWindow, OnKey);
 	glfwSetCharCallback(glfwWindow, OnChar);
 
-	glfwSetWindowUserPointer(glfwWindow, this);
+	m_instance = this;
 }
 
 void GlfwInput::AddListener(IInputListener* listener)
@@ -52,7 +47,7 @@ void GlfwInput::Read()
 
 GlfwInput::~GlfwInput()
 {
-	glfwSetWindowUserPointer(m_window->m_window, nullptr);
+	m_instance = nullptr;
 }
 
 void GlfwInput::Clear()
@@ -102,12 +97,12 @@ void GlfwInput::OnMouseButton(GLFWwindow *window, int button, int action, int mo
 	switch (action)
 	{
 	case GLFW_RELEASE:
-		for (auto listener : GetInput(window)->m_listeners)
+		for (auto listener : m_instance->m_listeners)
 			listener->OnMouseButtonUp(unmapped);
 		break;
 
 	case GLFW_PRESS:
-		for (auto listener : GetInput(window)->m_listeners)
+		for (auto listener : m_instance->m_listeners)
 			listener->OnMouseButtonDown(unmapped);
 		break;
 	}
@@ -123,17 +118,17 @@ void GlfwInput::OnKey(GLFWwindow *window, int platformKey, int scancode, int act
 	switch (action)
 	{
 	case GLFW_REPEAT:
-		for (auto listener : GetInput(window)->m_listeners)
+		for (auto listener : m_instance->m_listeners)
 			listener->OnKey(key);
 		break;
 
 	case GLFW_RELEASE:
-		for (auto listener : GetInput(window)->m_listeners)
+		for (auto listener : m_instance->m_listeners)
 			listener->OnKeyUp(key);
 		break;
 
 	case GLFW_PRESS:
-		for (auto listener : GetInput(window)->m_listeners)
+		for (auto listener : m_instance->m_listeners)
 			listener->OnKeyDown(key);
 		break;
 	}
@@ -149,7 +144,7 @@ void GlfwInput::OnScroll(GLFWwindow *window, double xOffset, double yOffset)
 	int dipHeight;
 	glfwGetWindowSize(window, &dipWidth, &dipHeight);
 
-	for (auto listener : GetInput(window)->m_listeners)
+	for (auto listener : m_instance->m_listeners)
 		listener->OnMouseScrollOffset(float(xOffset * pxWidth / dipWidth), float(yOffset * pxHeight / dipHeight));
 }
 
@@ -168,7 +163,7 @@ void GlfwInput::OnCursorPos(GLFWwindow *window, double xpos, double ypos)
 
 	m_mousePosition.set(xPos, yPos);
 
-	for (auto listener : GetInput(window)->m_listeners)
+	for (auto listener : m_instance->m_listeners)
 		listener->OnMousePosition(xPos, yPos);
 }
 
@@ -178,7 +173,7 @@ void GlfwInput::OnChar(GLFWwindow *window, unsigned int codepoint)
 
 	if ((character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z') || (character >= '0' && character <= '9'))
 	{
-		for (auto listener : GetInput(window)->m_listeners)
+		for (auto listener : m_instance->m_listeners)
 			listener->OnCharacter(character);
 		return;
 	}
@@ -188,7 +183,7 @@ void GlfwInput::OnChar(GLFWwindow *window, unsigned int codepoint)
 	case ' ':
 	case '_':
 	case '-':
-		for (auto listener : GetInput(window)->m_listeners)
+		for (auto listener : m_instance->m_listeners)
 			listener->OnCharacter(character);
 		break;
 

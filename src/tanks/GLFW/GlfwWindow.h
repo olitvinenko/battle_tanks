@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/IWindow.h"
+#include <set>
 
 struct GLFWwindow;
 
@@ -12,6 +13,10 @@ public:
 	~GlfwWindow() override;
 
 	int GetPixelWidth() const override;
+
+	void AddListener(IWindowListener* listener) override;
+
+	void RemoveListener(IWindowListener* listener) override;
 
 	int GetPixelHeight() const override;
 
@@ -34,9 +39,17 @@ public:
 	}
 
 private:
+
+	static void OnFramebufferSizeCallback(GLFWwindow *window, int width, int height);
+	static void OnSizeCallback(GLFWwindow *window, int width, int height);
+	static void OnCloseCallback(GLFWwindow *window);
+
 	GLFWwindow* m_window;
 	std::string m_name;
+	std::set<IWindowListener*> m_listeners;
 
 	friend class GlfwClipboard;
 	friend class GlfwInput;
+
+	static GlfwWindow* m_instance;
 };

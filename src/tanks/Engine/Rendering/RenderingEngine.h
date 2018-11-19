@@ -30,6 +30,8 @@ public:
 	unsigned int GetPixelWidth() const { return m_window->GetPixelWidth(); }
 	unsigned int GetPixelHeight() const { return m_window->GetPixelHeight(); }
 
+	std::shared_ptr<IWindow> GetWindow() const { return m_window; }
+
 private:
 
 	std::shared_ptr<IWindow> m_window;

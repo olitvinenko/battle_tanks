@@ -41,4 +41,6 @@ private:
 	static Vector2 m_mousePosition;
 	static bool m_mouseButtons[];
 	static bool m_keyboardButtons[];
+
+	static GlfwInput* m_instance;
 };

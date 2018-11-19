@@ -109,6 +109,10 @@ GlfwAppWindow::GlfwAppWindow(const char *title, bool fullscreen, int width, int 
 	glfwSetCharCallback(m_window, GLFWProcessors::OnChar);
 	glfwSetFramebufferSizeCallback(m_window, GLFWProcessors::OnFramebufferSize);
 
+
+	glfwSetWindowSizeCallback(m_window, GLFWProcessors::OnFramebufferSize);
+	glfwSetWindowCloseCallback(m_window, [](GLFWwindow* w) {});
+
 	glfwMakeContextCurrent(m_window);
 	glfwSwapInterval(1);	
 }

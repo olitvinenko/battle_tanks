@@ -85,6 +85,8 @@ protected:
 	//
 	virtual void OnTextChange() { }
 
+	std::list<WidgetBase*> m_children;
+
 private:
 
 	//
@@ -118,7 +120,6 @@ private:
 
 
 	WidgetBase* m_parent;
-	std::list<WidgetBase*> m_children;
 
 	const TextureManager& m_textureManager;
 };

@@ -37,9 +37,9 @@ public:
 
 	GameStatesController& GetStatesController() { return m_statesController; }
 
-	std::shared_ptr<FileSystem::IFileSystem> GetFileSystem() { return m_fileSystem; }
-	std::shared_ptr<RenderingEngine> GetRenderingEngine() { return m_rendering; }
-	std::shared_ptr<IInput> GetInput() { return m_input; }
+	std::shared_ptr<FileSystem::IFileSystem> GetFileSystem() const { return m_fileSystem; }
+	std::shared_ptr<RenderingEngine> GetRenderingEngine() const { return m_rendering; }
+	std::shared_ptr<IInput> GetInput() const { return m_input; }
 
 	GameLoop& GetLoop() { return m_loop; }
 
