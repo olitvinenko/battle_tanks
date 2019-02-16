@@ -65,6 +65,46 @@ float WidgetBase::GetTextureHeight() const
 	return (-1 != _texture) ? m_textureManager.GetFrameHeight(_texture, _frame) : 1;
 }
 
+void WidgetBase::SetVisible(bool visible)
+{
+	if (_isVisible != visible)
+	{
+		OnVisibleChangeInternal(visible, false);
+		assert(_isVisible == visible);
+	}
+}
+
+void WidgetBase::OnEnabledChangeInternal(bool enable, bool inherited)
+{
+	
+}
+
+void WidgetBase::OnVisibleChangeInternal(bool visible, bool inherited)
+{
+	if (visible)
+	{
+		// show children last
+		if (!inherited)
+			_isVisible = true;
+		OnVisibleChange(true, inherited);
+
+		for (auto it = m_children.begin(); it != m_children.end(); ++it)
+			(*it)->OnVisibleChangeInternal(true, true);
+	}
+	else
+	{
+		// hide children first
+		for (auto it = m_children.begin(); it != m_children.end(); ++it)
+			(*it)->OnVisibleChangeInternal(false, true);
+
+		//GetManager().ResetWindow(this);
+		if (!inherited)
+			_isVisible = false;
+
+		OnVisibleChange(false, inherited);
+	}
+}
+
 void WidgetBase::Draw(DrawingContext& dc, float interpolation) const
 {
 	if (!_isVisible)

@@ -18,7 +18,7 @@ Vector2 GlfwInput::m_mousePosition;
 GlfwInput::GlfwInput(std::shared_ptr<GlfwWindow> window)
 	: m_window(window)
 {
-	GLFWwindow* glfwWindow = m_window->m_window;
+	GLFWwindow* glfwWindow = m_window->m_glfwWindow;
 
 	glfwSetMouseButtonCallback(glfwWindow, OnMouseButton);
 	glfwSetCursorPosCallback(glfwWindow, OnCursorPos);

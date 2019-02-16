@@ -85,9 +85,14 @@ protected:
 	//
 	virtual void OnTextChange() { }
 
+	virtual void OnVisibleChange(bool visible, bool inherited) { }
+
 	std::list<WidgetBase*> m_children;
 
 private:
+
+	void OnEnabledChangeInternal(bool enable, bool inherited);
+	void OnVisibleChangeInternal(bool visible, bool inherited);
 
 	//
 	// size and position

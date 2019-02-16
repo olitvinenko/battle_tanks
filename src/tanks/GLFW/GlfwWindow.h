@@ -33,18 +33,13 @@ public:
 		return m_name;
 	}
 
-	GLFWwindow* GetWindow() const
-	{
-		return m_window;
-	}
-
 private:
 
 	static void OnFramebufferSizeCallback(GLFWwindow *window, int width, int height);
 	static void OnSizeCallback(GLFWwindow *window, int width, int height);
 	static void OnCloseCallback(GLFWwindow *window);
 
-	GLFWwindow* m_window;
+	GLFWwindow* m_glfwWindow;
 	std::string m_name;
 	std::set<IWindowListener*> m_listeners;
 

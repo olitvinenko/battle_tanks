@@ -8,10 +8,10 @@ GlfwClipboard::GlfwClipboard(std::shared_ptr<GlfwWindow> window)
 
 std::string GlfwClipboard::GetText()
 {
-	return glfwGetClipboardString(m_window->m_window);
+	return glfwGetClipboardString(m_window->m_glfwWindow);
 }
 
 void GlfwClipboard::SetText(const std::string& text)
 {
-	glfwSetClipboardString(m_window->m_window, text.c_str());
+	glfwSetClipboardString(m_window->m_glfwWindow, text.c_str());
 }

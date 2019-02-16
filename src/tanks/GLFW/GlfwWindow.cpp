@@ -12,7 +12,7 @@ GlfwWindow::GlfwWindow(const char* title, int width, int height, bool fullscreen
 		throw std::runtime_error("Failed to initialize OpenGL");
 	}
 
-	m_window = glfwCreateWindow(
+	m_glfwWindow = glfwCreateWindow(
 		fullscreen ? glfwGetVideoMode(glfwGetPrimaryMonitor())->width : width,
 		fullscreen ? glfwGetVideoMode(glfwGetPrimaryMonitor())->height : height,
 		title,
@@ -21,18 +21,18 @@ GlfwWindow::GlfwWindow(const char* title, int width, int height, bool fullscreen
 
 	m_instance = this;
 
-	glfwMakeContextCurrent(m_window);
+	glfwMakeContextCurrent(m_glfwWindow);
 	glfwSwapInterval(1);
 
-	glfwSetFramebufferSizeCallback(m_window, OnFramebufferSizeCallback);
-	glfwSetWindowSizeCallback(m_window, OnSizeCallback);
-	glfwSetWindowCloseCallback(m_window, OnCloseCallback);
+	glfwSetFramebufferSizeCallback(m_glfwWindow, OnFramebufferSizeCallback);
+	glfwSetWindowSizeCallback(m_glfwWindow, OnSizeCallback);
+	glfwSetWindowCloseCallback(m_glfwWindow, OnCloseCallback);
 }
 
 GlfwWindow::~GlfwWindow()
 {
 	glfwMakeContextCurrent(nullptr);
-	glfwDestroyWindow(m_window);
+	glfwDestroyWindow(m_glfwWindow);
 	glfwTerminate();
 
 	m_instance = nullptr;
@@ -41,7 +41,7 @@ GlfwWindow::~GlfwWindow()
 int GlfwWindow::GetPixelWidth() const
 {
 	int width;
-	glfwGetFramebufferSize(m_window, &width, nullptr);
+	glfwGetFramebufferSize(m_glfwWindow, &width, nullptr);
 	return width;
 }
 
@@ -76,7 +76,7 @@ void GlfwWindow::OnCloseCallback(GLFWwindow *window)
 int GlfwWindow::GetPixelHeight() const
 {
 	int height;
-	glfwGetFramebufferSize(m_window, nullptr, &height);
+	glfwGetFramebufferSize(m_glfwWindow, nullptr, &height);
 	return height;
 }
 
@@ -87,12 +87,12 @@ float GlfwWindow::GetAspectRatio() const
 
 bool GlfwWindow::ShouldClose() const
 {
-	return glfwWindowShouldClose(m_window);
+	return glfwWindowShouldClose(m_glfwWindow);
 }
 
 void GlfwWindow::SwapBuffers()
 {
-	glfwSwapBuffers(m_window);
+	glfwSwapBuffers(m_glfwWindow);
 }
 
 void GlfwWindow::PollEvents()

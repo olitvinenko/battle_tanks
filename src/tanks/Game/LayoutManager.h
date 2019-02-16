@@ -7,36 +7,78 @@
 #include <stack>
 #include <memory>
 #include "Base/IInput.h"
+#include "UIWindow.h"
 
-class MainMenuScreen : public WidgetBase
+//TODO: navigation stack
+class UIDialogsManager final : public WidgetBase
 {
 public:
-	MainMenuScreen(const TextureManager& textures):WidgetBase(nullptr, textures)
-	{}
+	
 
+	UIDialogsManager(float width, float height, const TextureManager& textures)
+		: WidgetBase(nullptr, textures)
+	{
+		Resize(width, height);
+	}
+
+	void Push(std::shared_ptr<WidgetBase> widget)
+	{
+		m_navStack.push_back(widget);
+		OnSize(GetWidth(), GetHeight());
+	}
+
+	void Pop()
+	{
+		
+	}
+
+	void Pop(std::shared_ptr<WidgetBase*> widget)
+	{
+		
+	}
+
+	void Draw(DrawingContext& dc, float interpolation) const override
+	{
+		//TODO:: draw only last dialog?
+
+		for (auto it = m_navStack.begin(); it != m_navStack.end(); ++it)
+			(*it)->Draw(dc, interpolation);
+	}
+
+	~UIDialogsManager()
+	{
+
+	}
 
 protected:
 	void OnSize(float width, float height) override
 	{
-		//for (WidgetBase* wnd : m_children)
-		//	wnd->Move((width - wnd->GetWidth()) / 2, wnd->GetY());
+		//float top = height/2.0f;
+		for (auto wnd : m_navStack)
+		{
+			wnd->Move(floorf((width - wnd->GetWidth()) / 2), floorf((height - wnd->GetHeight()) / 2));
+			//top += wnd->GetHeight() + 100.0f;// _conf.ui_spacing.GetFloat();
+		}
 	}
 
-	void OnMove(float x, float y) override
-	{
+private:
+	std::vector<std::shared_ptr<WidgetBase>> m_navStack;
+};
 
-	}
-
+class MainMenuDialog : public WidgetBase
+{
 public:
-	static std::shared_ptr<MainMenuScreen> Make(std::shared_ptr<RenderingEngine> re)
+	MainMenuDialog(const TextureManager& textures)
+		:WidgetBase(nullptr, textures)
+	{}
+
+	static std::shared_ptr<MainMenuDialog> Make(std::shared_ptr<RenderingEngine> re)
 	{
 		const float buttonWidth = 200;
 		const float buttonHeight = 128;
 
-		auto panel = std::make_shared<MainMenuScreen>(re->GetTextureManager());
+		auto panel = std::make_shared<MainMenuDialog>(re->GetTextureManager());
 		panel->Resize(640, 300);
-		panel->Move(re->GetPixelWidth() / 2 - 320, 0);
-		panel->SetTexture("gui_splash", false);
 
 		float y = panel->GetHeight() - buttonHeight;
 
@@ -92,18 +134,24 @@ public:
 
 	void Test()
 	{
-		auto back = std::make_shared<WidgetBase>(nullptr, m_renderingEngine->GetTextureManager());
-		back->Resize(m_renderingEngine->GetPixelWidth(), m_renderingEngine->GetPixelHeight());
-		back->SetTexture("gui_splash", false);
-		back->SetDrawBorder(false);
-		back->SetTextureStretchMode(StretchMode::Fill);
-		//m_openedScreens.push(back);
+		{ // background
+			auto back = std::make_shared<WidgetBase>(nullptr, m_renderingEngine->GetTextureManager());
+			back->Resize(m_renderingEngine->GetPixelWidth(), m_renderingEngine->GetPixelHeight());
+			back->SetTexture("gui_splash", false);
+			back->SetDrawBorder(false);
+			back->SetTextureStretchMode(StretchMode::Fill);
+			m_openedScreens.push_back(back);
+			//back->SetVisible(false);
+		}
 
-		auto screen = MainMenuScreen::Make(m_renderingEngine);
+		{
+			auto dm = std::make_shared<UIDialogsManager>(m_renderingEngine->GetPixelWidth(), m_renderingEngine->GetPixelHeight(), m_renderingEngine->GetTextureManager());
 
-		m_openedScreens.push_back(screen);
+			auto screen = MainMenuDialog::Make(m_renderingEngine);
+			dm->Push(screen);
 
-		//screen->Resize(m_renderingEngine->GetWindow()->GetPixelWidth(), m_renderingEngine->GetWindow()->GetPixelHeight());
+			m_openedScreens.push_back(dm);
+		}
 	}
 
 private:
@@ -121,7 +169,7 @@ private:
 
 	void OnMousePosition(float x, float y) override
 	{
-		std::cout << "OnMousePosition" << std::endl;
+		//std::cout << "OnMousePosition" << std::endl;
 
 		m_lastPointerLocation = Vector2(x, y);
 	}
