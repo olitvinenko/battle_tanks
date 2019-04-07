@@ -7,6 +7,8 @@
 
 #include "GameStateBase.h"
 
+class Engine;
+
 class GameStatesController final
 {
 public:

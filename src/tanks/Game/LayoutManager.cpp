@@ -20,6 +20,12 @@ LayoutManager::~LayoutManager()
 	m_renderingEngine->GetScheme().UnegisterDrawable(*this);
 }
 
+void LayoutManager::Initialize()
+{
+	//GUI system
+	Push(std::make_shared<UIDialogsManager>(m_renderingEngine));
+}
+
 int LayoutManager::GetOrder() const
 {
 	return static_cast<int>(RenderOrder::GUI);
@@ -32,7 +38,7 @@ void LayoutManager::Draw(DrawingContext& dc, float interpolation) const
 	for (auto it = m_openedScreens.begin(); it != m_openedScreens.end(); ++it)
 		(*it)->Draw(dc, interpolation);
 
-	math::RectFloat dst = { m_lastPointerLocation.x - 4, m_lastPointerLocation.y - 4,m_lastPointerLocation.x + 4, m_lastPointerLocation.y + 4 };
+	math::RectFloat dst { m_lastPointerLocation.x - 4, m_lastPointerLocation.y - 4, m_lastPointerLocation.x + 4, m_lastPointerLocation.y + 4 };
 	dc.DrawSprite(&dst, 0U, 0xffffffff, 0U);
 }
 

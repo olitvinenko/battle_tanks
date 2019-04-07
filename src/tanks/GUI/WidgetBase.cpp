@@ -40,13 +40,11 @@ void WidgetBase::SetTexture(const char *tex, bool fitSize)
 	{
 		_texture = m_textureManager.FindSprite(tex);
 		if (fitSize)
-		{
 			Resize(GetTextureWidth(), GetTextureHeight());
-		}
 	}
 	else
 	{
-		_texture = (size_t)-1;
+		_texture = static_cast<size_t>(-1);
 	}
 }
 
@@ -76,7 +74,30 @@ void WidgetBase::SetVisible(bool visible)
 
 void WidgetBase::OnEnabledChangeInternal(bool enable, bool inherited)
 {
-	
+	if (enable)
+	{
+		// enable children last
+		if (!inherited)
+			_isEnabled = true;
+		
+		OnEnabledChange(true, inherited);
+
+		for (auto it = m_children.begin(); it != m_children.end(); ++it)
+			(*it)->OnEnabledChangeInternal(true, true);
+	}
+	else
+	{
+		// disable children first
+		for (auto it = m_children.begin(); it != m_children.end(); ++it)
+			(*it)->OnEnabledChangeInternal(false, true);
+
+		//GetManager().ResetWindow(this);
+
+		if (!inherited)
+			_isEnabled = false;
+
+		OnEnabledChange(false, inherited);
+	}
 }
 
 void WidgetBase::OnVisibleChangeInternal(bool visible, bool inherited)
@@ -211,6 +232,15 @@ bool WidgetBase::Contains(const WidgetBase *other) const
 		other = other->m_parent;
 	}
 	return false;
+}
+
+void WidgetBase::SetEnabled(bool enable)
+{
+	if (_isEnabled != enable)
+	{
+		OnEnabledChangeInternal(enable, false);
+		assert(_isEnabled == enable);
+	}
 }
 
 const std::string& WidgetBase::GetText() const

@@ -73,13 +73,12 @@ void TextureManager::LoadTexture(TexDescIterator &itTexDesc, const std::string &
 	else
 	{
 		std::shared_ptr<FileSystem::File::Memory> file = fs.Open(fileName)->AsMemory();
-		std::unique_ptr<TgaImage> image(new TgaImage(file));
+		std::unique_ptr<IImage> image(new TgaImage(file));
 
-		TexDesc td;
+		TexDesc td{};
+
 		if (!_render->TexCreate(td.id, *image))
-		{
 			throw std::runtime_error("error in render device");
-		}
 
 		td.width = image->GetWidth();
 		td.height = image->GetHeight();
@@ -378,8 +377,8 @@ int TextureManager::LoadDirectory(const std::string &dirName, const std::string 
 		LogicalTexture tex;
 		tex.dev_texture = td->id;
 		tex.uvPivot = Vector2(0.5f, 0.5f);
-		tex.pxFrameWidth = (float)td->width;
-		tex.pxFrameHeight = (float)td->height;
+		tex.pxFrameWidth = static_cast<float>(td->width);
+		tex.pxFrameHeight = static_cast<float>(td->height);
 		tex.pxBorderSize = 0;
 
 		math::RectFloat frame = { 0,0,1,1 };

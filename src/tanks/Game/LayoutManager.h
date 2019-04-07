@@ -4,66 +4,10 @@
 #include "Rendering/IDrawable.h"
 #include "WidgetBase.h"
 
-#include <stack>
 #include <memory>
 #include "Base/IInput.h"
 #include "UIWindow.h"
-
-//TODO: navigation stack
-class UIDialogsManager final : public WidgetBase
-{
-public:
-	
-
-	UIDialogsManager(float width, float height, const TextureManager& textures)
-		: WidgetBase(nullptr, textures)
-	{
-		Resize(width, height);
-	}
-
-	void Push(std::shared_ptr<WidgetBase> widget)
-	{
-		m_navStack.push_back(widget);
-		OnSize(GetWidth(), GetHeight());
-	}
-
-	void Pop()
-	{
-		
-	}
-
-	void Pop(std::shared_ptr<WidgetBase*> widget)
-	{
-		
-	}
-
-	void Draw(DrawingContext& dc, float interpolation) const override
-	{
-		//TODO:: draw only last dialog?
-
-		for (auto it = m_navStack.begin(); it != m_navStack.end(); ++it)
-			(*it)->Draw(dc, interpolation);
-	}
-
-	~UIDialogsManager()
-	{
-
-	}
-
-protected:
-	void OnSize(float width, float height) override
-	{
-		//float top = height/2.0f;
-		for (auto wnd : m_navStack)
-		{
-			wnd->Move(floorf((width - wnd->GetWidth()) / 2), floorf((height - wnd->GetHeight()) / 2));
-			//top += wnd->GetHeight() + 100.0f;// _conf.ui_spacing.GetFloat();
-		}
-	}
-
-private:
-	std::vector<std::shared_ptr<WidgetBase>> m_navStack;
-};
+#include <algorithm>
 
 class MainMenuDialog : public WidgetBase
 {
@@ -116,6 +60,130 @@ public:
 	}
 };
 
+// 1. EditorLayout
+// 2. GameLayout
+// 3. LightingLayout
+// 4. GuiLayout
+// ....
+struct ILayout : public IDrawable
+{
+	virtual ~ILayout() = 0;
+};
+
+inline ILayout::~ILayout() = default;
+
+//TODO: navigation stack
+class UIDialogsManager final : public WidgetBase
+{
+public:
+	UIDialogsManager(std::shared_ptr<RenderingEngine> renderingEngine)
+		: WidgetBase(nullptr, renderingEngine->GetTextureManager())
+		, m_menuBack(std::make_shared<WidgetBase>(this, renderingEngine->GetTextureManager()))
+	{
+		const float width = renderingEngine->GetPixelWidth();
+		const float height = renderingEngine->GetPixelHeight();
+
+		m_menuBack->SetTexture("gui_splash", false);
+		m_menuBack->SetDrawBorder(false);
+		m_menuBack->SetTextureStretchMode(StretchMode::Fill);
+		m_menuBack->Resize(width, height);
+
+		Resize(width, height);
+
+		Push(MainMenuDialog::Make(renderingEngine));
+	}
+
+	void Push(std::shared_ptr<WidgetBase> widget)
+	{
+		m_navTransitionStart = GetTransitionTarget();
+		m_navTransitionTime = .5f;
+
+		if (!m_navStack.empty())
+			m_navStack.back()->SetEnabled(false);
+
+		m_navStack.push_back(widget);
+		OnSize(GetWidth(), GetHeight());
+	}
+
+	void Update(float deltaTime) override
+	{
+		deltaTime *= 100.0f/*_conf.sv_speed.GetFloat()*/ / 100.0f;
+
+		if (m_navTransitionTime > 0)
+		{
+			m_navTransitionTime = std::max(0.f, m_navTransitionTime - deltaTime);
+			OnSize(GetWidth(), GetHeight());
+		}
+	}
+
+	void Pop()
+	{
+		
+	}
+
+	void Pop(std::shared_ptr<WidgetBase*> widget)
+	{
+		
+	}
+
+	void Draw(DrawingContext& dc, float interpolation) const override
+	{
+		m_menuBack->Draw(dc, interpolation);
+		//TODO:: draw only last dialog?
+
+		for (auto it = m_navStack.begin(); it != m_navStack.end(); ++it)
+			(*it)->Draw(dc, interpolation);
+	}
+
+	~UIDialogsManager()
+	{
+		m_menuBack.reset();
+		m_navStack.clear();
+	}
+
+protected:
+	void OnSize(float width, float height) override
+	{
+		m_menuBack->Resize(width, height);
+
+		float transition = (1 - std::cos(PI * m_navTransitionTime / 0.5f)) / 2;
+		float top = std::floor(m_navTransitionStart * transition + GetTransitionTarget() * (1 - transition));
+
+		std::cout << top << std::endl;
+
+		for (auto wnd : m_navStack)
+		{
+			wnd->Move(floorf((width - wnd->GetWidth()) / 2), top);
+			top += wnd->GetHeight() + 100.0f;
+		}
+	}
+
+private:
+	float GetTransitionTarget() const
+	{
+		return (GetHeight() + (m_navStack.empty() ? 0 : m_navStack.back()->GetHeight())) / 2 - GetNavStackSize();
+	}
+
+	float GetNavStackSize() const
+	{
+		float navStackHeight = 0;
+		if (!m_navStack.empty())
+		{
+			for (const auto& wnd : m_navStack)
+			{
+				navStackHeight += wnd->GetHeight();
+			}
+			navStackHeight += static_cast<float>(m_navStack.size() - 1) *  100.0f;
+		}
+		return navStackHeight;
+	}
+
+	float m_navTransitionTime = 0;
+	float m_navTransitionStart = 0;
+
+	std::shared_ptr<WidgetBase> m_menuBack;
+	std::vector<std::shared_ptr<WidgetBase>> m_navStack;
+};
 
 class LayoutManager final
 	: public IDrawable
@@ -126,32 +194,24 @@ public:
 	explicit LayoutManager(std::shared_ptr<RenderingEngine> re, std::shared_ptr<IInput> input);
 	~LayoutManager();
 
+	void Initialize();
+
 	// IDrawable
 	int GetOrder() const override;
 	void Draw(DrawingContext& dc, float interpolation) const override;
 
 	void Update(float deltaTime);
 
-	void Test()
+	void Push(std::shared_ptr<WidgetBase> widget)
 	{
-		{ // background
-			auto back = std::make_shared<WidgetBase>(nullptr, m_renderingEngine->GetTextureManager());
-			back->Resize(m_renderingEngine->GetPixelWidth(), m_renderingEngine->GetPixelHeight());
-			back->SetTexture("gui_splash", false);
-			back->SetDrawBorder(false);
-			back->SetTextureStretchMode(StretchMode::Fill);
-			m_openedScreens.push_back(back);
-			//back->SetVisible(false);
-		}
+		m_openedScreens.push_back(widget);
+	}
 
-		{
-			auto dm = std::make_shared<UIDialogsManager>(m_renderingEngine->GetPixelWidth(), m_renderingEngine->GetPixelHeight(), m_renderingEngine->GetTextureManager());
-
-			auto screen = MainMenuDialog::Make(m_renderingEngine);
-			dm->Push(screen);
-
-			m_openedScreens.push_back(dm);
-		}
+	std::shared_ptr<WidgetBase> Pop()
+	{
+		std::shared_ptr<WidgetBase> popped = m_openedScreens.back();
+		m_openedScreens.pop_back();
+		return popped;
 	}
 
 private:

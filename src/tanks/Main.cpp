@@ -33,6 +33,7 @@
 #include "RenderOrder.h"
 #include "WidgetBase.h"
 
+
 namespace
 {
 	class ConsoleLog final
@@ -104,9 +105,6 @@ int main(int, const char**)
 
 		GameController game(tanksEngine);
 		game.Launch();
-
-		//TODO: remove
-		game.GetLayoutManager().Test();
 
 		// engine loop
 		tanksEngine.Launch();

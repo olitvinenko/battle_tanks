@@ -15,5 +15,8 @@ protected:
 	void OnUpdate(float deltaTime) override;
 
 private:
-	float m_timeElapsed;
+	void InitTextureManager();
+
+private:
+	volatile bool m_texturesLoaded;
 };

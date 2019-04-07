@@ -33,7 +33,7 @@ public:
 	float GetHeight() const { return m_height; }
 
 	// logic
-	void Update(float deltaTime);
+	virtual void Update(float deltaTime);
 
 	bool Contains(const WidgetBase* other) const;
 
@@ -68,6 +68,9 @@ public:
 	void BringToFront();
 	void BringToBack();
 
+	void SetEnabled(bool enable);
+	bool GetEnabled() const { return _isEnabled; }
+
 	const std::string& GetText() const;
 	void SetText(const std::string &text);
 
@@ -86,6 +89,8 @@ protected:
 	virtual void OnTextChange() { }
 
 	virtual void OnVisibleChange(bool visible, bool inherited) { }
+
+	virtual void OnEnabledChange(bool enable, bool inherited) { }
 
 	std::list<WidgetBase*> m_children;
 

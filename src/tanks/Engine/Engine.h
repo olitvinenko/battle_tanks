@@ -42,6 +42,7 @@ public:
 	std::shared_ptr<IInput> GetInput() const { return m_input; }
 
 	GameLoop& GetLoop() { return m_loop; }
+	std::shared_ptr<ThreadPool> GetThreadPool() const { return m_threadPool; }
 
 private:
 	// view

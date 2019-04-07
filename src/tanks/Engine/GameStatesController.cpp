@@ -1,6 +1,5 @@
 #include "GameStatesController.h"
 
-
 void GameStatesController::PopState()
 {
 	if (m_states.empty())

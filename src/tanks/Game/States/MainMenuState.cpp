@@ -12,6 +12,5 @@ void MainMenuState::OnEnter()
 {
 	GameController* inst = GameController::GetInstance();
 
-
 	std::cout << "MainMenuState::OnEnter()" << std::endl;
 }
