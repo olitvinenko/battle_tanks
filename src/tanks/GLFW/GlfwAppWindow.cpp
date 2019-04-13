@@ -1,10 +1,11 @@
 #include "GlfwAppWindow.h"
-#include "GlfwPlatform.h"
 #include "GlfwKeys.h"
 #include "GuiManager.h"
 #include "Pointers.h"
 #include "UIWindow.h"
 #include "Rendering/RenderOpenGL.h"
+#include "GlfwInput.h"
+#include "GlfwClipboard.h"
 
 namespace GLFWProcessors
 {
@@ -29,8 +30,8 @@ namespace GLFWProcessors
 				return;
 			}
 
-			Vector2 mousePos = GetCursorPosInPixels(window);
-			gui->ProcessPointer(mousePos.x, mousePos.y, 0, msg, buttons, UI::PointerType::Mouse, 0);
+			//Vector2 mousePos = GetCursorPosInPixels(window);
+			//gui->ProcessPointer(mousePos.x, mousePos.y, 0, msg, buttons, UI::PointerType::Mouse, 0);
 		}
 	}
 
@@ -38,8 +39,8 @@ namespace GLFWProcessors
 	{
 		if (auto gui = GlfwAppWindow::GetLayoutManager(window))
 		{
-			Vector2 mousePos = GetCursorPosInPixels(window, xpos, ypos);
-			gui->ProcessPointer(mousePos.x, mousePos.y, 0, UI::Msg::PointerMove, 0, UI::PointerType::Mouse, 0);
+			//Vector2 mousePos = GetCursorPosInPixels(window, xpos, ypos);
+			//gui->ProcessPointer(mousePos.x, mousePos.y, 0, UI::Msg::PointerMove, 0, UI::PointerType::Mouse, 0);
 		}
 	}
 
@@ -47,10 +48,10 @@ namespace GLFWProcessors
 	{
 		if (auto gui = GlfwAppWindow::GetLayoutManager(window))
 		{
-			Vector2 mousePos = GetCursorPosInPixels(window);
-			Vector2 mouseOffset = GetCursorPosInPixels(window, xoffset, yoffset);
+			//Vector2 mousePos = GetCursorPosInPixels(window);
+			//Vector2 mouseOffset = GetCursorPosInPixels(window, xoffset, yoffset);
 
-			gui->ProcessPointer(mousePos.x, mousePos.y, mouseOffset.y, UI::Msg::MOUSEWHEEL, 0, UI::PointerType::Mouse, 0);
+			//gui->ProcessPointer(mousePos.x, mousePos.y, mouseOffset.y, UI::Msg::MOUSEWHEEL, 0, UI::PointerType::Mouse, 0);
 		}
 	}
 
@@ -58,8 +59,8 @@ namespace GLFWProcessors
 	{
 		if (auto gui = GlfwAppWindow::GetLayoutManager(window))
 		{
-			Key key = MapGlfwKeyCode(platformKey);
-			gui->ProcessKeys(GLFW_RELEASE == action ? UI::Msg::KEYUP : UI::Msg::KEYDOWN, key);
+			//Key key = MapGlfwKeyCode(platformKey);
+			//gui->ProcessKeys(GLFW_RELEASE == action ? UI::Msg::KEYUP : UI::Msg::KEYDOWN, key);
 		}
 	}
 
@@ -69,7 +70,7 @@ namespace GLFWProcessors
 		{
 			if (codepoint < 57344 || codepoint > 63743) // ignore Private Use Area characters
 			{
-				gui->ProcessText(codepoint);
+				//gui->ProcessText(codepoint);
 			}
 		}
 	}
@@ -98,8 +99,8 @@ GlfwAppWindow::GlfwAppWindow(const char *title, bool fullscreen, int width, int 
 		fullscreen ? glfwGetPrimaryMonitor() : nullptr,
 		nullptr));
 
-	m_clipboard.reset(new GlfwClipboard(*m_window));
-	m_input.reset(new GlfwInput(*m_window));
+	//m_clipboard.reset(new GlfwClipboard(*m_window));
+	//m_input.reset(new GlfwInput(*m_window));
 	m_render.reset(new RenderOpenGL());
 
 	glfwSetMouseButtonCallback(m_window, GLFWProcessors::OnMouseButton);
@@ -124,12 +125,12 @@ GlfwAppWindow::~GlfwAppWindow()
 	glfwTerminate();
 }
 
-UI::IClipboard& GlfwAppWindow::GetClipboard()
+IClipboard& GlfwAppWindow::GetClipboard()
 {
 	return *m_clipboard;
 }
 
-UI::IInput& GlfwAppWindow::GetInput()
+IInput& GlfwAppWindow::GetInput()
 {
 	return *m_input;
 }

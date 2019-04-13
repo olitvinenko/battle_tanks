@@ -46,7 +46,7 @@ View::~View()
 
 void View::FixedUpdate(float fixedDeltaTime)
 {
-	m_gui.TimeStep(fixedDeltaTime); // this also sends user controller state to WorldController
+	m_gui.Update(fixedDeltaTime); // this also sends user controller state to WorldController
 }
 
 void View::Render(float interpolation) const
@@ -58,7 +58,7 @@ void View::Render(float interpolation) const
 
 	DrawingContext dc(m_textureManager, &r, width, height);
 	m_appWindow.GetRender().Begin();
-	m_gui.Render(dc, interpolation);
+	m_gui.Draw(dc, interpolation);
 	m_appWindow.GetRender().End();
 }
 

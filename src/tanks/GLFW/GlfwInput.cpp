@@ -189,4 +189,8 @@ void GlfwInput::OnChar(GLFWwindow *window, unsigned int codepoint)
 
 	default: break;
 	}
+
+	if (codepoint < 57344 || codepoint > 63743) // ignore Private Use Area characters
+		for (auto listener : m_instance->m_listeners)
+			listener->OnCharacter(character);
 }

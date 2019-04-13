@@ -1,7 +1,7 @@
 #include "DefaultCamera.h"
 #include "WorldCfg.h"
 #include "Keys.h"
-#include "UIInput.h"
+#include "Base/IInput.h"
 #include <chrono>
 #include <algorithm>
 
@@ -20,7 +20,7 @@ DefaultCamera::DefaultCamera()
 	_dwTimeX = _dwTimeY = GetMilliseconds();
 }
 
-void DefaultCamera::HandleMovement(UI::IInput &input,
+void DefaultCamera::HandleMovement(IInput &input,
 								   float worldWidth, float worldHeight,
                                    float screenWidth, float screenHeight)
 {
@@ -28,13 +28,13 @@ void DefaultCamera::HandleMovement(UI::IInput &input,
 	static float levels[] = { 0.0625f, 0.125f, 0.25f, 0.5f, 1.0f, 1.5f, 2.0f };
 	static int   level    = 4;
 
-	if( !lastIn && input.IsKeyPressed(Key::PageUp) )
+	if( !lastIn && input.GetKey(Key::PageUp) )
 		level = std::min(level+1, (int) (sizeof(levels) / sizeof(float)) - 1);
-	lastIn = input.IsKeyPressed(Key::PageUp);
+	lastIn = input.GetKey(Key::PageUp);
 
-	if( !LastOut && input.IsKeyPressed(Key::PageDown) )
+	if( !LastOut && input.GetKey(Key::PageDown) )
 		level = std::max(level - 1, 0);
-	LastOut = input.IsKeyPressed(Key::PageDown);
+	LastOut = input.GetKey(Key::PageDown);
 
 	_zoom = levels[level];
 
@@ -42,9 +42,9 @@ void DefaultCamera::HandleMovement(UI::IInput &input,
 	unsigned int dwCurTime = GetMilliseconds();
 	unsigned int dt        = (unsigned int) _dt;
 
-	Vector2 mouse = input.GetMousePos();
+	Vector2 mouse = input.GetMousePosition();
 
-	if( 0 == (int) mouse.x || input.IsKeyPressed(Key::Left) )
+	if( 0 == (int) mouse.x || input.GetKey(Key::Left) )
 	{
 		bMove = true;
 		while( dwCurTime - _dwTimeX > dt )
@@ -54,7 +54,7 @@ void DefaultCamera::HandleMovement(UI::IInput &input,
 		}
 	}
 	else
-	if( screenWidth - 1 == (int) mouse.x || input.IsKeyPressed(Key::Right) )
+	if( screenWidth - 1 == (int) mouse.x || input.GetKey(Key::Right) )
 	{
 		bMove = true;
 		while( dwCurTime - _dwTimeX > dt )
@@ -66,7 +66,7 @@ void DefaultCamera::HandleMovement(UI::IInput &input,
 	else
 		_dwTimeX = GetMilliseconds();
 	//---------------------------------------
-	if( 0 == (int) mouse.y || input.IsKeyPressed(Key::Up) )
+	if( 0 == (int) mouse.y || input.GetKey(Key::Up) )
 	{
 		bMove = true;
 		while( dwCurTime - _dwTimeY > dt )
@@ -76,7 +76,7 @@ void DefaultCamera::HandleMovement(UI::IInput &input,
 		}
 	}
 	else
-	if( screenHeight - 1 == (int) mouse.y || input.IsKeyPressed(Key::Down) )
+	if( screenHeight - 1 == (int) mouse.y || input.GetKey(Key::Down) )
 	{
 		bMove = true;
 		while( dwCurTime - _dwTimeY > dt )

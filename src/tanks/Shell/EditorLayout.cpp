@@ -11,7 +11,6 @@
 #include "List.h"
 #include "DataSourceAdapters.h"
 #include "Keys.h"
-#include "UIInput.h"
 
 #include <sstream>
 #include <algorithm>
@@ -553,7 +552,7 @@ void EditorLayout::Draw(DrawingContext &dc) const
 	//	dc.DrawSprite(&sel, _texSelection, 0xffffffff, 0);
 	//	dc.DrawBorder(sel, _texSelection, 0xffffffff, 0);
 	//}
-	Vector2 mouse = GetManager().GetInput().GetMousePos() / _defaultCamera.GetZoom() + _defaultCamera.GetPos();
+	Vector2 mouse = GetManager().GetInput().GetMousePosition() / _defaultCamera.GetZoom() + _defaultCamera.GetPos();
 
 	std::stringstream buf;
 	buf << "x=" << floor(mouse.x + 0.5f) << "; y=" << floor(mouse.y + 0.5f) << "; zoom= " << _defaultCamera.GetZoom() << "; cameraPos= " << _defaultCamera.GetPos();

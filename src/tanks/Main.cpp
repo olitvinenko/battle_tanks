@@ -26,12 +26,10 @@
 #include "Rendering/RenderOpenGL.h"
 
 #include "GameController.h"
-#include "LayoutManager.h"
 
 #include "MainMenu.h"
 #include "Button.h"
 #include "RenderOrder.h"
-#include "WidgetBase.h"
 
 
 namespace

@@ -40,6 +40,7 @@ public:
 	std::shared_ptr<FileSystem::IFileSystem> GetFileSystem() const { return m_fileSystem; }
 	std::shared_ptr<RenderingEngine> GetRenderingEngine() const { return m_rendering; }
 	std::shared_ptr<IInput> GetInput() const { return m_input; }
+	std::shared_ptr<IClipboard> GetClipboard() const { return m_clipboard; }
 
 	GameLoop& GetLoop() { return m_loop; }
 	std::shared_ptr<ThreadPool> GetThreadPool() const { return m_threadPool; }

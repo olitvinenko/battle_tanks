@@ -29,6 +29,74 @@ void LuaStateDeleter::operator()(lua_State *L) const
 	lua_close(L);
 }
 
+static UI::ConsoleBuffer s_logger(100, 500);
+static AppState appState;
+
+
+Desktop::Desktop(UI::LayoutManager* manager,
+	FileSystem::IFileSystem &fs,
+	int width, int height)
+	: UIWindow(nullptr, manager)
+	, AppStateListener(appState)
+	, _fs(fs)
+	, _logger(s_logger)
+	, _globL(luaL_newstate())
+{
+	using namespace std::placeholders;
+
+	if (!_globL)
+		throw std::bad_alloc();
+
+	SetTexture("gui_splash", false);
+	SetDrawBorder(false);
+	SetTextureStretchMode(UI::StretchMode::Fill);
+
+	_con = UI::Console::Create(this, 10, 0, 100, 100, &_logger);
+	_con->eventOnSendCommand = std::bind(&Desktop::OnCommand, this, _1);
+	_con->eventOnRequestCompleteCommand = std::bind(&Desktop::OnCompleteCommand, this, _1, _2, _3);
+	_con->SetVisible(false);
+	_con->SetTopMost(true);
+	Color colors[] = { 0xffffffff, 0xffff7fff };
+	_con->SetColors(colors, sizeof(colors) / sizeof(colors[0]));
+	_con->SetHistory(&_history);
+
+	_fps = new FpsCounter(this, 0, 0, alignTextLB);
+	//	_conf.ui_showfps.eventChange = std::bind(&Desktop::OnChangeShowFps, this);
+	OnChangeShowFps();
+
+	//if( _conf.dbg_graph.Get() )
+	//{
+	//	float xx = 200;
+	//	float yy = 3;
+	//	float hh = 50;
+	//	for( size_t i = 0; i < CounterBase::GetMarkerCountStatic(); ++i )
+	//	{
+	//		Oscilloscope *os = new Oscilloscope(this, xx, yy);
+	//		os->Resize(400, hh);
+	//		os->SetRange(-1/15.0f, 1/15.0f);
+	//		os->SetTitle(CounterBase::GetMarkerInfoStatic(i).title);
+	//		CounterBase::SetMarkerCallbackStatic(i, std::bind(&Oscilloscope::Push, os, std::placeholders::_1));
+	//		yy += hh+5;
+	//	}
+	//}
+
+	_pauseButton = UI::ImageButton::Create(this, 0, 0, "ui/pause");
+	_pauseButton->SetTopMost(true);
+	_pauseButton->eventClick = [=]()
+	{
+		if (_navStack.empty())
+		{
+			ShowMainMenu();
+		}
+	};
+
+	SetTimeStep(true);
+	//OnGameContextChanged();
+
+	//new 
+	Resize(width, height);
+	OnGameContextChanged();
+}
 
 Desktop::Desktop(UI::LayoutManager* manager,
                  AppState &appState,

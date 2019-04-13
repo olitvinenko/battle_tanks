@@ -1,8 +1,8 @@
 #include "Edit.h"
-#include "Clipboard.h"
 #include "GuiManager.h"
 #include "Keys.h"
-#include "UIInput.h"
+#include "Base/IInput.h"
+#include "Base/IClipboard.h"
 
 #include <algorithm>
 #include <cstring>
@@ -168,10 +168,10 @@ bool Edit::OnChar(int c)
 
 bool Edit::OnKeyPressed(Key key)
 {
-    bool shift = GetManager().GetInput().IsKeyPressed(Key::LeftShift) ||
-        GetManager().GetInput().IsKeyPressed(Key::RightShift);
-    bool control = GetManager().GetInput().IsKeyPressed(Key::LeftCtrl) ||
-        GetManager().GetInput().IsKeyPressed(Key::RightCtrl);
+    bool shift = GetManager().GetInput().GetKey(Key::LeftShift) ||
+        GetManager().GetInput().GetKey(Key::RightShift);
+    bool control = GetManager().GetInput().GetKey(Key::LeftCtrl) ||
+        GetManager().GetInput().GetKey(Key::RightCtrl);
 	int tmp;
 	switch(key)
 	{
@@ -358,7 +358,7 @@ void Edit::OnTimeStep(float dt)
 
 void Edit::Paste()
 {
-    if( const char *data = GetManager().GetClipboard().GetClipboardText() )
+    if( const char *data = GetManager().GetClipboard().GetText().c_str() )
     {
         std::ostringstream buf;
         buf << GetText().substr(0, GetSelMin());
@@ -374,7 +374,7 @@ void Edit::Copy() const
 	std::string str = GetText().substr(GetSelMin(), GetSelLength());
 	if( !str.empty() )
 	{
-        GetManager().GetClipboard().SetClipboardText(std::move(str));
+        GetManager().GetClipboard().SetText(std::move(str));
 	}
 }
 

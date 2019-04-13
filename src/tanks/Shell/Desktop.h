@@ -43,6 +43,10 @@ class Desktop
 {
 public:
 	Desktop(UI::LayoutManager* manager,
+		FileSystem::IFileSystem &fs,
+		int width, int height);
+
+	Desktop(UI::LayoutManager* manager,
 	        AppState &appState,
 			FileSystem::IFileSystem &fs,
 	       // ConfCache &conf,
@@ -51,6 +55,7 @@ public:
 	virtual ~Desktop();
 
 	void ShowConsole(bool show);
+	void ShowMainMenu();
 
 protected:
 	bool OnKeyPressed(Key key) override;
@@ -91,7 +96,6 @@ private:
 	bool GetEditorMode() const;
 	void SetEditorMode(bool editorMode);
 	bool IsGamePaused() const;
-	void ShowMainMenu();
 
 	void OnChangeShowFps();
 

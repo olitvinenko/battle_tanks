@@ -6,14 +6,17 @@
 #include "AppController.h"
 #include "Rendering/DrawingContext.h"
 #include "Desktop.h"
+#include <memory>
+#include "RenderOrder.h"
+#include "Base/MouseButton.h"
 
 namespace UI
 {
 
-LayoutManager::LayoutManager(UI::IInput &input, IClipboard &clipboard, TextureManager &texman, AppController& controller)
-  : _input(input)
-  , _clipboard(clipboard)
-  , _texman(texman)
+LayoutManager::LayoutManager(IInput &input, IClipboard &clipboard, TextureManager &texman, AppController& controller)
+  : //_input(input)
+ // , _clipboard(clipboard)
+    _texman(texman)
   , _tsCurrent(_timestep.end())
   , _tsDeleteCurrent(false)
   , _captureCountSystem(0)
@@ -28,9 +31,47 @@ LayoutManager::LayoutManager(UI::IInput &input, IClipboard &clipboard, TextureMa
 	_desktop.Set(new Desktop(this, controller.GetAppState(), controller.GetFs(), controller.GetLogger()));
 }
 
+void LayoutManager::Initialize()
+{
+	_desktop.Set(new Desktop(this, *m_fs, m_renderingEngine->GetPixelWidth(), m_renderingEngine->GetPixelHeight()));
+}
+
+LayoutManager::LayoutManager(std::shared_ptr<RenderingEngine> re, std::shared_ptr<FileSystem::IFileSystem> fs, std::shared_ptr<IInput> input, std::shared_ptr<IClipboard> clipboard)
+	: m_renderingEngine(re)
+	, m_input(input)
+	, m_clipboard(clipboard)
+	, m_fs(fs)
+	, _texman(re->GetTextureManager())
+	, _tsCurrent(_timestep.end())
+	, _tsDeleteCurrent(false)
+	, _captureCountSystem(0)
+	, _focusWnd(nullptr)
+	, _hotTrackWnd(nullptr)
+	, _desktop(nullptr)
+	, _isAppActive(false)
+#ifndef NDEBUG
+	, _dbgFocusIsChanging(false)
+#endif
+{
+	m_renderingEngine->GetScheme().RegisterDrawable(*this);
+
+	m_input->AddListener(this);
+	m_renderingEngine->GetWindow()->AddListener(this);
+}
+
 LayoutManager::~LayoutManager()
 {
 	_desktop->Destroy();
+
+	m_input->RemoveListener(this);
+	m_renderingEngine->GetWindow()->RemoveListener(this);
+
+	m_renderingEngine->GetScheme().UnegisterDrawable(*this);
+}
+
+int LayoutManager::GetOrder() const
+{
+	return static_cast<int>(RenderOrder::GUI);
 }
 
 UIWindow* LayoutManager::GetCapture(unsigned int pointerID) const
@@ -240,13 +281,13 @@ void LayoutManager::TimeStepUnregister(std::list<UIWindow*>::iterator it)
     }
 }
 
-void LayoutManager::TimeStep(float dt)
+void LayoutManager::Update(float realDeltaTime)
 {
     assert(_tsCurrent == _timestep.end());
     assert(!_tsDeleteCurrent);
 	for( _tsCurrent = _timestep.begin(); _tsCurrent != _timestep.end(); )
 	{
-		(*_tsCurrent)->OnTimeStep(dt);
+		(*_tsCurrent)->OnTimeStep(realDeltaTime);
         if (_tsDeleteCurrent)
         {
             _tsDeleteCurrent = false;
@@ -342,6 +383,111 @@ bool LayoutManager::ProcessPointerInternal(UIWindow* wnd, float x, float y, floa
 	}
 
 	return false;
+}
+
+void LayoutManager::OnMouseButtonDown(MouseButton button)
+{
+	UI::Msg msg = UI::Msg::PointerDown;
+	int buttons = 0;
+
+	switch (button)
+	{
+	case MouseButton::Left:
+		buttons |= 0x01;
+		break;
+
+	case MouseButton::Right:
+		buttons |= 0x02;
+		break;
+
+	case MouseButton::Middle:
+		buttons |= 0x04;
+		break;
+
+	default: ;
+	}
+
+	const Vector2& pos = m_input->GetMousePosition();
+	ProcessPointer(pos.x, pos.y, 0, Msg::PointerDown, buttons, PointerType::Mouse, 0);
+}
+
+void LayoutManager::OnMouseButtonUp(MouseButton button)
+{
+	Msg msg = Msg::PointerDown;
+	int buttons = 0;
+
+	switch (button)
+	{
+	case MouseButton::Left:
+		buttons |= 0x01;
+		break;
+
+	case MouseButton::Right:
+		buttons |= 0x02;
+		break;
+
+	case MouseButton::Middle:
+		buttons |= 0x04;
+		break;
+
+	default:;
+	}
+
+	const Vector2& pos = m_input->GetMousePosition();
+	ProcessPointer(pos.x, pos.y, 0, Msg::PointerUp, buttons, PointerType::Mouse, 0);
+}
+
+void LayoutManager::OnMousePosition(float x, float y)
+{
+	ProcessPointer(x, y, 0, UI::Msg::PointerMove, 0, UI::PointerType::Mouse, 0);
+}
+
+void LayoutManager::OnMouseScrollOffset(float x, float y)
+{
+	const Vector2& pos = m_input->GetMousePosition();
+	ProcessPointer(pos.x, pos.y, y, Msg::MOUSEWHEEL, 0, PointerType::Mouse, 0);
+
+	std::cout << "OnMouseScrollOffset" << std::endl;
+}
+
+void LayoutManager::OnKeyDown(Key key)
+{
+	ProcessKeys(Msg::KEYDOWN, key);
+
+	std::cout << "OnKeyDown" << std::endl;
+}
+
+void LayoutManager::OnKey(Key key)
+{
+}
+
+void LayoutManager::OnCharacter(char character)
+{
+	ProcessText(character);
+
+	std::cout << "OnCharacter " << character << std::endl;
+}
+
+void LayoutManager::OnKeyUp(Key key)
+{
+	ProcessKeys(Msg::KEYUP, key);
+
+	std::cout << "OnKeyUp" << std::endl;
+}
+
+void LayoutManager::OnFrameBufferChanged(int width, int height)
+{
+	_desktop->Resize(width, height);
+}
+
+void LayoutManager::OnSizeChanged(int width, int height)
+{
+	std::cout << "OnSizeChanged" << std::endl;
+}
+
+void LayoutManager::OnClosed()
+{
+	std::cout << "OnClosed" << std::endl;
 }
 
 bool LayoutManager::ProcessPointer(float x, float y, float z, Msg msg, int button, PointerType pointerType, unsigned int pointerID)
@@ -462,7 +608,7 @@ static void DrawWindowRecursive(const UIWindow &wnd, DrawingContext &dc, bool to
 	dc.PopTransform();
 }
 
-void LayoutManager::Render(DrawingContext &dc, float interpolation) const
+void LayoutManager::Draw(DrawingContext &dc, float interpolation) const
 {
 	dc.SetMode(INTERFACE);
 

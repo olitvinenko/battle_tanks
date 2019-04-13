@@ -2,6 +2,8 @@
 #include <memory>
 #include "AppWindowBase.h"
 #include <GLFW/glfw3.h>
+#include "Base/IInput.h"
+#include "Base/IClipboard.h"
 
 class GlfwClipboard;
 class GlfwInput;
@@ -21,8 +23,8 @@ public:
 	bool ShouldClose() const;
 
 	// AppWindow
-	UI::IClipboard& GetClipboard() override;
-	UI::IInput& GetInput() override;
+	IClipboard& GetClipboard() override;
+	IInput& GetInput() override;
 	IRender& GetRender() override;
 	unsigned int GetPixelWidth() override;
 	unsigned int GetPixelHeight() override;

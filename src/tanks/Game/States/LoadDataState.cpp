@@ -2,6 +2,7 @@
 #include "MainMenuState.h"
 #include "GameController.h"
 #include "Config.h"
+#include "GuiManager.h"
 
 
 LoadDataState::LoadDataState(GameStatesController* controller)

@@ -3,17 +3,14 @@
 #pragma once
 #include "Vector2.h"
 
-namespace UI
-{
-	struct IInput;
-}
+struct IInput;
 
 class DefaultCamera
 {
 public:
 	DefaultCamera();
 
-	void HandleMovement(UI::IInput &input, float worldWidth, float worldHeight, float screenWidth, float screenHeight);
+	void HandleMovement(IInput &input, float worldWidth, float worldHeight, float screenWidth, float screenHeight);
 	float GetZoom() const { return _zoom; }
 	Vector2 GetPos() const { return _pos; }
 
