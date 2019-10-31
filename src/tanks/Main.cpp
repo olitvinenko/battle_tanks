@@ -20,7 +20,7 @@
 #include "GlfwWindow.h"
 #include "GlfwClipboard.h"
 #include "GlfwInput.h"
-#include "LoadDataState.h"
+#include "States/LoadDataState.h"
 
 #include "GameStatesController.h"
 #include "Rendering/RenderOpenGL.h"

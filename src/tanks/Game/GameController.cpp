@@ -1,6 +1,6 @@
 #include "Engine.h"
 #include "GameController.h"
-#include "LoadDataState.h"
+#include "States/LoadDataState.h"
 
 GameController::GameController(Engine& engine)
 	: m_engine(engine)

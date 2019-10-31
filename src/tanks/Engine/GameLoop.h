@@ -51,7 +51,7 @@ class GameLoop
 		}
 
 		template<typename F>
-		void Foreach(F& f)
+		void Foreach(F&& f)
 		{
 			std::for_each(m_targets.begin(), m_targets.end(), f);
 		}

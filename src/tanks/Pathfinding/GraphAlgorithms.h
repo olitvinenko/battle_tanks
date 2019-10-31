@@ -136,7 +136,7 @@ bool Graph_SearchDFS<graph_type>::Search()
     //push the edges leading from the node this edge points to onto
     //the stack (provided the edge does not point to a previously 
     //visited node)
-    graph_type::ConstEdgeIterator ConstEdgeItr(m_Graph, Next->To());
+    typename graph_type::ConstEdgeIterator ConstEdgeItr(m_Graph, Next->To());
 
     for (const Edge* pE=ConstEdgeItr.begin();
         !ConstEdgeItr.end();
@@ -291,7 +291,7 @@ bool Graph_SearchBFS<graph_type>::Search()
 
     //push the edges leading from the node at the end of this edge 
     //onto the queue
-    graph_type::ConstEdgeIterator ConstEdgeItr(m_Graph, Next->To());
+    typename graph_type::ConstEdgeIterator ConstEdgeItr(m_Graph, Next->To());
 
     for (const Edge* pE=ConstEdgeItr.begin();
         !ConstEdgeItr.end();
@@ -448,7 +448,7 @@ void Graph_SearchDijkstra<graph_type>::Search()
 		if (NextClosestNode == m_iTarget) return;
 
 		//now to relax the edges.
-		graph_type::ConstEdgeIterator ConstEdgeItr(m_Graph, NextClosestNode);
+		typename graph_type::ConstEdgeIterator ConstEdgeItr(m_Graph, NextClosestNode);
 
 		//for each edge connected to the next closest node
 		for (const Edge* pE = ConstEdgeItr.begin();
@@ -598,7 +598,7 @@ void Graph_SearchAStar<graph_type, heuristic>::Search()
 		if (NextClosestNode == m_iTarget) return;
 
 		//now to test all the edges attached to this node
-		graph_type::ConstEdgeIterator ConstEdgeItr(m_Graph, NextClosestNode);
+		typename graph_type::ConstEdgeIterator ConstEdgeItr(m_Graph, NextClosestNode);
 
 		for (const Edge* pE = ConstEdgeItr.begin();
 			!ConstEdgeItr.end();
@@ -690,47 +690,50 @@ private:
 
   void Search(const int source)
   {
-    //create a priority queue
-    IndexedPriorityQLow<double> pq(m_CostToThisNode, m_Graph.NumNodes());
-
-    //put the source node on the queue
-    pq.insert(source);
-
-    //while the queue is not empty
-    while(!pq.empty())
-    {
-      //get lowest cost edge from the queue
-      int best = pq.Pop();
-
-      //move this edge from the fringe to the spanning tree
-      m_SpanningTree[best] = m_Fringe[best];
-
-      //now to test the edges attached to this node
-      graph_type::ConstEdgeIterator ConstEdgeItr(m_Graph, best);
-
-      for (const Edge* pE=ConstEdgeItr.beg(); !ConstEdgeItr.end(); pE=ConstEdgeItr.nxt())
+      typedef std::pair<int, int> iPair;
+      std::priority_queue<iPair, std::vector<iPair>, std::greater<iPair>> pq;
+      
+      //put the source node on the queue
+      pq.push(std::make_pair(0, source));
+      
+      //while the queue is not empty
+      while(!pq.empty())
       {
-        double Priority = pE->Cost;
+          //get lowest cost edge from the queue
+          int best = pq.top().second;
+          pq.pop();
+          
+          //move this edge from the fringe to the spanning tree
+          m_SpanningTree[best] = m_Fringe[best];
 
-        if (m_Fringe[pE->To()] == 0)
-        {
-          m_CostToThisNode[pE->To()] = Priority;
+          //now to test the edges attached to this node
+          typename graph_type::ConstEdgeIterator ConstEdgeItr(m_Graph, best);
 
-          pq.insert(pE->To());
+          for (const Edge* pE=ConstEdgeItr.beg(); !ConstEdgeItr.end(); pE=ConstEdgeItr.nxt())
+          {
+            double Priority = pE->Cost;
 
-          m_Fringe[pE->To()] = pE;
-        }
+            if (m_Fringe[pE->To()] == 0)
+            {
+              m_CostToThisNode[pE->To()] = Priority;
 
-        else if ((Priority<m_CostToThisNode[pE->To()]) && (m_SpanningTree[pE->To()]==0))
-        {
-          m_CostToThisNode[pE->To()] = Priority;
+              //pq.insert(pE->To());
+                pq.push(std::make_pair(Priority, pE->To()));
+                
+              m_Fringe[pE->To()] = pE;
+            }
 
-          pq.ChangePriority(pE->To());
+            else if ((Priority<m_CostToThisNode[pE->To()]) && (m_SpanningTree[pE->To()]==0))
+            {
+              m_CostToThisNode[pE->To()] = Priority;
 
-          m_Fringe[pE->To()] = pE;
-        }
+              //pq.ChangePriority(pE->To());
+                pq.push(std::make_pair(Priority, pE->To()));
+                
+              m_Fringe[pE->To()] = pE;
+            }
+          }
       }
-    }
   }
 
 public:
