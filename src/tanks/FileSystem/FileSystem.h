@@ -90,16 +90,15 @@ namespace FileSystem
 		virtual ~IFileSystem() = default;
 
 		virtual std::shared_ptr<IFileSystem> GetFileSystem(const std::string &path, bool create = false, bool nothrow = false);
-
+        virtual std::vector<std::string> EnumAllFiles(const std::string &mask) = 0;
+        
 		std::shared_ptr<File> Open(const std::string &path, FileOpenMode mode = FileOpenMode::Read | FileOpenMode::Binary);
 		void Mount(const std::string &nodeName, std::shared_ptr<IFileSystem> fs);
 
-		virtual std::vector<std::string> EnumAllFiles(const std::string &mask) = 0;
-		virtual char Separator() const = 0;
-
 	protected:
-		explicit IFileSystem(std::string &&rootDirectory);
-		
+		explicit IFileSystem(const std::string& rootDirectory);
+    
+        virtual char Separator() const = 0;
 		std::string _rootDirectory;
 	private:
 		std::shared_ptr<File> RawOpen(const std::string &fileName, FileOpenMode mode) const;

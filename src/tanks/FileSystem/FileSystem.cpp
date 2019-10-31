@@ -1,7 +1,6 @@
 #include <cassert>
 
 #include "FileSystem.h"
-#include "FileSystemWin32.h"
 
 namespace FileSystem
 {
@@ -46,7 +45,7 @@ namespace FileSystem
 		return result;
 	}
 
-	static int toCppSeek(SeekMethod method)
+	static std::ios_base::seek_dir toCppSeek(SeekMethod method)
 	{
 		switch (method)
 		{
@@ -56,10 +55,9 @@ namespace FileSystem
 			return std::ios_base::cur;
 		case SeekMethod::End:
 			return std::ios_base::end;
+                
+        default: assert(false && "Not supported seek method");
 		}
-
-		assert(false && "Not supported seek method");
-		return -1;
 	}
 
 
@@ -183,8 +181,8 @@ namespace FileSystem
 		return _parent->_file.tellp();
 	}
 
-	IFileSystem::IFileSystem(std::string &&rootDirectory)
-		: _rootDirectory(std::move(rootDirectory))
+	IFileSystem::IFileSystem(const std::string& rootDirectory)
+		: _rootDirectory(rootDirectory)
 	{ }
 
 	void IFileSystem::Mount(const std::string &nodeName, std::shared_ptr<IFileSystem> fs)
