@@ -53,7 +53,7 @@ set(SRC_FILE_SYSTEM
 if(WIN32)
 	list(APPEND SRC_FILE_SYSTEM FileSystem/FileSystemWin32.cpp FileSystem/FileSystemWin32.h)
 elseif(UNIX)
-
+	list(APPEND SRC_FILE_SYSTEM FileSystem/FileSystemUnix.cpp FileSystem/FileSystemUnix.h)
 endif()
 
 source_group("filesystem" FILES ${SRC_FILE_SYSTEM})
@@ -93,7 +93,7 @@ elseif(IOS)
 		Render/RenderGLES2.cpp
 	)
 elseif(UNIX)
-	list(APPEND SRC_RENDER Render/RenderOpenGL.cpp)
+	#list(APPEND SRC_RENDER Render/RenderOpenGL.cpp)
 endif()
 
 source_group("render" FILES ${SRC_RENDER})
@@ -269,10 +269,23 @@ else()
 	message(FATAL_ERROR "Unknown platform")
 endif()
 
-target_link_libraries(tanks
-	opengl32
-	glfw
-	lua
-	box2d
-	${GLFW_LIBRARIES}
-)
+if(WIN32)
+	target_link_libraries(tanks
+		opengl32
+		glfw
+		lua
+		box2d
+		${GLFW_LIBRARIES}
+	)
+elseif(UNIX)
+	find_package(OpenGL REQUIRED)
+	include_directories(${OPENGL_INCLUDE_DIR})
+
+	target_link_libraries(tanks
+		glfw
+		lua
+		box2d
+		${GLFW_LIBRARIES}
+		${OPENGL_LIBRARIES}
+	)
+endif()
