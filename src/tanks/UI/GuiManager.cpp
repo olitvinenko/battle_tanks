@@ -511,6 +511,13 @@ bool LayoutManager::ProcessPointer(float x, float y, float z, Msg msg, int butto
 	}
 	else
 	{
+#ifndef NDEBUG
+        if (!_desktop.Get())
+            return false;
+#else
+        assert(_desktop.Get());
+#endif
+        
 		// handle all children of the desktop recursively; offer to topmost windows first
 		if( ProcessPointerInternal(_desktop.Get(), x, y, z, msg, button, pointerType, pointerID, true) ||
             ProcessPointerInternal(_desktop.Get(), x, y, z, msg, button, pointerType, pointerID, false))
