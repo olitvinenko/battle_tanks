@@ -12,6 +12,7 @@
 #include "NewMap.h"
 #include "AppState.h"
 #include "EditorContext.h"
+#include "Campaign.h"
 
 #include "FileSystem.h"
 
@@ -260,32 +261,32 @@ void Desktop::OnCloseChild(UI::UIWindow *child, int result)
 
 void Desktop::OnNewCampaign()
 {
-//	NewCampaignDlg *dlg = new NewCampaignDlg(this, _fs, _lang);
-//	dlg->eventCampaignSelected = [this,dlg](std::string name)
-//	{
-//		if( !name.empty() )
-//		{
-//			OnCloseChild(dlg, UI::Dialog::_resultOK);
-//
-//			_conf.ui_showmsg.Set(true);
-//            try
-//            {
-////                script_exec_file(_globL.get(), _fs, ("campaign/" + name + ".lua").c_str());
-//                throw std::logic_error("not implemented");
-//            }
-//            catch( const std::exception &e )
-//            {
-//                _logger.WriteLine(1, e.what());
-//                ShowConsole(true);
-//            }
-//		}
-//		else
-//		{
-//			OnCloseChild(dlg, UI::Dialog::_resultCancel);
-//		}
-//		dlg->Destroy();
-//	};
-//	PushNavStack(*dlg);
+	NewCampaignDlg *dlg = new NewCampaignDlg(this, _fs);
+	dlg->eventCampaignSelected = [this,dlg](std::string name)
+	{
+		if( !name.empty() )
+		{
+			OnCloseChild(dlg, UI::Dialog::_resultOK);
+
+			//_conf.ui_showmsg.Set(true);
+            try
+            {
+                //script_exec_file(_globL.get(), _fs, ("campaign/" + name + ".lua").c_str());
+                throw std::logic_error("not implemented");
+            }
+            catch( const std::exception &e )
+            {
+                _logger.WriteLine(1, e.what());
+                ShowConsole(true);
+            }
+		}
+		else
+		{
+			OnCloseChild(dlg, UI::Dialog::_resultCancel);
+		}
+		dlg->Destroy();
+	};
+	PushNavStack(*dlg);
 }
 
 void Desktop::OnNewDM()
