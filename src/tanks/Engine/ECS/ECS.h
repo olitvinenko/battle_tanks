@@ -59,7 +59,7 @@ public:
 	using EntityPtrAllocator = std::allocator_traits<Allocator>::rebind_alloc<Entity*>;
 	using SystemPtrAllocator = std::allocator_traits<Allocator>::rebind_alloc<EntitySystem*>;
 	using SubscriberPtrAllocator = std::allocator_traits<Allocator>::rebind_alloc<Internal::BaseEventSubscriber*>;
-	using SubscriberPairAllocator = std::allocator_traits<Allocator>::rebind_alloc<std::pair<const TypeIndex, std::vector<Internal::BaseEventSubscriber*, SubscriberPtrAllocator>>>;
+	using SubscriberPairAllocator = std::allocator_traits<Allocator>::rebind_alloc<std::pair<const type_id_t, std::vector<Internal::BaseEventSubscriber*, SubscriberPtrAllocator>>>;
 
 	/**
 	 * Use this function to construct the world with a custom allocator.
@@ -95,7 +95,7 @@ public:
 		, systemAlloc(alloc)
 		, entities({}, EntityPtrAllocator(alloc))
 		, systems({}, SystemPtrAllocator(alloc))
-		, subscribers({}, 0, std::hash<TypeIndex>(), std::equal_to<TypeIndex>(), SubscriberPtrAllocator(alloc))
+		, subscribers({}, 0, std::hash<type_id_t>(), std::equal_to<type_id_t>(), SubscriberPtrAllocator(alloc))
 	{
 	}
 
@@ -333,10 +333,10 @@ private:
 	std::vector<EntitySystem*> disabledSystems;
 
 	std::unordered_map<
-		TypeIndex
+		type_id_t
 		, std::vector<Internal::BaseEventSubscriber*, SubscriberPtrAllocator>
-		, std::hash<TypeIndex>
-		, std::equal_to<TypeIndex>
+		, std::hash<type_id_t>
+		, std::equal_to<type_id_t>
 		, SubscriberPairAllocator
 	> subscribers;
 
@@ -473,7 +473,7 @@ public:
 	}
 
 private:
-	std::unordered_map<TypeIndex, Internal::BaseComponentContainer*> components;
+	std::unordered_map<type_id_t, Internal::BaseComponentContainer*> components;
 	World* world;
 
 	size_t id;

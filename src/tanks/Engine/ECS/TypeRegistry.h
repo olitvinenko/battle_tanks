@@ -1,24 +1,34 @@
 #pragma once
 
-typedef unsigned int TypeIndex;
+#include <cstddef>
 
-class TypeRegistry
+using type_id_t = std::size_t;
+
+namespace Internal
 {
-public:
-	TypeRegistry();
+    template <typename T>
+    class TypeFamily
+    {
+    private:
+        template <typename U>
+        struct type { static void id() { } };
+    public:
+        static type_id_t GetId();
+    };
 
-	TypeIndex getIndex() const;
+    template <typename T>
+    type_id_t TypeFamily<T>::GetId()
+    {
+        static type_id_t typeId = reinterpret_cast<type_id_t>(&type<T>::id);
+        return typeId;
+    }
+}
 
-private:
-	static TypeIndex nextIndex;
-	TypeIndex index;
-};
+#define ECS_DECLARE_TYPE static type_id_t GetStaticId();
+#define ECS_DEFINE_TYPE(TypeName) type_id_t TypeName::GetStaticId() { return Internal::TypeFamily<TypeName>::GetId(); }
 
-#define ECS_DECLARE_TYPE public: static TypeRegistry __ecs_type_reg
-#define ECS_DEFINE_TYPE(name) TypeRegistry name::__ecs_type_reg
-
-template<typename T>
-TypeIndex getTypeIndex()
+template<typename T, typename = decltype(T::GetStaticId)>
+type_id_t getTypeIndex()
 {
-	return T::__ecs_type_reg.getIndex();
+    return T::GetStaticId();
 }
