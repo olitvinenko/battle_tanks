@@ -1,7 +1,7 @@
 #include "LoadDataState.h"
 #include "MainMenuState.h"
 #include "GameController.h"
-#include "Config.h"
+#include "Configuration.h"
 #include "GuiManager.h"
 
 

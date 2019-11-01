@@ -9,6 +9,7 @@ include_directories(
 	${GLFW_SOURCE_DIR}/include
 	${Lua_SOURCE_DIR}/src	
 	${box2d_SOURCE_DIR}
+	${jsoncpp_SOURCE_DIR}
 )
 #########################################################################
 
@@ -275,6 +276,7 @@ if(WIN32)
 		glfw
 		lua
 		box2d
+		jsoncpp
 		${GLFW_LIBRARIES}
 	)
 elseif(UNIX)
@@ -285,6 +287,7 @@ elseif(UNIX)
 		glfw
 		lua
 		box2d
+		jsoncpp
 		${GLFW_LIBRARIES}
 		${OPENGL_LIBRARIES}
 	)

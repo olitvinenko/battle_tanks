@@ -1,4 +1,4 @@
-#include "Config.h"
+#include "Configuration.h"
 #include "FileSystem.h"
 #include "GlfwAppWindow.h"
 #include "ConsoleBuffer.h"
@@ -31,6 +31,8 @@
 #include "Button.h"
 #include "RenderOrder.h"
 
+#include "Engine/ECS/ecsTest.h"
+#include <json.h>
 
 namespace
 {
@@ -93,22 +95,22 @@ int main(int, const char**)
 
 		//--------------------------------------------------------------------------------------------------
 
-		std::shared_ptr<GlfwWindow> window = std::make_shared<GlfwWindow>(TXT_VERSION, 1024, 768, false);
-		std::shared_ptr<IClipboard> clipboard = std::make_shared<GlfwClipboard>(window);
-		std::shared_ptr<IInput> input = std::make_shared<GlfwInput>(window);
-
-		RenderOpenGL render;
-
-		Engine tanksEngine(window, clipboard, input, fs, &render, static_cast<int>(RenderOrder::Last));
-
-		GameController game(tanksEngine);
-		game.Launch();
-
-		// engine loop
-		tanksEngine.Launch();
-
-		game.Shutdown();
-		return 0;
+//		std::shared_ptr<GlfwWindow> window = std::make_shared<GlfwWindow>(TXT_VERSION, 1024, 768, false);
+//		std::shared_ptr<IClipboard> clipboard = std::make_shared<GlfwClipboard>(window);
+//		std::shared_ptr<IInput> input = std::make_shared<GlfwInput>(window);
+//
+//		RenderOpenGL render;
+//
+//		Engine tanksEngine(window, clipboard, input, fs, &render, static_cast<int>(RenderOrder::Last));
+//
+//		GameController game(tanksEngine);
+//		game.Launch();
+//
+//		// engine loop
+//		tanksEngine.Launch();
+//
+//		game.Shutdown();
+//		return 0;
 
 		//--------------------------------------------------------------------------------------------------
 

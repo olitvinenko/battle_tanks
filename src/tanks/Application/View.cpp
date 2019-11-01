@@ -1,7 +1,7 @@
 #include "View.h"
 #include "AppWindowBase.h"
 #include "AppController.h"
-#include "Config.h"
+#include "Configuration.h"
 #include "FileSystem.h"
 #include "ConsoleBuffer.h"
 #include "UIWindow.h"

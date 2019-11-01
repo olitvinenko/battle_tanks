@@ -13,7 +13,7 @@
 #include "Button.h"
 #include "Text.h"
 #include "Keys.h"
-#include "Config.h"
+#include "Configuration.h"
 #include "Dialog.h"
 
 MainMenuDlg::MainMenuDlg(UIWindow *parent,
