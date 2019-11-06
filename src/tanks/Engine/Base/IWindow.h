@@ -2,6 +2,8 @@
 
 #include <string>
 
+class Vector2;
+
 struct IWindowListener
 {
 	virtual ~IWindowListener() = default;
@@ -20,6 +22,7 @@ struct IWindow
 
 	virtual int GetPixelWidth() const = 0;
 	virtual int GetPixelHeight() const = 0;
+    virtual float GetLayoutScale() const = 0;
 	virtual float GetAspectRatio() const = 0;
 
 	virtual bool ShouldClose() const = 0;
@@ -27,4 +30,8 @@ struct IWindow
 	virtual void PollEvents() = 0;
 
 	virtual const std::string& GetName() const = 0;
+    
+    virtual Vector2 GetCursorPosInPixels() const = 0;
+    virtual Vector2 GetCursorPosInPixels(double xoffset, double yoffset) const = 0;
+    virtual Vector2 GetPixelSize() const = 0;
 };

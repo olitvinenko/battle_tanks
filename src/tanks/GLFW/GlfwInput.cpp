@@ -71,6 +71,27 @@ const Vector2& GlfwInput::GetMousePosition() const
 }
 
 
+Vector2 GetCursorPosInPixels(GLFWwindow *window, double dipX, double dipY)
+{
+    int pxWidth;
+    int pxHeight;
+    glfwGetFramebufferSize(window, &pxWidth, &pxHeight);
+
+    int dipWidth;
+    int dipHeight;
+    glfwGetWindowSize(window, &dipWidth, &dipHeight);
+
+    return{ float(dipX * pxWidth / dipWidth), float(dipY * pxHeight / dipHeight) };
+}
+
+Vector2 GetCursorPosInPixels(GLFWwindow *window)
+{
+    double dipX = 0;
+    double dipY = 0;
+    glfwGetCursorPos(window, &dipX, &dipY);
+    return GetCursorPosInPixels(window, dipX, dipY);
+}
+
 // static members
 
 void GlfwInput::OnMouseButton(GLFWwindow *window, int button, int action, int mods)
@@ -150,21 +171,11 @@ void GlfwInput::OnScroll(GLFWwindow *window, double xOffset, double yOffset)
 
 void GlfwInput::OnCursorPos(GLFWwindow *window, double xpos, double ypos)
 {
-	int pxWidth;
-	int pxHeight;
-	glfwGetFramebufferSize(window, &pxWidth, &pxHeight);
-
-	int dipWidth;
-	int dipHeight;
-	glfwGetWindowSize(window, &dipWidth, &dipHeight);
-
-	float xPos = float(xpos * pxWidth / dipWidth);
-	float yPos = float(ypos * pxHeight / dipHeight);
-
-	m_mousePosition.set(xPos, yPos);
+    Vector2 mousePos = GetCursorPosInPixels(window, xpos, ypos);
+	m_mousePosition.set(mousePos.x, mousePos.y);
 
 	for (auto listener : m_instance->m_listeners)
-		listener->OnMousePosition(xPos, yPos);
+		listener->OnMousePosition(mousePos.x, mousePos.y);
 }
 
 void GlfwInput::OnChar(GLFWwindow *window, unsigned int codepoint)

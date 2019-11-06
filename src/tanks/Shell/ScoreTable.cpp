@@ -1,0 +1,126 @@
+#include "ScoreTable.h"
+
+#include <GameContext.h>
+#include <Deathmatch.h>
+#include <Player.h>
+#include <World.h>
+#include <Macros.h>
+#include <Language.h>
+#include <GuiManager.h>
+#include <LayoutContext.h>
+#include <TextureManager.h>
+#include <DrawingContext.h>
+
+#include <sstream>
+#include <iomanip>
+
+#define SCORE_POS_NUMBER     16
+#define SCORE_POS_NAME       48
+#define SCORE_POS_SCORE      16 // from the right side
+#define SCORE_LIMITS_LEFT    64
+#define SCORE_TIMELIMIT_TOP  16
+#define SCORE_FRAGLIMIT_TOP  36
+#define SCORE_NAMES_TOP      64
+#define SCORE_ROW_HEIGHT     24
+
+ScoreTable::ScoreTable(UI::LayoutManager &manager, TextureManager &texman, World &world, const Deathmatch *deathmatch, LangCache &lang)
+  : UI::Rectangle(manager)
+  , _font(texman.FindSprite("font_default"))
+  , _texHighlight(texman.FindSprite("ui/selection"))
+  , _world(world)
+  , _deathmatch(deathmatch)
+  , _lang(lang)
+{
+	SetTexture(texman, "scoretbl", true);
+	SetDrawBorder(false);
+}
+
+void ScoreTable::Draw(const UI::StateContext &sc, const UI::LayoutContext &lc, const UI::InputContext &ic, DrawingContext &dc, TextureManager &texman) const
+{
+	UI::Rectangle::Draw(sc, lc, ic, dc, texman);
+
+	std::vector<GC_Player*> players;
+	FOREACH( _world.GetList(LIST_players), GC_Player, player )
+	{
+		players.push_back(player);
+	}
+
+	int max_score = 0;
+	if( !players.empty() )
+	{
+		for( size_t i = players.size(); --i;)
+		{
+			for( size_t j = 0; j < i; ++j )
+			{
+				if( players[j]->GetScore() < players[j+1]->GetScore() )
+				{
+					std::swap(players[j+1], players[j]);
+				}
+			}
+		}
+		max_score = players[0]->GetScore();
+	}
+
+	if( _deathmatch && _deathmatch->GetTimeLimit() > 0 )
+	{
+		std::ostringstream text;
+		int timeleft = (int)std::ceil(_deathmatch->GetTimeLimit() - _world.GetTime());
+		if( timeleft > 0 )
+			text << _lang.score_time_left.Get() << " " << (timeleft / 60) << ":" << std::setfill('0') << std::setw(2) << (timeleft % 60);
+		else
+			text << _lang.score_time_limit_hit.Get();
+		dc.DrawBitmapText(ToPx(vec2d{ SCORE_LIMITS_LEFT, SCORE_TIMELIMIT_TOP }, lc), lc.GetScale(), _font, 0xffffffff, text.str());
+	}
+
+	if( _deathmatch && _deathmatch->GetFragLimit() > 0 )
+	{
+		std::ostringstream text;
+		int scoreleft = _deathmatch->GetFragLimit() - max_score;
+		if( scoreleft > 0 )
+			text << _lang.score_frags_left.Get() << " " << scoreleft;
+		else
+			text << _lang.score_frag_limit_hit.Get();
+		dc.DrawBitmapText(ToPx(vec2d{ SCORE_LIMITS_LEFT, SCORE_FRAGLIMIT_TOP }, lc), lc.GetScale(), _font, 0xffffffff, text.str());
+	}
+
+	const size_t maxLines = 8;
+
+	float pxLineHeight = ToPx(texman.GetCharHeight(_font) - 1, lc);
+	for (size_t i = 0; i < players.size(); ++i)
+	{
+		if (i == maxLines)
+			break;
+
+		vec2d pxOffset = vec2d{ 0, pxLineHeight * (float)i };
+		if (players[i]->GetIsHuman())
+		{
+			vec2d lt = ToPx(vec2d{ SCORE_POS_NUMBER, SCORE_NAMES_TOP }, lc) + pxOffset;
+			float pxWidth = lc.GetPixelSize().x - ToPx(SCORE_POS_SCORE, lc) - lt.x;
+			vec2d pxMargin = ToPx(vec2d{ 3, 3 }, lc);
+			FRECT pxRect = MakeRectWH(lt - pxMargin, vec2d{ pxWidth, pxLineHeight } + pxMargin * 2);
+			dc.DrawSprite(pxRect, _texHighlight, 0xffffffff, 0);
+			dc.DrawBorder(pxRect, _texHighlight, 0xffffffff, 0);
+		}
+	}
+
+	for (size_t i = 0; i < players.size(); ++i)
+	{
+		vec2d pxOffset = vec2d{ 0, pxLineHeight * (float)i };
+		if( i < maxLines)
+		{
+			dc.DrawBitmapText(ToPx(vec2d{ SCORE_POS_NAME, SCORE_NAMES_TOP }, lc) + pxOffset, lc.GetScale(), _font, 0xffffffff, players[i]->GetNick());
+
+			std::ostringstream text;
+			text << (int) (i + 1);
+			dc.DrawBitmapText(ToPx(vec2d{ SCORE_POS_NUMBER, SCORE_NAMES_TOP }, lc) + pxOffset, lc.GetScale(), _font, 0xffffffff, text.str());
+			text.str(std::string());
+			text << players[i]->GetScore();
+			dc.DrawBitmapText(vec2d{ lc.GetPixelSize().x - ToPx(SCORE_POS_SCORE, lc), ToPx(SCORE_NAMES_TOP, lc) } + pxOffset, lc.GetScale(), _font, 0xffffffff, text.str(), alignTextRT);
+		}
+		else
+		{
+			dc.DrawBitmapText(ToPx(vec2d{ SCORE_POS_NAME, SCORE_NAMES_TOP }, lc) + pxOffset, lc.GetScale(), _font, 0xffffffff, "...");
+			break;
+		}
+	}
+}

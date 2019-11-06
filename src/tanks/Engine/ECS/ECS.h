@@ -25,24 +25,24 @@
 //#define ECS_TICK_NO_CLEANUP
 
 
-class World;
+class ECSWorld;
 class Entity;
 
 typedef std::allocator<Entity> Allocator;
 
 namespace Internal
 {
-	using BaseComponentContainer = ComponentContainerInternalBase<World, Entity>;
+	using BaseComponentContainer = ComponentContainerInternalBase<ECSWorld, Entity>;
 	template<typename T>
-	using ComponentContainer = ComponentContainerInternal<T, World, Entity>;
+	using ComponentContainer = ComponentContainerInternal<T, ECSWorld, Entity>;
 
 	template<typename... Types>
-	using ComponentIterator = ComponentIteratorTemplate<World, Entity, Types...>;
+	using ComponentIterator = ComponentIteratorTemplate<ECSWorld, Entity, Types...>;
 	template<typename... Types>
-	using ComponentView = ComponentViewTemplate<World, Entity, Types...>;
+	using ComponentView = ComponentViewTemplate<ECSWorld, Entity, Types...>;
 
-	using EntityIterator = EntityIteratorTemplate<World, Entity>;
-	using EntityView = EntityViewTemplate<World, Entity>;
+	using EntityIterator = EntityIteratorTemplate<ECSWorld, Entity>;
+	using EntityView = EntityViewTemplate<ECSWorld, Entity>;
 }
 
 /**
@@ -50,10 +50,11 @@ namespace Internal
  * (don't delete a system without unregistering it from the world first!), while event subscribers have their own lifetimes
  * (the world doesn't delete them automatically when the world is deleted).
  */
-class World
+
+class ECSWorld
 {
 public:
-	using WorldAllocator = std::allocator_traits<Allocator>::rebind_alloc<World>;
+	using WorldAllocator = std::allocator_traits<Allocator>::rebind_alloc<ECSWorld>;
 	using EntityAllocator = std::allocator_traits<Allocator>::rebind_alloc<Entity>;
 	using SystemAllocator = std::allocator_traits<Allocator>::rebind_alloc<EntitySystem>;
 	using EntityPtrAllocator = std::allocator_traits<Allocator>::rebind_alloc<Entity*>;
@@ -64,10 +65,10 @@ public:
 	/**
 	 * Use this function to construct the world with a custom allocator.
 	 */
-	static World* createWorld(Allocator alloc)
+	static ECSWorld* createWorld(Allocator alloc)
 	{
 		WorldAllocator worldAlloc(alloc);
-		World* world = std::allocator_traits<WorldAllocator>::allocate(worldAlloc, 1);
+		ECSWorld* world = std::allocator_traits<WorldAllocator>::allocate(worldAlloc, 1);
 		std::allocator_traits<WorldAllocator>::construct(worldAlloc, world, alloc);
 
 		return world;
@@ -76,7 +77,7 @@ public:
 	/**
 	 * Use this function to construct the world with the default allocator.
 	 */
-	static World* createWorld()
+	static ECSWorld* createWorld()
 	{
 		return createWorld(Allocator());
 	}
@@ -90,7 +91,7 @@ public:
 		std::allocator_traits<WorldAllocator>::deallocate(alloc, this, 1);
 	}
 
-	World(Allocator alloc)
+	ECSWorld(Allocator alloc)
 		: entAlloc(alloc)
 		, systemAlloc(alloc)
 		, entities({}, EntityPtrAllocator(alloc))
@@ -104,7 +105,7 @@ public:
 	 *
 	 * Use World::destroyWorld to destroy and deallocate the world, do not manually delete the world!
 	 */
-	~World();
+	~ECSWorld();
 
 	/**
 	 * Create a new entity. This will emit the OnEntityCreated event.
@@ -352,12 +353,12 @@ private:
 class Entity
 {
 public:
-	friend class World;
+	friend class ECSWorld;
 
 	const static size_t InvalidEntityId = 0;
 
 	// Do not create entities yourself, use World::create().
-	Entity(World* world, size_t id)
+	Entity(ECSWorld* world, size_t id)
 		: world(world), id(id)
 	{
 	}
@@ -371,7 +372,7 @@ public:
 	/**
 	 * Get the world associated with this entity.
 	 */
-	World* getWorld() const
+	ECSWorld* getWorld() const
 	{
 		return world;
 	}
@@ -474,13 +475,13 @@ public:
 
 private:
 	std::unordered_map<type_id_t, Internal::BaseComponentContainer*> components;
-	World* world;
+	ECSWorld* world;
 
 	size_t id;
 	bool bPendingDestroy = false;
 };
 
-inline World::~World()
+inline ECSWorld::~ECSWorld()
 {
 	for (auto* ent : entities)
 	{
@@ -502,7 +503,7 @@ inline World::~World()
 	}
 }
 
-inline void World::destroy(Entity* ent, bool immediate)
+inline void ECSWorld::destroy(Entity* ent, bool immediate)
 {
 	if (ent == nullptr)
 		return;
@@ -531,7 +532,7 @@ inline void World::destroy(Entity* ent, bool immediate)
 	}
 }
 
-inline bool World::cleanup()
+inline bool ECSWorld::cleanup()
 {
 	size_t count = 0;
 	entities.erase(std::remove_if(entities.begin(), entities.end(), [&, this](Entity* ent) {
@@ -549,7 +550,7 @@ inline bool World::cleanup()
 	return count > 0;
 }
 
-inline void World::reset()
+inline void ECSWorld::reset()
 {
 	for (auto* ent : entities)
 	{
@@ -566,7 +567,7 @@ inline void World::reset()
 	lastEntityId = 0;
 }
 
-inline void World::all(std::function<void(Entity*)> viewFunc, bool bIncludePendingDestroy)
+inline void ECSWorld::all(std::function<void(Entity*)> viewFunc, bool bIncludePendingDestroy)
 {
 	for (auto* ent : all(bIncludePendingDestroy))
 	{
@@ -574,14 +575,14 @@ inline void World::all(std::function<void(Entity*)> viewFunc, bool bIncludePendi
 	}
 }
 
-inline Internal::EntityView World::all(bool bIncludePendingDestroy)
+inline Internal::EntityView ECSWorld::all(bool bIncludePendingDestroy)
 {
 	const Internal::EntityIterator first(this, 0, false, bIncludePendingDestroy);
 	const Internal::EntityIterator last(this, getCount(), true, bIncludePendingDestroy);
 	return { first, last };
 }
 
-inline Entity* World::getById(size_t id) const
+inline Entity* ECSWorld::getById(size_t id) const
 {
 	if (id == Entity::InvalidEntityId || id > lastEntityId)
 		return nullptr;
@@ -597,7 +598,7 @@ inline Entity* World::getById(size_t id) const
 }
 
 template<typename... Types>
-void World::each(typename std::common_type<std::function<void(Entity*, ComponentHandle<Types>...)>>::type viewFunc, bool bIncludePendingDestroy)
+void ECSWorld::each(typename std::common_type<std::function<void(Entity*, ComponentHandle<Types>...)>>::type viewFunc, bool bIncludePendingDestroy)
 {
 	for (Entity* ent : each<Types...>(bIncludePendingDestroy))
 	{
@@ -619,7 +620,7 @@ ComponentHandle<T> Entity::assign(Args&&... args)
 		return handle;
 	}
 
-	using ComponentAllocator = std::allocator_traits<World::EntityAllocator>::rebind_alloc<Internal::ComponentContainer<T>>;
+	using ComponentAllocator = std::allocator_traits<ECSWorld::EntityAllocator>::rebind_alloc<Internal::ComponentContainer<T>>;
 
 	ComponentAllocator alloc(world->getPrimaryAllocator());
 

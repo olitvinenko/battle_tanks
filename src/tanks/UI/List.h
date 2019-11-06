@@ -1,49 +1,42 @@
-// List.h
-
 #pragma once
-
-#include "UIWindow.h"
+#include "Window.h"
 #include "ListBase.h"
-
 #include <functional>
+
+class TextureManager;
 
 namespace UI
 {
 
-class ScrollBarVertical;
-
-
-///////////////////////////////////////////////////////////////////////////////
-// multi-column ListBox control
-
-class List : public UIWindow
+class List
+	: public Window
+	, private PointerSink
+	, private KeyboardSink
 {
 public:
-	static List* Create(UIWindow *parent, ListDataSource* dataSource, float x, float y, float width, float height);
+	List(LayoutManager &manager, TextureManager &texman, ListDataSource* dataSource);
+	virtual ~List();
 
 	ListDataSource* GetData() const;
 
-	float GetScrollPos() const;
-	void SetScrollPos(float pos);
-
-	float GetItemHeight() const;
-	float GetNumLinesVisible() const;
-	void AlignHeightToContent(float maxHeight = 512);
-	int HitTest(float y); // returns index of item
+	vec2d GetItemSize(TextureManager &texman, float scale) const;
+	int HitTest(vec2d pxPos, TextureManager &texman, float scale) const; // returns item index or -1
 
 	int  GetCurSel() const;
 	void SetCurSel(int sel, bool scroll = false);
 
-	void SetTabPos(int index, float pos);
+	void SetFlowDirection(FlowDirection flowDirection) { _flowDirection = flowDirection; }
+
+	void SetItemTemplate(std::shared_ptr<Window> itemTemplate);
 
 	// list events
 	std::function<void(int)> eventChangeCurSel;
 	std::function<void(int)> eventClickItem;
 
-protected:
-	List(UIWindow *parent, ListDataSource* dataSource);
-	virtual ~List();
+	// Window
+    vec2d GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const override;
 
+protected:
 	// callback interface
 	class ListCallbackImpl : public ListDataSourceListener
 	{
@@ -59,36 +52,32 @@ protected:
 	ListCallbackImpl _callbacks;
 
 protected:
-	void OnSize(float width, float height) override;
-	bool OnPointerMove(float x, float y, PointerType pointerType, unsigned int pointerID) override;
-	bool OnMouseLeave() override;
-	bool OnPointerDown(float x, float y, int button, PointerType pointerType, unsigned int pointerID) override;
-	bool OnPointerUp(float x, float y, int button, PointerType pointerType, unsigned int pointerID) override;
-	bool OnMouseWheel(float x, float y, float z) override;
-    bool OnTap(float x, float y) override;
-	bool OnKeyPressed(Key key) override;
-	bool OnFocus(bool focus) override;
-
-	void Draw(DrawingContext &dc) const override;
+	// Window
+	PointerSink* GetPointerSink() override { return this; }
+	KeyboardSink *GetKeyboardSink() override { return this; }
+	void Draw(const StateContext &sc, const LayoutContext &lc, const InputContext &ic, DrawingContext &dc, TextureManager &texman) const override;
 
 private:
-	List(const List &); // no copy
-	List& operator = (const List &);
+	List(const List &) = delete;
+	List& operator=(const List &) = delete;
+
+	std::shared_ptr<Window> _itemTemplate;
+	FlowDirection _flowDirection = FlowDirection::Vertical;
 
 	ListDataSource *_data;
 	std::vector<float> _tabs;
 
-	ScrollBarVertical *_scrollBar;
+	int _curSel;
 
-	int        _curSel;
-	int        _hotItem;
+	size_t _font;
+	size_t _selection;
 
-	size_t     _font;
-	size_t     _selection;
+	// PointerSink
+	bool OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, PointerType pointerType, unsigned int pointerID) override;
+	void OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition) override;
+
+	// KeyboardSink
+	bool OnKeyPressed(InputContext &ic, Key key) override;
 };
 
-
-///////////////////////////////////////////////////////////////////////////////
-} // end of namespace UI
-
-// end of file
+} // namespace UI

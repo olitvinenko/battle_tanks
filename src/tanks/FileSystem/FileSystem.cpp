@@ -71,14 +71,14 @@ namespace FileSystem
 		_file.close();
 	}
 
-	std::shared_ptr<File::Memory> File::AsMemory()
+	std::shared_ptr<Memory> File::AsMemory()
 	{
 		assert(!_mapped && !_streamed);
 		_mapped = true;
 		return std::make_shared<Memory>(shared_from_this());
 	}
 
-	std::shared_ptr<File::Stream> File::AsStream()
+	std::shared_ptr<Stream> File::AsStream()
 	{
 		assert(!_mapped && !_streamed);
 		_streamed = true;
@@ -103,7 +103,7 @@ namespace FileSystem
 	}
 
 
-	File::Memory::Memory(std::shared_ptr<File> file)
+	Memory::Memory(std::shared_ptr<File> file)
 		: _parent(file)
 		, _data(nullptr)
 		, _size(0)
@@ -120,7 +120,7 @@ namespace FileSystem
 		_parent->_file.seekg(0, std::ios::beg);
 	}
 
-	File::Memory::~Memory()
+	Memory::~Memory()
 	{
 		if (_data)
 			delete[] _data;
@@ -128,55 +128,55 @@ namespace FileSystem
 		_parent->Unmap();
 	}
 
-	char* File::Memory::GetData() const
+	char* Memory::GetData() const
 	{
 		return _data;
 	}
 
-	unsigned long File::Memory::GetSize() const
+	unsigned long Memory::GetSize() const
 	{
 		return _size;
 	}
 
-	File::Stream::Stream(std::shared_ptr<File> file)
+	Stream::Stream(std::shared_ptr<File> file)
 		: _parent(file)
 	{
 		SeekPut(0, SeekMethod::Begin);
 		SeekGet(0, SeekMethod::Begin);
 	}
 
-	File::Stream::~Stream()
+	Stream::~Stream()
 	{
 		_parent->Unstream();
 	}
 
-	size_t File::Stream::Read(void *dst, size_t size, size_t count) const
+	size_t Stream::Read(void *dst, size_t size, size_t count) const
 	{
 		_parent->_file.read((char*)dst, size * count);
 		return static_cast<size_t>(_parent->_file.gcount()) / size;
 	}
 
-	void File::Stream::Write(const void *src, size_t size) const
+	void Stream::Write(const void *src, size_t size) const
 	{
 		_parent->_file.write((const char*)src, size);
 	}
 
-	void File::Stream::SeekGet(long long amount, SeekMethod method) const
+	void Stream::SeekGet(long long amount, SeekMethod method) const
 	{
 		_parent->_file.seekg(amount, toCppSeek(method));
 	}
 
-	void File::Stream::SeekPut(long long amount, SeekMethod method) const
+	void Stream::SeekPut(long long amount, SeekMethod method) const
 	{
 		_parent->_file.seekp(amount, toCppSeek(method));
 	}
 
-	long long File::Stream::TellGet() const
+	long long Stream::TellGet() const
 	{
 		return _parent->_file.tellg();
 	}
 
-	long long File::Stream::TellPut() const
+	long long Stream::TellPut() const
 	{
 		return _parent->_file.tellp();
 	}

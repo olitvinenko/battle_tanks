@@ -1,45 +1,42 @@
 #pragma once
-#include "UIWindow.h"
+#include "Rectangle.h"
 #include <functional>
 
 namespace UI
 {
-	// TODO: to make dialog modal create a full screen window behind it
 
-class Dialog : public UIWindow
+class Dialog
+	: public Rectangle
+	, private KeyboardSink
+	, private PointerSink
 {
 public:
-	Dialog(UIWindow *parent, float width, float height, bool modal = true);
+	Dialog(LayoutManager &manager, TextureManager &texman);
 
-	void SetEasyMove(bool enable);
+	enum
+	{
+		_resultOK,
+		_resultCancel
+	};
 
-    enum
-    {
-        _resultOK,
-        _resultCancel
-    };
-
-	std::function<void(int)> eventClose;
+	std::function<void(std::shared_ptr<Dialog>, int)> eventClose;
 
 	void Close(int result);
 
-protected:
 	// Window
-	bool OnPointerDown(float x, float y, int button, PointerType pointerType, unsigned int pointerID) override;
-	bool OnPointerUp(float x, float y, int button, PointerType pointerType, unsigned int pointerID) override;
-	bool OnPointerMove(float x, float y, PointerType pointerType, unsigned int pointerID) override;
-	bool OnMouseEnter(float x, float y) override;
-	bool OnMouseLeave() override;
-	bool OnKeyPressed(Key key) override;
-	bool OnFocus(bool focus) override;
+	KeyboardSink *GetKeyboardSink() override { return this; }
+	PointerSink *GetPointerSink() override { return this; }
+
+protected:
+	void NextFocus(bool wrap);
+	void PrevFocus(bool wrap);
+	bool TrySetFocus(const std::shared_ptr<Window> &child);
+
+	// KeyboardSink
+	bool OnKeyPressed(InputContext &ic, Key key) override;
 
 private:
-	float _mouseX;
-	float _mouseY;
-	bool  _easyMove;
-
 	virtual bool OnClose(int result) { return true; }
 };
 
-} // end of namespace UI
-
+} // namespace UI

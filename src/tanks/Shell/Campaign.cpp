@@ -1,33 +1,53 @@
 #include "Campaign.h"
+#include "ConfigBinding.h"
 #include "Configuration.h"
 
-#include "../FileSystem/FileSystem.h"
-#include "../UI/List.h"
-#include "../UI/Button.h"
-#include "../UI/Text.h"
-#include "../UI/DataSourceAdapters.h"
-#include "../UI/GuiManager.h"
+#include <FileSystem.h>
+#include <Language.h>
+#include <List.h>
+#include <Button.h>
+#include <Text.h>
+#include <DataSourceAdapters.h>
+#include <GuiManager.h>
 
 
-NewCampaignDlg::NewCampaignDlg(UI::UIWindow *parent, FileSystem::IFileSystem &fs)
-  : UI::Dialog(parent, 512, 400)
+NewCampaignDlg::NewCampaignDlg(UI::LayoutManager &manager, TextureManager &texman, FileSystem::IFileSystem &fs, LangCache &lang)
+  : UI::Dialog(manager, texman)
   , _fs(fs)
 {
-    UI::Text *t = UI::Text::Create(this, GetWidth() / 2, 16, "New campaign", alignTextCT);
-    t->SetFont("font_default");
+	Resize(512, 400);
 
-    _files = DefaultListBox::Create(this);
-    _files->Move(20, 56);
-    _files->Resize(472, 280);
-    
-    _files->GetData()->AddItem("test1");
-    _files->GetData()->AddItem("test2");
-    _files->GetData()->AddItem("test3");
+	auto t = std::make_shared<UI::Text>(manager, texman);
+	t->Move(GetWidth() / 2, 16);
+	t->SetText(ConfBind(lang.campaign_title));
+	t->SetAlign(alignTextCT);
+	t->SetFont(texman, "font_default");
+	AddFront(t);
 
-    _files->GetData()->Sort();
+	_files = std::make_shared<DefaultListBox>(manager, texman);
+	_files->Move(20, 56);
+	_files->Resize(472, 280);
+	AddFront(_files);
 
-    UI::Button::Create(this, "OK", 290, 360)->eventClick = std::bind(&NewCampaignDlg::OnOK, this);
-    UI::Button::Create(this, "Cancel", 400, 360)->eventClick = std::bind(&NewCampaignDlg::OnCancel, this);
+	auto files = _fs.GetFileSystem("campaign")->EnumAllFiles("*.lua");
+	for( auto it = files.begin(); it != files.end(); ++it )
+	{
+		it->erase(it->length() - 4); // cut out the file extension
+		_files->GetData()->AddItem(*it);
+	}
+	_files->GetData()->Sort();
+
+	auto btn = std::make_shared<UI::Button>(manager, texman);
+	btn->SetText(ConfBind(lang.campaign_ok));
+	btn->Move(290, 360);
+	btn->eventClick = std::bind(&NewCampaignDlg::OnOK, this);
+	AddFront(btn);
+
+	btn = std::make_shared<UI::Button>(manager, texman);
+	btn->SetText(ConfBind(lang.campaign_cancel));
+	btn->Move(400, 360);
+	btn->eventClick = std::bind(&NewCampaignDlg::OnCancel, this);
+	AddFront(btn);
 }
 
 NewCampaignDlg::~NewCampaignDlg()
@@ -36,15 +56,15 @@ NewCampaignDlg::~NewCampaignDlg()
 
 void NewCampaignDlg::OnOK()
 {
-    if( -1 != _files->GetCurSel() )
-    {
-        if( eventCampaignSelected )
-            eventCampaignSelected(_files->GetData()->GetItemText(_files->GetCurSel(), 0));
-    }
+	if( -1 != _files->GetCurSel() )
+	{
+		if( eventCampaignSelected )
+			eventCampaignSelected(std::static_pointer_cast<NewCampaignDlg>(shared_from_this()), _files->GetData()->GetItemText(_files->GetCurSel(), 0));
+	}
 }
 
 void NewCampaignDlg::OnCancel()
 {
-    if( eventCampaignSelected )
-        eventCampaignSelected(std::string());
+	if( eventCampaignSelected )
+		eventCampaignSelected(std::static_pointer_cast<NewCampaignDlg>(shared_from_this()), std::string());
 }

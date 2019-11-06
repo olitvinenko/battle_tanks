@@ -29,7 +29,7 @@ public:
 
 	void SetAmbient(float ambient) override;
 
-	bool TexCreate(GlTexture &tex, const IImage &img) override;
+	bool TexCreate(GlTexture &tex, const IImage &img, bool magFilter) override;
 	void TexFree(GlTexture tex) override;
 
 	Vertex* DrawQuad(GlTexture tex) override;

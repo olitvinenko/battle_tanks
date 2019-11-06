@@ -1,8 +1,14 @@
 #pragma once
+
+#include "Rectangle.h"
 #include "Text.h"
+
 #include <list>
 #include <string>
 #include <queue>
+
+class AppState;
+class TextureManager;
 
 class FpsCounter : public UI::Text
 {
@@ -11,19 +17,19 @@ class FpsCounter : public UI::Text
 	int _nSprites;
 	int _nLights;
 	int _nBatches;
+	AppState &_appState;
 
 public:
-	FpsCounter(UI::UIWindow *parent, float x, float y, AlignTextKind align);
+	FpsCounter(UI::LayoutManager &manager, TextureManager &texman, float x, float y, enumAlignText align, AppState &appState);
 
 protected:
-	void OnVisibleChange(bool visible, bool inherited);
-	void OnTimeStep(float dt);
+	void OnTimeStep(UI::LayoutManager &manager, float dt);
 };
 
-class Oscilloscope : public UI::UIWindow
+class Oscilloscope : public UI::Rectangle
 {
 public:
-	Oscilloscope(UI::UIWindow *parent, float x, float y);
+	Oscilloscope(UI::LayoutManager &manager, TextureManager &texman, float x, float y);
 	void Push(float value);
 	void SetRange(float rmin, float rmax);
 	void SetTitle(const std::string &title);
@@ -33,7 +39,7 @@ public:
 	void AutoRange();
 
 protected:
-	void Draw(DrawingContext &dc) const override;
+	void Draw(const UI::StateContext &sc, const UI::LayoutContext &lc, const UI::InputContext &ic, DrawingContext &dc, TextureManager &texman) const override;
 
 private:
 	size_t _barTexture;

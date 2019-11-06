@@ -12,64 +12,129 @@
 class TextureManager
 {
 public:
-	struct LogicalTexture
-	{
-		GlTexture dev_texture;
+    struct LogicalTexture
+    {
+        GlTexture dev_texture;
 
-		Vector2 uvPivot;
+        Vector2 uvPivot;
 
-		float pxFrameWidth;
-		float pxFrameHeight;
-		float pxBorderSize;
+        float pxFrameWidth;
+        float pxFrameHeight;
+        float pxBorderSize;
+        
+        bool magFilter;
 
-		std::vector<math::RectFloat> uvFrames;
-	};
+        std::vector<math::RectFloat> uvFrames;
+    };
+    
+    TextureManager(TextureManager&&) = default;
+    explicit TextureManager(IRender* render);
+    ~TextureManager();
 
-	TextureManager(TextureManager&&) = default;
-	TextureManager(IRender* render);
-	~TextureManager();
+    int LoadPackage(std::vector<std::tuple<std::shared_ptr<IImage>, std::string, LogicalTexture>> definitions);
+    void UnloadAllTextures();
 
-	int LoadPackage(const std::string &packageName, std::shared_ptr<FileSystem::File::Memory> file, FileSystem::IFileSystem &fs);
-	int LoadDirectory(const std::string &dirName, const std::string &texPrefix, FileSystem::IFileSystem &fs);
-	void UnloadAllTextures();
+    size_t FindSprite(const std::string &name) const;
+    const GlTexture& GetDeviceTexture(size_t texIndex) const { return _logicalTextures[texIndex].second->id; }
+    const LogicalTexture& GetSpriteInfo(size_t texIndex) const { return _logicalTextures[texIndex].first; }
+    float GetFrameWidth(size_t texIndex, size_t /*frameIdx*/) const { return _logicalTextures[texIndex].first.pxFrameWidth; }
+    float GetFrameHeight(size_t texIndex, size_t /*frameIdx*/) const { return _logicalTextures[texIndex].first.pxFrameHeight; }
+    float GetBorderSize(size_t texIndex) const { return _logicalTextures[texIndex].first.pxBorderSize; }
+    unsigned int GetFrameCount(size_t texIndex) const { return static_cast<unsigned int>(_logicalTextures[texIndex].first.uvFrames.size()); }
 
-	size_t FindSprite(const std::string &name) const;
-	const LogicalTexture& GetSpriteInfo(size_t texIndex) const { return _logicalTextures[texIndex]; }
-	float GetFrameWidth(size_t texIndex, size_t /*frameIdx*/) const { return _logicalTextures[texIndex].pxFrameWidth; }
-	float GetFrameHeight(size_t texIndex, size_t /*frameIdx*/) const { return _logicalTextures[texIndex].pxFrameHeight; }
-	float GetBorderSize(size_t texIndex) const { return _logicalTextures[texIndex].pxBorderSize; }
-	unsigned int GetFrameCount(size_t texIndex) const { return static_cast<unsigned int>(_logicalTextures[texIndex].uvFrames.size()); }
+    void GetTextureNames(std::vector<std::string> &names, const char *prefix) const;
 
-	void GetTextureNames(std::vector<std::string> &names, const char *prefix, bool noPrefixReturn) const;
+    float GetCharHeight(size_t fontTexture) const;
 
-	float GetCharHeight(size_t fontTexture) const;
+private:
+    IRender* _render;
 
-protected:
-	IRender* _render;
+    struct TexDesc
+    {
+        GlTexture id;
+        int width;          // The Width Of The Entire Image.
+        int height;         // The Height Of The Entire Image.
+        int refCount;       // number of logical textures
+    };
 
-	struct TexDesc
-	{
-		GlTexture id;
-		int width;          // The Width Of The Entire Image.
-		int height;         // The Height Of The Entire Image.
-		int refCount;       // number of logical textures
-	};
-	typedef std::list<TexDesc>       TexDescList;
-	typedef TexDescList::iterator    TexDescIterator;
+    std::list<TexDesc> _devTextures;
+    std::map<std::shared_ptr<IImage>, std::list<TexDesc>::iterator> _mapImage_to_TexDescIter;
+    std::map<std::string, size_t> _mapName_to_Index;// index in _logicalTextures
+    std::vector<std::pair<LogicalTexture, std::list<TexDesc>::iterator>> _logicalTextures;
 
-	typedef std::map<std::string, TexDescIterator> FileToTexDescMap;
-	typedef std::map<GlTexture, TexDescIterator> DevToTexDescMap;
+    std::list<TexDesc>::iterator LoadTexture(const std::shared_ptr<IImage> &image, bool magFilter);
 
-	FileToTexDescMap _mapFile_to_TexDescIter;
-	DevToTexDescMap  _mapDevTex_to_TexDescIter;
-	TexDescList      _textures;
-	std::map<std::string, size_t>   _mapName_to_Index;// index in _logicalTextures
-	std::vector<LogicalTexture>  _logicalTextures;
-
-	void LoadTexture(TexDescIterator &itTexDesc, const std::string &fileName, FileSystem::IFileSystem &fs);
-	void Unload(TexDescIterator what);
-
-	void CreateChecker(); // Create checker texture without name and with index=0
+    void CreateChecker(); // Create checker texture without name and with index=0
 };
+
+std::vector<std::tuple<std::shared_ptr<IImage>, std::string, TextureManager::LogicalTexture>>
+ParsePackage(const std::string &packageName, std::shared_ptr<FileSystem::File::Memory> file, FileSystem::IFileSystem &fs);
+
+std::vector<std::tuple<std::shared_ptr<IImage>, std::string, TextureManager::LogicalTexture>>
+ParseDirectory(const std::string &dirName, const std::string &texPrefix, FileSystem::IFileSystem &fs);
+
+//
+//class TextureManager
+//{
+//public:
+//	struct LogicalTexture
+//	{
+//		GlTexture dev_texture;
+//
+//		Vector2 uvPivot;
+//
+//		float pxFrameWidth;
+//		float pxFrameHeight;
+//		float pxBorderSize;
+//
+//		std::vector<math::RectFloat> uvFrames;
+//	};
+//
+//	TextureManager(TextureManager&&) = default;
+//	TextureManager(IRender* render);
+//	~TextureManager();
+//
+//	int LoadPackage(const std::string &packageName, std::shared_ptr<FileSystem::File::Memory> file, FileSystem::IFileSystem &fs);
+//	int LoadDirectory(const std::string &dirName, const std::string &texPrefix, FileSystem::IFileSystem &fs);
+//	void UnloadAllTextures();
+//
+//	size_t FindSprite(const std::string &name) const;
+//	const LogicalTexture& GetSpriteInfo(size_t texIndex) const { return _logicalTextures[texIndex]; }
+//	float GetFrameWidth(size_t texIndex, size_t /*frameIdx*/) const { return _logicalTextures[texIndex].pxFrameWidth; }
+//	float GetFrameHeight(size_t texIndex, size_t /*frameIdx*/) const { return _logicalTextures[texIndex].pxFrameHeight; }
+//	float GetBorderSize(size_t texIndex) const { return _logicalTextures[texIndex].pxBorderSize; }
+//	unsigned int GetFrameCount(size_t texIndex) const { return static_cast<unsigned int>(_logicalTextures[texIndex].uvFrames.size()); }
+//
+//	void GetTextureNames(std::vector<std::string> &names, const char *prefix, bool noPrefixReturn) const;
+//
+//	float GetCharHeight(size_t fontTexture) const;
+//
+//protected:
+//	IRender* _render;
+//
+//	struct TexDesc
+//	{
+//		GlTexture id;
+//		int width;          // The Width Of The Entire Image.
+//		int height;         // The Height Of The Entire Image.
+//		int refCount;       // number of logical textures
+//	};
+//	typedef std::list<TexDesc>       TexDescList;
+//	typedef TexDescList::iterator    TexDescIterator;
+//
+//	typedef std::map<std::string, TexDescIterator> FileToTexDescMap;
+//	typedef std::map<GlTexture, TexDescIterator> DevToTexDescMap;
+//
+//	FileToTexDescMap _mapFile_to_TexDescIter;
+//	DevToTexDescMap  _mapDevTex_to_TexDescIter;
+//	TexDescList      _textures;
+//	std::map<std::string, size_t>   _mapName_to_Index;// index in _logicalTextures
+//	std::vector<LogicalTexture>  _logicalTextures;
+//
+//	void LoadTexture(TexDescIterator &itTexDesc, const std::string &fileName, FileSystem::IFileSystem &fs);
+//	void Unload(TexDescIterator what);
+//
+//	void CreateChecker(); // Create checker texture without name and with index=0
+//};
 
 // end of file

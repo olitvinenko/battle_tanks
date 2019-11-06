@@ -1,31 +1,34 @@
 #include "Widgets.h"
-#include "GuiManager.h"
+
+#include <AppState.h>
+#include <GameContext.h>
+#include <World.h>
+#include <DataSource.h>
+#include <GuiManager.h>
+#include <LayoutContext.h>
+#include <TextureManager.h>
+#include <DrawingContext.h>
 #include <sstream>
 #include <iomanip>
-#include "Rendering/TextureManager.h"
 
-FpsCounter::FpsCounter(UIWindow *parent, float x, float y, AlignTextKind align)
-  : Text(parent)
+FpsCounter::FpsCounter(UI::LayoutManager &manager, TextureManager &texman, float x, float y, enumAlignText align, AppState &appState)
+  : Text(manager, texman)
   , _nSprites(0)
   , _nLights(0)
   , _nBatches(0)
+  , _appState(appState)
 {
 	SetTimeStep(true);
 	Move(x, y);
 	SetAlign(align);
 }
 
-void FpsCounter::OnVisibleChange(bool visible, bool inherited)
-{
-	SetTimeStep(visible);
-}
-
-void FpsCounter::OnTimeStep(float dt)
+void FpsCounter::OnTimeStep(UI::LayoutManager &manager, float dt)
 {
 	_dts.push_back(dt);
 	if( _dts.size() > 200 ) _dts.pop_front();
 
-	if( GetVisibleCombined() )
+//	if( GetVisibleCombined() )
 	{
 		float avr = 0;
 		float min = _dts.front();
@@ -42,19 +45,47 @@ void FpsCounter::OnTimeStep(float dt)
 		std::ostringstream s;
 		s << std::setfill('0');
 		s << "fps:" << std::setw(3) << int(1.0f / max + 0.5f) << '-' << std::setw(3) << int(1.0f / avr + 0.5f) << '-' << std::setw(3) << int(1.0f / min + 0.5f);
-//		if (GameContextBase *gc = _appState.GetGameContext())
-//		{
-//			s << std::setfill(' ');
-//			s << "; obj:" << gc->GetWorld().GetList(LIST_objects).size() << '\n';
-//			s << std::setw(4) << gc->GetWorld().GetList(LIST_timestep).size() << "timestep";
-//
-//#ifndef NDEBUG
-//			s << " " << std::setw(4) << gc->GetWorld()._garbage.size() << "garbage";
-//#endif
-//		}
+		if (GameContextBase *gc = _appState.GetGameContext())
+		{
+			s << std::setfill(' ');
+			s << "; obj:" << gc->GetWorld().GetList(LIST_objects).size() << '\n';
+			s << std::setw(4) << gc->GetWorld().GetList(LIST_timestep).size() << "timestep";
+
+#ifndef NDEBUG
+			s << " " << std::setw(4) << gc->GetWorld()._garbage.size() << "garbage";
+#endif
+		}
 
 
-		SetText(s.str());
+		// network statistics
+/*		if( g_client )
+		{
+		//	NetworkStats ns;
+		//	g_client->GetStatistics(&ns);
+		//	sprintf_s(s1, "\nsent:%uk; recv:%uk pending:%u timebuf:%f",
+		//		ns.bytesSent>>10, ns.bytesRecv>>10, ns.bytesPending, world._timeBuffer);
+		//	strcat(s, s1);
+
+
+			if( _dts_net.empty() )
+			{
+				min = max = avr = 0;
+			}
+			else
+			{
+				min = max = _dts_net.front();
+				for( std::list<float>::iterator it = _dts_net.begin();
+					it != _dts_net.end(); ++it )
+				{
+					avr += *it;
+					if( *it > max ) max = *it;
+					if( *it < min ) min = *it;
+				}
+				avr /= (float) _dts_net.size();
+			}
+		}*/
+
+		SetText(std::make_shared<UI::StaticText>(s.str()));
 	}
 
 	_nSprites = 0;
@@ -64,10 +95,10 @@ void FpsCounter::OnTimeStep(float dt)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Oscilloscope::Oscilloscope(UI::UIWindow *parent, float x, float y)
-  : UIWindow(parent)
-  , _barTexture(GetManager().GetTextureManager().FindSprite("ui/bar"))
-  , _titleFont(GetManager().GetTextureManager().FindSprite("font_small"))
+Oscilloscope::Oscilloscope(UI::LayoutManager &manager, TextureManager &texman, float x, float y)
+  : UI::Rectangle(manager)
+  , _barTexture(texman.FindSprite("ui/bar"))
+  , _titleFont(texman.FindSprite("font_small"))
   , _rangeMin(-0.1f)
   , _rangeMax(0.1f)
   , _gridStepX(1)
@@ -75,7 +106,7 @@ Oscilloscope::Oscilloscope(UI::UIWindow *parent, float x, float y)
   , _scale(3)
 {
 	Move(x, y);
-	SetTexture("ui/list", true);
+	SetTexture(texman, "ui/list", true);
 	SetDrawBorder(true);
 	SetClipChildren(true);
 }
@@ -179,20 +210,20 @@ void Oscilloscope::AutoRange()
 	}
 }
 
-void Oscilloscope::Draw(DrawingContext &dc) const
+void Oscilloscope::Draw(const UI::StateContext &sc, const UI::LayoutContext &lc, const UI::InputContext &ic, DrawingContext &dc, TextureManager &texman) const
 {
-	UIWindow::Draw(dc);
+	UI::Rectangle::Draw(sc, lc, ic, dc, texman);
 
-	float labelOffset = GetManager().GetTextureManager().GetCharHeight(_titleFont) / 2;
+	float labelOffset = texman.GetCharHeight(_titleFont) / 2;
 
-	float scale = (GetHeight() - labelOffset * 2) / (_rangeMin - _rangeMax);
+	float scale = (lc.GetPixelSize().y - labelOffset * 2) / (_rangeMin - _rangeMax);
 	float center = labelOffset - _rangeMax * scale;
-	float dx = GetWidth() - (float) _data.size() * _scale;
+	float dx = lc.GetPixelSize().x - (float) _data.size() * _scale;
 
 	// data
 	for( size_t i = 0; i < _data.size(); ++i )
 	{
-		dc.DrawSprite(_barTexture, 0, 0x44444444, (float) i * _scale + dx, center, 2, _data[i] * scale, Vector2(1,0));
+		dc.DrawSprite(_barTexture, 0, 0x44444444, (float)i * _scale + dx, center, 2, _data[i] * scale, vec2d{ 1, 0 });
 	}
 
 	// grid
@@ -203,18 +234,18 @@ void Oscilloscope::Draw(DrawingContext &dc) const
 		for( int i = start; i <= stop; ++i )
 		{
 			float y = (float) i * _gridStepY;
-			dc.DrawSprite(_barTexture, 0, 0x44444444, 0, labelOffset - (_rangeMax - y) * scale, GetWidth(), -1, Vector2(1,0));
+			dc.DrawSprite(_barTexture, 0, 0x44444444, 0, labelOffset - (_rangeMax - y) * scale, lc.GetPixelSize().x, -1, vec2d{ 1, 0 });
 			std::ostringstream buf;
 			buf << y;
 			float textWidth = float(6 * buf.str().size()); // FIXME: calc true char width
-			dc.DrawBitmapText(GetWidth() - textWidth, labelOffset - (_rangeMax - y) * scale - labelOffset, _titleFont, 0x77777777, buf.str());
+			dc.DrawBitmapText(vec2d{ lc.GetPixelSize().x - textWidth, labelOffset - (_rangeMax - y) * scale - labelOffset },
+				lc.GetScale(), _titleFont, 0x77777777, buf.str());
 		}
 	}
 	else
 	{
-		dc.DrawSprite(_barTexture, 0, 0x44444444, 0, labelOffset - _rangeMax * scale, GetWidth(), -1, Vector2(1,0));
+		dc.DrawSprite(_barTexture, 0, 0x44444444, 0, labelOffset - _rangeMax * scale, lc.GetPixelSize().x, -1, vec2d{ 1, 0 });
 	}
 
-	dc.DrawBitmapText(0, labelOffset - labelOffset, _titleFont, 0x77777777, _title);
+	dc.DrawBitmapText(vec2d{ 0, labelOffset - labelOffset }, lc.GetScale(), _titleFont, 0x77777777, _title);
 }
-

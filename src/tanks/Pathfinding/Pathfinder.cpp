@@ -415,7 +415,9 @@ std::string Pathfinder::GetNameOfCurrentSearchAlgorithm()const
 //------------------------------------------------------------------------
 void Pathfinder::Render(DrawingContext& dc)
 {
-	dc.DrawBackground(m_backTexture, (float) m_icxClient, (float) m_icyClient);
+	//dc.DrawBackground(m_backTexture, (float) m_icxClient, (float) m_icyClient);
+    
+    dc.DrawBackground(m_backTexture, RectFloat{0, 0, (float) m_icxClient, (float) m_icyClient});
 
 	Vector2 dir(1, 0);
 	//render all the cells
@@ -473,7 +475,7 @@ void Pathfinder::Render(DrawingContext& dc)
 
 			for (const NavGraph::NodeType* pN = NodeItr.begin(); !NodeItr.end(); pN = NodeItr.next())
 			{
-				dc.DrawBitmapText(pN->Pos().x, pN->Pos().y, m_fontTexture, 0xffffffff, std::to_string(pN->Index()), alignTextLC);
+				dc.DrawBitmapText(Vector2(pN->Pos().x, pN->Pos().y), 1.0f, m_fontTexture, 0xffffffff, std::to_string(pN->Index()), alignTextLC);
 			}
 		}
 	}
@@ -486,7 +488,7 @@ void Pathfinder::Render(DrawingContext& dc)
 			for (const NavGraph::NodeType* pN = NodeItr.begin(); !NodeItr.end(); pN = NodeItr.next())
 			{
 				math::RectFloat dst = { (float)pN->Pos().x - 2, (float)pN->Pos().y - 2, (float)pN->Pos().x + 2, (float)pN->Pos().y + 2 };
-				dc.DrawSprite(&dst, 0U, Color(255, 0, 0, 255), 0U); // tile's center
+				dc.DrawSprite(dst, 0U, Color(255, 0, 0, 255), 0U); // tile's center
 			}
 		}
 	}

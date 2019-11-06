@@ -1,333 +1,275 @@
-// Button.cpp
-
 #include "Button.h"
+#include "DataSource.h"
+#include "InputContext.h"
+#include "LayoutContext.h"
+#include "Rectangle.h"
+#include "StateContext.h"
+#include "Text.h"
+#include "UIInput.h"
 #include "GuiManager.h"
+#include <TextureManager.h>
+#include <DrawingContext.h>
 #include <algorithm>
-#include "Rendering/DrawingContext.h"
-#include "Rendering/TextureManager.h"
 
-namespace UI
-{
+using namespace UI;
 
-ButtonBase::ButtonBase(UIWindow *parent)
-  : UIWindow(parent)
-  , _state(stateNormal)
+ButtonBase::ButtonBase(LayoutManager &manager)
+  : Window(manager)
 {
 }
 
-void ButtonBase::SetState(State s)
+ButtonBase::State ButtonBase::GetState(const LayoutContext &lc, const InputContext &ic) const
 {
-	if( _state != s )
-	{
-		_state = s;
-		OnChangeState(s);
-	}
+	if (!lc.GetEnabledCombined())
+		return stateDisabled;
+
+	vec2d pointerPosition = ic.GetMousePos();
+	bool pointerInside = pointerPosition.x >= 0 && pointerPosition.y >= 0 && pointerPosition.x < lc.GetPixelSize().x && pointerPosition.y < lc.GetPixelSize().y;
+	bool pointerPressed = ic.GetInput().IsMousePressed(1);
+
+	if (pointerInside && pointerPressed && ic.HasCapturedPointers(this))
+		return statePushed;
+
+	if (ic.GetHovered())
+		return stateHottrack;
+
+	return stateNormal;
 }
 
-bool ButtonBase::OnPointerMove(float x, float y, PointerType pointerType, unsigned int pointerID)
+void ButtonBase::OnPointerMove(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, PointerType pointerType, unsigned int pointerID, bool captured)
 {
-	if( GetManager().HasCapturedPointers(this) )
-	{
-		if (GetManager().GetCapture(pointerID) == this)
-		{
-			bool push = x < GetWidth() && y < GetHeight() && x > 0 && y > 0;
-			SetState(push ? statePushed : stateNormal);
-		}
-	}
-	else
-	{
-		SetState(stateHottrack);
-	}
 	if( eventMouseMove )
-		eventMouseMove(x, y);
-	return true;
+		eventMouseMove(pointerPosition.x, pointerPosition.y);
 }
 
-bool ButtonBase::OnPointerDown(float x, float y, int button, PointerType pointerType, unsigned int pointerID)
+bool ButtonBase::OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, PointerType pointerType, unsigned int pointerID)
 {
-	if( !GetManager().HasCapturedPointers(this) && 1 == button ) // primary button only
+	if( !ic.HasCapturedPointers(this) && 1 == button ) // primary button only
 	{
-		GetManager().SetCapture(pointerID, this);
-		SetState(statePushed);
 		if( eventMouseDown )
-			eventMouseDown(x, y);
+			eventMouseDown(pointerPosition.x, pointerPosition.y);
+		return true;
 	}
-	return true;
+	return false;
 }
 
-bool ButtonBase::OnPointerUp(float x, float y, int button, PointerType pointerType, unsigned int pointerID)
+void ButtonBase::OnPointerUp(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, PointerType pointerType, unsigned int pointerID)
 {
-	if( GetManager().GetCapture(pointerID) == this && 1 == button )
+	auto size = lc.GetPixelSize();
+	bool pointerInside = pointerPosition.x < size.x && pointerPosition.y < size.y && pointerPosition.x >= 0 && pointerPosition.y >= 0;
+	if( eventMouseUp )
+		eventMouseUp(pointerPosition.x, pointerPosition.y);
+	if(pointerInside)
 	{
-		GetManager().SetCapture(pointerID, nullptr);
-		bool click = (GetState() == statePushed);
-		WindowWeakPtr wwp(this);
-		if( eventMouseUp )
-			eventMouseUp(x, y);          // handler may destroy this object
-		if( click && wwp.Get() )
-		{
-			OnClick();                   // handler may destroy this object
-			if( eventClick && wwp.Get() )
-				eventClick();            // handler may destroy this object
-		}
-		if( click && wwp.Get() && GetEnabledCombined() )  // handler may disable this button
-			SetState(stateHottrack);
+		OnClick();
+		if( eventClick )
+			eventClick();
 	}
-	return true;
 }
 
-bool ButtonBase::OnMouseLeave()
+void ButtonBase::OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition)
 {
-	SetState(stateNormal);
-	return true;
+	if( !ic.HasCapturedPointers(this))
+	{
+		OnClick();
+		if( eventClick )
+			eventClick();
+	}
 }
 
-bool ButtonBase::OnTap(float x, float y)
+void ButtonBase::PushState(StateContext &sc, const LayoutContext &lc, const InputContext &ic) const
 {
-    if( !GetManager().HasCapturedPointers(this))
-    {
-        WindowWeakPtr wwp(this);
-        OnClick();                   // handler may destroy this object
-        if( eventClick && wwp.Get() )
-            eventClick();            // handler may destroy this object        
-    }
-    return true;
+	switch (GetState(lc, ic))
+	{
+	case statePushed:
+		sc.SetState("Pushed");
+		break;
+	case stateHottrack:
+		sc.SetState("Hover");
+		break;
+	case stateNormal:
+		sc.SetState("Idle");
+		break;
+	case stateDisabled:
+		sc.SetState("Disabled");
+		break;
+	default:
+		assert(false);
+	}
 }
 
 void ButtonBase::OnClick()
 {
 }
 
-void ButtonBase::OnChangeState(State state)
+///////////////////////////////////////////////////////////////////////////////
+
+static const auto c_textColor = std::make_shared<ColorMap>(0xffffffff, // default
+	ColorMap::ColorMapType{ { "Disabled", 0xbbbbbbbb }, { "Hover", 0xffccccff } });
+
+Button::Button(LayoutManager &manager, TextureManager &texman)
+	: ButtonBase(manager)
+	, _background(std::make_shared<Rectangle>(manager))
+	, _text(std::make_shared<Text>(manager, texman))
 {
+	AddFront(_background);
+	AddFront(_text);
+
+	_text->SetAlign(alignTextCC);
+	_text->SetFontColor(c_textColor);
+
+	SetFont(texman, "font_small");
+	SetBackground(texman, "ui/button", true);
 }
 
-void ButtonBase::OnEnabledChange(bool enable, bool inherited)
+void Button::SetFont(TextureManager &texman, const char *fontName)
 {
-	if( enable )
+	_text->SetFont(texman, fontName);
+}
+
+void Button::SetIcon(LayoutManager &manager, TextureManager &texman, const char *spriteName)
+{
+	if (spriteName)
 	{
-		SetState(stateNormal);
+		if (!_icon)
+		{
+			_icon = std::make_shared<Rectangle>(manager);
+			_icon->SetBackColor(c_textColor);
+			_icon->SetBorderColor(c_textColor);
+			AddFront(_icon);
+		}
+		_icon->SetTexture(texman, spriteName, true);
 	}
 	else
 	{
-		SetState(stateDisabled);
+		if (_icon)
+		{
+			UnlinkChild(*_icon);
+			_icon.reset();
+		}
 	}
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-// button class implementation
-
-Button* Button::Create(UIWindow *parent, const std::string &text, float x, float y, float w, float h)
+void Button::SetText(std::shared_ptr<DataSource<const std::string&>> text)
 {
-	Button *res = new Button(parent);
-	res->Move(x, y);
-	res->SetText(text);
-	if( w >= 0 && h >= 0 )
+	_text->SetText(std::move(text));
+}
+
+void Button::SetBackground(TextureManager &texman, const char *tex, bool fitSize)
+{
+	_background->SetTexture(texman, tex, fitSize);
+	if (fitSize)
 	{
-		res->Resize(w, h);
+		Resize(_background->GetWidth(), _background->GetHeight());
+	}
+}
+
+FRECT Button::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
+{
+	float scale = lc.GetScale();
+	vec2d size = lc.GetPixelSize();
+
+	if (_background.get() == &child)
+	{
+		return MakeRectRB(vec2d{}, size);
 	}
 
-	return res;
-}
-
-Button::Button(UIWindow *parent)
-  : ButtonBase(parent)
-  , _font((size_t)-1)
-  , _icon((size_t)-1)
-{
-	SetTexture("ui/button", true);
-	SetFont("font_default");
-	OnChangeState(stateNormal);
-}
-
-void Button::SetFont(const char *fontName)
-{
-	_font = GetManager().GetTextureManager().FindSprite(fontName);
-}
-
-void Button::SetIcon(const char *spriteName)
-{
-	_icon = spriteName ? GetManager().GetTextureManager().FindSprite(spriteName) : (size_t)-1;
-}
-
-void Button::OnChangeState(State state)
-{
-	SetFrame(state);
-}
-
-void Button::Draw(DrawingContext &dc) const
-{
-	ButtonBase::Draw(dc);
-
-	Color c = 0;
-
-	switch( GetState() )
+	if (_icon)
 	{
-	case statePushed:
-		c = 0xffffffff;
-		break;
-	case stateHottrack:
-		c = 0xffffffff;
-		break;
-	case stateNormal:
-		c = 0xffffffff;
-		break;
-	case stateDisabled:
-		c = 0xbbbbbbbb;
-		break;
-	default:
-		assert(false);
-	}
+		if (_text.get() == &child)
+		{
+			vec2d pxChildPos = Vec2dFloor(size / 2);
+			pxChildPos.y += std::floor(_icon->GetHeight() * scale / 2);
+			return MakeRectWH(pxChildPos, vec2d{});
+		}
 
-	if (_icon != -1)
-	{
-		float iconHeight = GetManager().GetTextureManager().GetFrameHeight(_icon, 0);
-		float textHeight = GetManager().GetTextureManager().GetFrameHeight(_font, 0);
-
-		float x = GetWidth() / 2;
-		float y = (GetHeight() - iconHeight - textHeight) / 2 + iconHeight;
-
-		dc.DrawSprite(_icon, 0, c, x, y - iconHeight/2, Vector2(1, 0));
-		dc.DrawBitmapText(x, y, _font, c, GetText(), alignTextCT);
+		if (_icon.get() == &child)
+		{
+			vec2d pxChildSize = Vec2dFloor(_icon->GetSize() * scale);
+			vec2d pxChildPos = Vec2dFloor((size - pxChildSize) / 2);
+			pxChildPos.y -= std::floor(_text->GetContentSize(texman, sc, scale).y / 2);
+			return MakeRectWH(pxChildPos, pxChildSize);
+		}
 	}
 	else
 	{
-		float x = GetWidth() / 2;
-		float y = GetHeight() / 2;
-		dc.DrawBitmapText(x, y, _font, c, GetText(), alignTextCC);
+		if (_text.get() == &child)
+		{
+			return MakeRectWH(Vec2dFloor(size / 2), vec2d{});
+		}
 	}
+
+	return Window::GetChildRect(texman, lc, sc, child);
+}
+
+void Button::Draw(const StateContext &sc, const LayoutContext &lc, const InputContext &ic, DrawingContext &dc, TextureManager &texman) const
+{
+	ButtonBase::Draw(sc, lc, ic, dc, texman);
+
+	State state = GetState(lc, ic);
+	_background->SetFrame(state);
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// text button class implementation
+// TextButton
 
-TextButton* TextButton::Create(UIWindow *parent, float x, float y, const std::string &text, const char *font)
+TextButton::TextButton(LayoutManager &manager, TextureManager &texman)
+	: ButtonBase(manager)
+	, _text(std::make_shared<Text>(manager, texman))
 {
-	TextButton *res = new TextButton(parent);
-	res->Move(x, y);
-	res->SetText(text);
-	res->SetFont(font);
-	return res;
+	AddFront(_text);
+	_text->SetFontColor(c_textColor);
 }
 
-TextButton::TextButton(UIWindow *parent)
-  : ButtonBase(parent)
-  , _fontTexture((size_t) -1)
-  , _drawShadow(true)
+vec2d TextButton::GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const
 {
-	SetTexture(nullptr, false);
-	OnChangeState(stateNormal);
+	return _text->GetContentSize(texman, sc, scale);
 }
 
-void TextButton::AlignSizeToContent()
+void TextButton::SetFont(TextureManager &texman, const char *fontName)
 {
-	if( -1 != _fontTexture )
+	_text->SetFont(texman, fontName);
+}
+
+void TextButton::SetText(std::shared_ptr<DataSource<const std::string&>> text)
+{
+	_text->SetText(std::move(text));
+}
+
+FRECT TextButton::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
+{
+	if (_text.get() == &child)
 	{
-		float w = GetManager().GetTextureManager().GetFrameWidth(_fontTexture, 0);
-		float h = GetManager().GetTextureManager().GetFrameHeight(_fontTexture, 0);
-		Resize((w - 1) * (float) GetText().length(), h + 1);
+		return MakeRectWH(lc.GetPixelSize());
 	}
-}
 
-void TextButton::SetDrawShadow(bool drawShadow)
-{
-	_drawShadow = drawShadow;
-}
-
-bool TextButton::GetDrawShadow() const
-{
-	return _drawShadow;
-}
-
-void TextButton::SetFont(const char *fontName)
-{
-	_fontTexture = GetManager().GetTextureManager().FindSprite(fontName);
-	AlignSizeToContent();
-}
-
-void TextButton::OnTextChange()
-{
-	AlignSizeToContent();
-}
-
-void TextButton::Draw(DrawingContext &dc) const
-{
-	ButtonBase::Draw(dc);
-
-	// grep 'enum State'
-	Color colors[] =
-	{
-		Color(0xffffffff), // normal
-		Color(0xffccccff), // hottrack
-		Color(0xffccccff), // pushed
-		Color(0xAAAAAAAA), // disabled
-	};
-	if( _drawShadow && stateDisabled != GetState() )
-	{
-		dc.DrawBitmapText(1, 1, _fontTexture, 0xff000000, GetText());
-	}
-	dc.DrawBitmapText(0, 0, _fontTexture, colors[GetState()], GetText());
+	return ButtonBase::GetChildRect(texman, lc, sc, child);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// ImageButton class implementation
 
-ImageButton* ImageButton::Create(UIWindow *parent, float x, float y, const char *texture)
-{
-	ImageButton *res = new ImageButton(parent);
-	res->Move(x, y);
-	res->SetTexture(texture, true);
-	return res;
-}
-
-ImageButton::ImageButton(UIWindow *parent)
-  : ButtonBase(parent)
-{
-}
-
-void ImageButton::OnChangeState(State state)
-{
-	SetFrame(state);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// CheckBox class implementation
-
-CheckBox* CheckBox::Create(UIWindow *parent, float x, float y, const std::string &text)
-{
-	CheckBox *res = new CheckBox(parent);
-	res->Move(x, y);
-	res->SetText(text);
-	return res;
-}
-
-CheckBox::CheckBox(UIWindow *parent)
-  : ButtonBase(parent)
-  , _fontTexture(GetManager().GetTextureManager().FindSprite("font_small"))
-  , _boxTexture(GetManager().GetTextureManager().FindSprite("ui/checkbox"))
-  , _drawShadow(true)
+CheckBox::CheckBox(LayoutManager &manager, TextureManager &texman)
+  : ButtonBase(manager)
+  , _fontTexture(texman.FindSprite("font_small"))
+  , _boxTexture(texman.FindSprite("ui/checkbox"))
   , _isChecked(false)
 {
-	SetTexture(nullptr, false);
-	AlignSizeToContent();
+	AlignSizeToContent(texman);
 }
 
-void CheckBox::AlignSizeToContent()
+void CheckBox::AlignSizeToContent(TextureManager &texman)
 {
-	const TextureManager &tm = GetManager().GetTextureManager();
-	float th = tm.GetFrameHeight(_fontTexture, 0);
-	float tw = tm.GetFrameWidth(_fontTexture, 0);
-	float bh = tm.GetFrameHeight(_boxTexture, GetFrame());
-	float bw = tm.GetFrameWidth(_boxTexture, GetFrame());
+	float th = texman.GetFrameHeight(_fontTexture, 0);
+	float tw = texman.GetFrameWidth(_fontTexture, 0);
+	float bh = texman.GetFrameHeight(_boxTexture, 0);
+	float bw = texman.GetFrameWidth(_boxTexture, 0);
 	Resize(bw + (tw - 1) * (float) GetText().length(), std::max(th + 1, bh));
 }
 
 void CheckBox::SetCheck(bool checked)
 {
 	_isChecked = checked;
-	SetFrame(_isChecked ? GetState()+4 : GetState());
 }
 
 void CheckBox::OnClick()
@@ -335,41 +277,43 @@ void CheckBox::OnClick()
 	SetCheck(!GetCheck());
 }
 
-void CheckBox::OnTextChange()
+void CheckBox::OnTextChange(TextureManager &texman)
 {
-	AlignSizeToContent();
+	AlignSizeToContent(texman);
 }
 
-void CheckBox::OnChangeState(State state)
+const std::string& CheckBox::GetText() const
 {
-	SetFrame(_isChecked ? state+4 : state);
+	return _text;
 }
 
-void CheckBox::Draw(DrawingContext &dc) const
+void CheckBox::SetText(TextureManager &texman, const std::string &text)
 {
-	ButtonBase::Draw(dc);
+	_text.assign(text);
+	OnTextChange(texman);
+}
 
-	float bh = GetManager().GetTextureManager().GetFrameHeight(_boxTexture, GetFrame());
-	float bw = GetManager().GetTextureManager().GetFrameWidth(_boxTexture, GetFrame());
-	float th = GetManager().GetTextureManager().GetFrameHeight(_fontTexture, 0);
+void CheckBox::Draw(const StateContext &sc, const LayoutContext &lc, const InputContext &ic, DrawingContext &dc, TextureManager &texman) const
+{
+	ButtonBase::Draw(sc, lc, ic, dc, texman);
 
-	math::RectFloat box = {0, (GetHeight() - bh) / 2, bw, (GetHeight() - bh) / 2 + bh};
-	dc.DrawSprite(&box, _boxTexture, GetBackColor(), GetFrame());
+	State state = GetState(lc, ic);
+	size_t frame = _isChecked ? state + 4 : state;
+
+	float bh = texman.GetFrameHeight(_boxTexture, frame);
+	float bw = texman.GetFrameWidth(_boxTexture, frame);
+	float th = texman.GetFrameHeight(_fontTexture, 0);
+
+	FRECT box = {0, (lc.GetPixelSize().y - bh) / 2, bw, (lc.GetPixelSize().y - bh) / 2 + bh};
+	dc.DrawSprite(box, _boxTexture, 0xffffffff, frame);
 
 	// grep 'enum State'
-	Color colors[] =
+	SpriteColor colors[] =
 	{
-		Color(0xffffffff), // Normal
-		Color(0xffffffff), // Hottrack
-		Color(0xffffffff), // Pushed
-		Color(0xffffffff), // Disabled
+		SpriteColor(0xffffffff), // Normal
+		SpriteColor(0xffffffff), // Hottrack
+		SpriteColor(0xffffffff), // Pushed
+		SpriteColor(0xffffffff), // Disabled
 	};
-	if( _drawShadow && stateDisabled != GetState() )
-	{
-		dc.DrawBitmapText(bw + 1, (GetHeight() - th) / 2 + 1, _fontTexture, 0xff000000, GetText());
-	}
-	dc.DrawBitmapText(bw, (GetHeight() - th) / 2, _fontTexture, colors[GetState()], GetText());
+	dc.DrawBitmapText(vec2d{ bw, (lc.GetPixelSize().y - th) / 2 }, lc.GetScale(), _fontTexture, colors[state], GetText());
 }
-
-} // namespace UI
-

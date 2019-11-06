@@ -1,9 +1,7 @@
-// Console.h
-
 #pragma once
-
 #include <mutex>
 #include <sstream>
+#include <string>
 #include <vector>
 
 namespace UI
@@ -11,7 +9,6 @@ namespace UI
 
 struct IConsoleLog
 {
-	virtual ~IConsoleLog() = default;
 	virtual void WriteLine(int severity, const std::string &str) = 0;
 	virtual void Release() = 0;
 };
@@ -101,6 +98,4 @@ private:
 #endif
 };
 
-///////////////////////////////////////////////////////////////////////////////
-} // end of namespace UI
-// end of file
+} // namespace UI

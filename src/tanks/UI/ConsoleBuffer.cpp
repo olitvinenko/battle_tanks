@@ -7,8 +7,7 @@
 
 #define GET_LINE(x) (&_buffer[(_lineLength + 1) * (x)])
 
-namespace UI
-{
+using namespace UI;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -121,13 +120,12 @@ void ConsoleBuffer::WriteLine(int severity, const std::string &s)
 			_currentCount = std::min(_lineCount, _currentCount + 1);
 			dst = GET_LINE(_currentLine);
 			break;
-
 		default:
 			_times[_currentLine] = time;
 			_sev[_currentLine] = severity;
 			if( _currentPos < _lineLength )
 			{
-				dst[_currentPos++] = *src++;
+				dst[_currentPos++] = *(src++);
 			}
 			else
 			{
@@ -180,8 +178,3 @@ void ConsoleBuffer::Unlock() const
 #endif
 	_cs.unlock();
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-} // end of namespace UI
-// end of file

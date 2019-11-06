@@ -1,5 +1,7 @@
 #pragma once
 
+namespace UI
+{
 	enum class Key
 	{
 		Unknown,
@@ -106,6 +108,5 @@
 		Insert,
 		Delete,
 		Menu,
-
-		Last
 	};
+}

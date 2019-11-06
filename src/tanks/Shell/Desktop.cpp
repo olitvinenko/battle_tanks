@@ -1,195 +1,169 @@
-#include "Desktop.h"
-#include "MainMenu.h"
-#include "Widgets.h"
-
-#include "FileSystem.h"
-#include "Button.h"
-#include "Console.h"
-#include "ConsoleBuffer.h"
-#include "GuiManager.h"
-#include "Keys.h"
-#include <iostream>
-#include "NewMap.h"
-#include "AppState.h"
-#include "EditorContext.h"
 #include "Campaign.h"
+#include "ConfigBinding.h"
+#include "Editor.h"
+#include "Game.h"
+#include "GetFileName.h"
+#include "gui.h"
+#include "MainMenu.h"
+#include "MapSettings.h"
+#include "NavStack.h"
+#include "NewMap.h"
+#include "Settings.h"
+#include "SinglePlayer.h"
+#include "Widgets.h"
+#include "Configuration.h"
+#include "Desktop.h"
+#include "Profiler.h"
 
-#include "FileSystem.h"
+#include <AppConstants.h>
+#include <AppController.h>
+#include <AppState.h>
+#include <EditorContext.h>
+#include <World.h>
+#include <FileSystem.h>
+#include <Language.h>
+//#include <script/script.h>
+#include <Button.h>
+#include <Console.h>
+#include <ConsoleBuffer.h>
+#include <DataSource.h>
+#include <InputContext.h>
+#include <GuiManager.h>
+#include <Keys.h>
+#include <LayoutContext.h>
+#include <Text.h>
+#include <UIInput.h>
+#include <DrawingContext.h>
 
 extern "C"
 {
-	#include "lua.h"
-	#include "lualib.h"
-	#include "lauxlib.h"
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
 }
 
 #include <functional>
 
-void LuaStateDeleter::operator()(lua_State *L) const
-{
-	lua_close(L);
-}
 
-static UI::ConsoleBuffer s_logger(100, 500);
-static AppState appState;
+static CounterBase counterDt("dt", "dt, ms");
 
-
-Desktop::Desktop(UI::LayoutManager* manager,
-	FileSystem::IFileSystem &fs,
-	int width, int height)
-	: UIWindow(nullptr, manager)
-	, AppStateListener(appState)
-	, _fs(fs)
-	, _logger(s_logger)
-	, _globL(luaL_newstate())
-{
-	using namespace std::placeholders;
-
-	if (!_globL)
-		throw std::bad_alloc();
-
-	SetTexture("gui_splash", false);
-	SetDrawBorder(false);
-	SetTextureStretchMode(UI::StretchMode::Fill);
-
-	_con = UI::Console::Create(this, 10, 0, 100, 100, &_logger);
-	_con->eventOnSendCommand = std::bind(&Desktop::OnCommand, this, _1);
-	_con->eventOnRequestCompleteCommand = std::bind(&Desktop::OnCompleteCommand, this, _1, _2, _3);
-	_con->SetVisible(false);
-	_con->SetTopMost(true);
-	Color colors[] = { 0xffffffff, 0xffff7fff };
-	_con->SetColors(colors, sizeof(colors) / sizeof(colors[0]));
-	_con->SetHistory(&_history);
-
-	_fps = new FpsCounter(this, 0, 0, alignTextLB);
-	//	_conf.ui_showfps.eventChange = std::bind(&Desktop::OnChangeShowFps, this);
-	OnChangeShowFps();
-
-	//if( _conf.dbg_graph.Get() )
-	//{
-	//	float xx = 200;
-	//	float yy = 3;
-	//	float hh = 50;
-	//	for( size_t i = 0; i < CounterBase::GetMarkerCountStatic(); ++i )
-	//	{
-	//		Oscilloscope *os = new Oscilloscope(this, xx, yy);
-	//		os->Resize(400, hh);
-	//		os->SetRange(-1/15.0f, 1/15.0f);
-	//		os->SetTitle(CounterBase::GetMarkerInfoStatic(i).title);
-	//		CounterBase::SetMarkerCallbackStatic(i, std::bind(&Oscilloscope::Push, os, std::placeholders::_1));
-	//		yy += hh+5;
-	//	}
-	//}
-
-	_pauseButton = UI::ImageButton::Create(this, 0, 0, "ui/pause");
-	_pauseButton->SetTopMost(true);
-	_pauseButton->eventClick = [=]()
-	{
-		if (_navStack.empty())
-		{
-			ShowMainMenu();
-		}
-	};
-
-	SetTimeStep(true);
-	//OnGameContextChanged();
-
-	//new 
-	Resize(width, height);
-	OnGameContextChanged();
-}
-
-Desktop::Desktop(UI::LayoutManager* manager,
+Desktop::Desktop(UI::LayoutManager &manager,
+                 TextureManager &texman,
                  AppState &appState,
+                 AppConfig &appConfig,
+                 AppController &appController,
                  FileSystem::IFileSystem &fs,
+                 ShellConfig &conf,
+                 LangCache &lang,
+                 DMCampaign &dmCampaign,
                  UI::ConsoleBuffer &logger)
-  : UIWindow(nullptr, manager)
+  : Window(manager)
   , AppStateListener(appState)
+  , _history(conf)
+  , _texman(texman)
+  , _appConfig(appConfig)
+  , _appController(appController)
   , _fs(fs)
+  , _conf(conf)
+  , _lang(lang)
+  , _dmCampaign(dmCampaign)
   , _logger(logger)
   , _globL(luaL_newstate())
-  , _editor(nullptr)
-  , _worldView()
+  , _renderScheme(texman)
+  , _worldView(texman, _renderScheme)
 {
 	using namespace std::placeholders;
 
 	if (!_globL)
 		throw std::bad_alloc();
 
-	SetTexture("gui_splash", false);
-	SetDrawBorder(false);
-	SetTextureStretchMode(UI::StretchMode::Fill);
+	_background = std::make_shared<UI::Rectangle>(manager);
+	_background->SetTexture(texman, "gui_splash", false);
+	_background->SetTextureStretchMode(UI::StretchMode::Fill);
+	_background->SetDrawBorder(false);
+	AddFront(_background);
 
-	_con = UI::Console::Create(this, 10, 0, 100, 100, &_logger);
+	_con = UI::Console::Create(this, texman, 10, 0, 100, 100, &_logger);
 	_con->eventOnSendCommand = std::bind(&Desktop::OnCommand, this, _1);
 	_con->eventOnRequestCompleteCommand = std::bind(&Desktop::OnCompleteCommand, this, _1, _2, _3);
 	_con->SetVisible(false);
 	_con->SetTopMost(true);
-	Color colors[] = {0xffffffff, 0xffff7fff};
+	SpriteColor colors[] = {0xffffffff, 0xffff7fff};
 	_con->SetColors(colors, sizeof(colors) / sizeof(colors[0]));
 	_con->SetHistory(&_history);
 
-	_fps = new FpsCounter(this, 0, 0, alignTextLB);
-//	_conf.ui_showfps.eventChange = std::bind(&Desktop::OnChangeShowFps, this);
+	_fps = std::make_shared<FpsCounter>(manager, texman, 0.f, 0.f, alignTextLB, GetAppState());
+	AddFront(_fps);
+	_conf.ui_showfps.eventChange = std::bind(&Desktop::OnChangeShowFps, this);
 	OnChangeShowFps();
 
-	//if( _conf.dbg_graph.Get() )
-	//{
-	//	float xx = 200;
-	//	float yy = 3;
-	//	float hh = 50;
-	//	for( size_t i = 0; i < CounterBase::GetMarkerCountStatic(); ++i )
-	//	{
-	//		Oscilloscope *os = new Oscilloscope(this, xx, yy);
-	//		os->Resize(400, hh);
-	//		os->SetRange(-1/15.0f, 1/15.0f);
-	//		os->SetTitle(CounterBase::GetMarkerInfoStatic(i).title);
-	//		CounterBase::SetMarkerCallbackStatic(i, std::bind(&Oscilloscope::Push, os, std::placeholders::_1));
-	//		yy += hh+5;
-	//	}
-	//}
+	if( _conf.dbg_graph.Get() )
+	{
+		float xx = 200;
+		float yy = 3;
+		float hh = 50;
+		for( size_t i = 0; i < CounterBase::GetMarkerCountStatic(); ++i )
+		{
+			auto os = std::make_shared<Oscilloscope>(manager, texman, xx, yy);
+			os->Resize(400, hh);
+			os->SetRange(-1/15.0f, 1/15.0f);
+			os->SetTitle(CounterBase::GetMarkerInfoStatic(i).title);
+			AddFront(os);
+			CounterBase::SetMarkerCallbackStatic(i, std::bind(&Oscilloscope::Push, os, std::placeholders::_1));
+			yy += hh+5;
+		}
+	}
 
-	_pauseButton = UI::ImageButton::Create(this, 0, 0, "ui/pause");
+	_pauseButton = std::make_shared<UI::Button>(manager, texman);
+	_pauseButton->SetBackground(texman, "ui/pause", true);
 	_pauseButton->SetTopMost(true);
 	_pauseButton->eventClick = [=]()
 	{
-		if (_navStack.empty())
+		if (!_navStack->GetNavFront())
 		{
 			ShowMainMenu();
 		}
+		else
+		{
+			while (auto wnd = _navStack->GetNavFront())
+			{
+				_navStack->PopNavStack(wnd.get());
+			}
+			UpdateFocus();
+		}
 	};
+	AddFront(_pauseButton);
+
+	_navStack = std::make_shared<NavStack>(manager);
+	_navStack->SetSpacing(_conf.ui_spacing.GetFloat());
+	AddFront(_navStack);
+
+	_tierTitle = std::make_shared<UI::Text>(manager, texman);
+	_tierTitle->SetAlign(alignTextCC);
+	_tierTitle->SetFont(texman, "font_default");
+	AddFront(_tierTitle);
 
 	SetTimeStep(true);
 	OnGameContextChanged();
+
+	_initializing = false;
 }
 
 Desktop::~Desktop()
 {
-	//_conf.ui_showfps.eventChange = nullptr;
+	_conf.ui_showfps.eventChange = nullptr;
 }
 
-void Desktop::OnTimeStep(float dt)
+void Desktop::OnTimeStep(UI::LayoutManager &manager, float dt)
 {
-	dt *= 100.0f/*_conf.sv_speed.GetFloat()*/ / 100.0f;
+	dt *= _conf.sv_speed.GetFloat() / 100.0f;
 
-	if (_navTransitionTime > 0)
+	if (_openingTime > 0)
 	{
-		_navTransitionTime = std::max(0.f, _navTransitionTime - dt);
-		OnSize(GetWidth(), GetHeight());
+		_openingTime = std::max(0.f, _openingTime - dt);
 	}
 
-//	if( !IsGamePaused() || !IsPauseSupported() )
-	if (GameContextBase *gc = GetAppState().GetGameContext())
-	{
-		assert(dt >= 0);
-		//counterDt.Push(dt);
-
-		_defaultCamera.HandleMovement(GetManager().GetInput(),
-			gc->GetPathfinder().GetSizeX(),
-			gc->GetPathfinder().GetSizeY(),
-			(float) GetWidth(),
-			(float) GetHeight());
-	}
+	counterDt.Push(dt);
 }
 
 bool Desktop::GetEditorMode() const
@@ -202,18 +176,13 @@ void Desktop::SetEditorMode(bool editorMode)
 	if( _editor )
 	{
 		_editor->SetVisible(editorMode);
-		//if( _game )
-		//	_game->SetVisible(!editorMode);
+		if( _game )
+			_game->SetVisible(!editorMode);
 		if( editorMode && !_con->GetVisible() )
 		{
-			GetManager().SetFocusWnd(_editor);
+			SetFocus(_editor);
 		}
 	}
-}
-
-bool Desktop::IsGamePaused() const
-{
-	return !_navStack.empty() || _editor->GetVisible(); //  || _world._limitHit
 }
 
 void Desktop::ShowConsole(bool show)
@@ -221,57 +190,61 @@ void Desktop::ShowConsole(bool show)
 	_con->SetVisible(show);
 	if (show)
 	{
-		_con->BringToFront();
+		UnlinkChild(*_con);
+		AddFront(_con);
 	}
 }
 
-void Desktop::OnCloseChild(UI::UIWindow *child, int result)
+void Desktop::OnCloseChild(std::shared_ptr<UI::Window> child, int result)
 {
-	PopNavStack(child);
+	_navStack->PopNavStack(child.get());
+	UpdateFocus();
 }
 
-//static PlayerDesc GetPlayerDescFromConf(const ConfPlayerBase &p)
-//{
-//	PlayerDesc result;
-//	result.nick = p.nick.Get();
-//	result.cls = p.platform_class.Get();
-//	result.skin = p.skin.Get();
-//	result.team = p.team.GetInt();
-//	return result;
-//}
-//
-//static DMSettings GetDMSettingsFromConfig(const ConfCache &conf)
-//{
-//	DMSettings settings;
-//
-//	for( size_t i = 0; i < conf.dm_players.GetSize(); ++i )
-//	{
-//		ConfPlayerLocal p(&conf.dm_players.GetAt(i).AsTable());
-//		settings.players.push_back(GetPlayerDescFromConf(p));
-//	}
-//
-//	for( size_t i = 0; i < conf.dm_bots.GetSize(); ++i )
-//	{
-//		ConfPlayerAI p(&conf.dm_bots.GetAt(i).AsTable());
-//		settings.bots.push_back(GetPlayerDescFromConf(p));
-//	}
-//
-//	return settings;
-//}
+static PlayerDesc GetPlayerDescFromConf(const ConfPlayerBase &p)
+{
+    PlayerDesc result;
+    result.nick = p.nick.Get();
+    result.cls = p.platform_class.Get();
+    result.skin = p.skin.Get();
+    result.team = p.team.GetInt();
+    return result;
+}
+
+static DMSettings GetDMSettingsFromConfig(const ShellConfig &conf)
+{
+	DMSettings settings;
+
+	for( size_t i = 0; i < conf.dm_players.GetSize(); ++i )
+	{
+		ConfPlayerLocal p(&conf.dm_players.GetAt(i).AsTable());
+		settings.players.push_back(GetPlayerDescFromConf(p));
+	}
+
+	for( size_t i = 0; i < conf.dm_bots.GetSize(); ++i )
+	{
+		ConfPlayerAI p(&conf.dm_bots.GetAt(i).AsTable());
+		settings.bots.push_back(GetPlayerDescFromConf(p));
+	}
+
+	settings.timeLimit = conf.sv_timelimit.GetFloat() * 60;
+	settings.fragLimit = conf.sv_fraglimit.GetInt();
+
+	return settings;
+}
 
 void Desktop::OnNewCampaign()
 {
-	NewCampaignDlg *dlg = new NewCampaignDlg(this, _fs);
-	dlg->eventCampaignSelected = [this,dlg](std::string name)
+	auto dlg = std::make_shared<NewCampaignDlg>(GetManager(), _texman, _fs, _lang);
+	dlg->eventCampaignSelected = [this](auto sender, std::string name)
 	{
 		if( !name.empty() )
 		{
-			OnCloseChild(dlg, UI::Dialog::_resultOK);
+			OnCloseChild(sender, UI::Dialog::_resultOK);
 
-			//_conf.ui_showmsg.Set(true);
             try
             {
-                //script_exec_file(_globL.get(), _fs, ("campaign/" + name + ".lua").c_str());
+//                script_exec_file(_globL.get(), _fs, ("campaign/" + name + ".lua").c_str());
                 throw std::logic_error("not implemented");
             }
             catch( const std::exception &e )
@@ -282,252 +255,290 @@ void Desktop::OnNewCampaign()
 		}
 		else
 		{
-			OnCloseChild(dlg, UI::Dialog::_resultCancel);
+			OnCloseChild(sender, UI::Dialog::_resultCancel);
 		}
-		dlg->Destroy();
 	};
-	PushNavStack(*dlg);
+	_navStack->PushNavStack(dlg);
+	UpdateFocus();
 }
 
 void Desktop::OnNewDM()
 {
-	//for (auto wnd: _navStack)
-	//	if (dynamic_cast<NewGameDlg*>(wnd))
-	//		return;
+	if (_navStack->IsOnStack<NewGameDlg>() || _navStack->IsOnStack<SinglePlayer>())
+		return;
 
-	//if (!_navStack.empty() && dynamic_cast<SettingsDlg*>(_navStack.back()) )
-	//	PopNavStack();
+//	if (_navStack->IsOnTop<SettingsDlg>())
+//		_navStack->PopNavStack();
 
-	//auto dlg = new NewGameDlg(this, _fs, _conf, _logger, _lang);
-	//dlg->eventClose = [this, dlg](int result)
-	//{
-	//	OnCloseChild(dlg, result);
-	//	if (UI::Dialog::_resultOK == result)
-	//	{
-	//		try
-	//		{
+	if (_dmCampaign.tiers.GetSize() > 0 &&
+		!GetManager().GetInputContext().GetInput().IsKeyPressed(UI::Key::LeftCtrl) &&
+		!GetManager().GetInputContext().GetInput().IsKeyPressed(UI::Key::RightCtrl))
+	{
+		auto dlg = std::make_shared<SinglePlayer>(GetManager(), _texman, _worldView, _fs, _appConfig, _conf, _lang, _dmCampaign);
+		dlg->eventClose = [this](auto sender, int result)
+		{
+			OnCloseChild(sender, result);
+			if (UI::Dialog::_resultOK == result)
+			{
+				try
+				{
+					int currentTier = GetCurrentTier(_conf, _dmCampaign);
+					int currentMap = GetCurrentMap(_conf, _dmCampaign);
+					_appController.StartDMCampaignMap(GetAppState(), _appConfig, _dmCampaign, currentTier, currentMap);
 
-			//std::string path = std::string(DIR_MAPS) + '/' + mapName + ".map";
-			//std::shared_ptr<FS::Stream> stream = _fs.Open(path)->QueryStream();
-		    //GetAppState().SetGameContext(std::make_unique<GameContext>(*stream, GetDMSettingsFromConfig(_conf)));
-
-	//			ClearNavStack();
-	//		}
-	//		catch( const std::exception &e )
-	//		{
-	//			_logger.Printf(1, "Could not start new game - %s", e.what());
-	//		}
-	//	}
-	//};
-	//PushNavStack(*dlg);
+					while (auto wnd = _navStack->GetNavFront())
+					{
+						_navStack->PopNavStack(wnd.get());
+					}
+					UpdateFocus();
+				}
+				catch (const std::exception &e)
+				{
+					_logger.Printf(1, "Could not start new game - %s", e.what());
+				}
+			}
+		};
+		_navStack->PushNavStack(dlg);
+		UpdateFocus();
+	}
+	else
+	{
+		auto dlg = std::make_shared<NewGameDlg>(GetManager(), _texman, _fs, _conf, _logger, _lang);
+		dlg->eventClose = [this](auto sender, int result)
+		{
+			OnCloseChild(sender, result);
+			if (UI::Dialog::_resultOK == result)
+			{
+				try
+				{
+					_appController.NewGameDM(GetAppState(), static_cast<NewGameDlg&>(*sender).GetSelectedMapName(), GetDMSettingsFromConfig(_conf));
+					while (auto wnd = _navStack->GetNavFront())
+					{
+						_navStack->PopNavStack(wnd.get());
+					}
+					UpdateFocus();
+				}
+				catch (const std::exception &e)
+				{
+					_logger.Printf(1, "Could not start new game - %s", e.what());
+				}
+			}
+		};
+		_navStack->PushNavStack(dlg);
+		UpdateFocus();
+	}
 }
 
 void Desktop::OnNewMap()
 {
-	auto dlg = new NewMapDlg(this);
-	dlg->onOkCallback = [=](int width, int height)
+	auto dlg = std::make_shared<NewMapDlg>(GetManager(), _texman, _conf, _lang);
+	dlg->eventClose = [this](auto sender, int result)
 	{
-		OnCloseChild(dlg, UI::Dialog::_resultOK);
-
-		std::unique_ptr<GameContextBase> gc(new EditorContext(width, height, GetManager().GetTextureManager()));
-		GetAppState().SetGameContext(std::move(gc));
-
-		ClearNavStack();
+		OnCloseChild(sender, result);
+		if (UI::Dialog::_resultOK == result)
+		{
+			std::unique_ptr<GameContextBase> gc(new EditorContext(_conf.ed_width.GetInt(), _conf.ed_height.GetInt()));
+			GetAppState().SetGameContext(std::move(gc));
+			while (auto wnd = _navStack->GetNavFront())
+			{
+				_navStack->PopNavStack(wnd.get());
+			}
+			UpdateFocus();
+		}
 	};
-
-	dlg->eventClose = [=](int result)
-	{
-		if (result == UI::Dialog::_resultCancel)
-			OnCloseChild(dlg, result);
-	};
-
-	PushNavStack(*dlg);
+	_navStack->PushNavStack(dlg);
+	UpdateFocus();
 }
 
-void Desktop::OnOpenMap(std::string fileName)
+void Desktop::OnOpenMap()
 {
-	std::unique_ptr<GameContextBase> gc(new EditorContext(_fs.Open(fileName, FileSystem::FileOpenMode::Read), GetManager().GetTextureManager()));
-	GetAppState().SetGameContext(std::move(gc));
-	ClearNavStack();
+	if (GetManager().GetInputContext().GetInput().IsKeyPressed(UI::Key::LeftCtrl) ||
+		GetManager().GetInputContext().GetInput().IsKeyPressed(UI::Key::RightCtrl))
+	{
+		OnExportMap();
+		return;
+	}
+
+	GetFileNameDlg::Params param;
+	param.blank = _lang.get_file_name_new_map.Get();
+	param.title = _lang.get_file_name_load_map.Get();
+	param.folder = _fs.GetFileSystem(DIR_MAPS);
+	param.extension = "map";
+
+	if (!param.folder)
+	{
+		ShowConsole(true);
+		_logger.Printf(1, "Could not open directory '%s'", DIR_MAPS);
+		return;
+	}
+
+	auto fileDlg = std::make_shared<GetFileNameDlg>(GetManager(), _texman, param, _lang);
+	fileDlg->eventClose = [this](auto sender, int result)
+	{
+		OnCloseChild(sender, result);
+		if (UI::Dialog::_resultOK == result)
+		{
+			std::shared_ptr<FileSystem::Stream> stream;
+			if (!static_cast<GetFileNameDlg&>(*sender).IsBlank())
+			{
+				auto fileName = std::string(DIR_MAPS) + "/" + static_cast<GetFileNameDlg&>(*sender).GetFileName();
+				stream = _fs.Open(fileName)->AsStream();
+			}
+			std::unique_ptr<GameContextBase> gc(new EditorContext(_conf.ed_width.GetInt(), _conf.ed_height.GetInt(), stream.get()));
+			GetAppState().SetGameContext(std::move(gc));
+			while (auto wnd = _navStack->GetNavFront())
+			{
+				_navStack->PopNavStack(wnd.get());
+			}
+			UpdateFocus();
+		}
+	};
+	_navStack->PushNavStack(fileDlg);
+	UpdateFocus();
 }
 
-void Desktop::OnExportMap(std::string fileName)
+void Desktop::OnExportMap()
 {
-	if (GameContextBase *gameContext = GetAppState().GetGameContext())
+	if (GetAppState().GetGameContext())
 	{
-		std::shared_ptr<FileSystem::File> file = _fs.Open(fileName, FileSystem::FileOpenMode::Write);
-		gameContext->GetPathfinder().Save(file->AsSTDStream());
-		_logger.Printf(0, "map exported: '%s'", fileName.c_str());
+		GetFileNameDlg::Params param;
+		param.title = _lang.get_file_name_save_map.Get();
+		param.folder = _fs.GetFileSystem(DIR_MAPS, true);
+		param.extension = "map";
 
-		ClearNavStack();
+		if (!param.folder)
+		{
+			ShowConsole(true);
+			_logger.Printf(1, "ERROR: Could not open directory '%s'", DIR_MAPS);
+			return;
+		}
+
+		auto fileDlg = std::make_shared<GetFileNameDlg>(GetManager(), _texman, param, _lang);
+		fileDlg->eventClose = [this](auto sender, int result)
+		{
+			OnCloseChild(sender, result);
+			GameContextBase *gameContext = GetAppState().GetGameContext();
+			if (UI::Dialog::_resultOK == result && gameContext)
+			{
+				auto fileName = std::string(DIR_MAPS) + "/" + static_cast<GetFileNameDlg&>(*sender).GetFileName();
+				gameContext->GetWorld().Export(*_fs.Open(fileName, FileSystem::FileOpenMode::Write)->AsStream());
+				_logger.Printf(0, "map exported: '%s'", fileName.c_str());
+			//	_conf.cl_map.Set(fileDlg->GetFileTitle());
+			}
+		};
+		_navStack->PushNavStack(fileDlg);
+		UpdateFocus();
 	}
 }
 
 void Desktop::OnGameSettings()
 {
-	//auto dlg = new SettingsDlg(this, _conf, _lang);
-	//dlg->eventClose = [=](int result) {OnCloseChild(dlg, result);};
-	//PushNavStack(*dlg);
+	auto dlg = std::make_shared<SettingsDlg>(GetManager(), _texman, _conf, _lang);
+	dlg->eventClose = [this](auto sender, int result) {OnCloseChild(sender, result);};
+	_navStack->PushNavStack(dlg);
+	UpdateFocus();
 }
 
-void Desktop::OnHost()
+void Desktop::OnMapSettings()
 {
-	//auto dlg = new CreateServerDlg(this, *new World(100, 100), _fs, _conf, _lang, _logger);
-	//dlg->eventClose = [=](int result) {OnCloseChild(dlg, result); };
-	//PushNavStack(*dlg);
-}
-
-void Desktop::OnJoin()
-{
-	//auto dlg = new InternetDlg(this, *new World(11, 11), _conf, _lang);
-	//dlg->eventClose = [=](int result) {OnCloseChild(dlg, result); };
-	//PushNavStack(*dlg);
+	if (auto gameContext = GetAppState().GetGameContext())
+	{
+		//ThemeManager themeManager(GetAppState(), _fs, _texman);
+		auto dlg = std::make_shared<MapSettingsDlg>(GetManager(), _texman, gameContext->GetWorld()/*, themeManager*/, _lang);
+		dlg->eventClose = [this](auto sender, int result) {OnCloseChild(sender, result);};
+		_navStack->PushNavStack(dlg);
+		UpdateFocus();
+	}
 }
 
 void Desktop::ShowMainMenu()
 {
-	using namespace std::placeholders;
-
 	MainMenuCommands commands;
 	commands.newCampaign = [this]() { OnNewCampaign(); };
 	commands.newDM = std::bind(&Desktop::OnNewDM, this);
 	commands.newMap = std::bind(&Desktop::OnNewMap, this);
-	commands.openMap = std::bind(&Desktop::OnOpenMap, this, _1);
-	commands.exportMap = std::bind(&Desktop::OnExportMap, this, _1);
+	commands.openMap = std::bind(&Desktop::OnOpenMap, this);
+	commands.exportMap = std::bind(&Desktop::OnExportMap, this);
 	commands.gameSettings = std::bind(&Desktop::OnGameSettings, this);
+	commands.mapSettings = std::bind(&Desktop::OnMapSettings, this);
 	commands.close = [=]()
 	{
 		if (GetAppState().GetGameContext()) // do not return to nothing
 		{
-			ClearNavStack();
+			while (auto wnd = _navStack->GetNavFront())
+			{
+				_navStack->PopNavStack(wnd.get());
+			}
+			UpdateFocus();
 		}
 	};
-
-	commands.onHost = std::bind(&Desktop::OnHost, this);
-	commands.onJoin = std::bind(&Desktop::OnJoin, this);
-
-	auto mainMenu = new MainMenuDlg(this, _fs, _logger, std::move(commands));
-	PushNavStack(*mainMenu);
+	_navStack->PushNavStack(std::make_shared<MainMenuDlg>(GetManager(), _texman, _lang, std::move(commands)));
+	UpdateFocus();
 }
 
-void Desktop::ClearNavStack()
+void Desktop::UpdateFocus()
 {
-	for (auto wnd: _navStack)
+	if (_con->GetVisible())
 	{
-		wnd->Destroy();
+		SetFocus(_con);
 	}
-	_navStack.clear();
+	else if(_navStack->GetNavFront())
+	{
+		SetFocus(_navStack);
+	}
+	else
+	{
+		SetFocus(_game); // may be null
+	}
 }
 
-void Desktop::PopNavStack(UI::UIWindow *wnd)
-{
-	if (wnd)
-	{
-		_navTransitionStart = GetTransitionTarget();
-		_navTransitionTime = .5f;// _conf.ui_foldtime.GetFloat();
-
-		auto it = std::find(_navStack.begin(), _navStack.end(), wnd);
-		assert(_navStack.end() != it);
-		_navStack.erase(it);
-	}
-	else if (!_navStack.empty())
-	{
-		_navTransitionStart = GetTransitionTarget();
-		_navTransitionTime = .5f;// _conf.ui_foldtime.GetFloat();
-
-		_navStack.back()->Destroy();
-		_navStack.pop_back();
-	}
-
-	if (!_navStack.empty())
-	{
-		_navStack.back()->SetEnabled(true);
-	}
-
-	OnSize(GetWidth(), GetHeight());
-}
-
-void Desktop::PushNavStack(UI::UIWindow &wnd)
-{
-	_navTransitionStart = GetTransitionTarget();
-	_navTransitionTime = .5f;// _conf.ui_foldtime.GetFloat();
-
-	if (!_navStack.empty())
-	{
-		_navStack.back()->SetEnabled(false);
-	}
-	_navStack.push_back(&wnd);
-	GetManager().SetFocusWnd(&wnd);
-	OnSize(GetWidth(), GetHeight());
-}
-
-float Desktop::GetNavStackSize() const
-{
-	float navStackHeight = 0;
-	if (!_navStack.empty())
-	{
-		for (auto wnd : _navStack)
-		{
-			navStackHeight += wnd->GetHeight();
-		}
-		navStackHeight += (float)(_navStack.size() - 1) *  100.0f; //_conf.ui_spacing.GetFloat();
-	}
-	return navStackHeight;
-}
-
-float Desktop::GetTransitionTarget() const
-{
-	return (GetHeight() + (_navStack.empty() ? 0 : _navStack.back()->GetHeight())) / 2 - GetNavStackSize();
-}
-
-bool Desktop::OnKeyPressed(Key key)
+bool Desktop::OnKeyPressed(UI::InputContext &ic, UI::Key key)
 {
 	switch( key )
 	{
-	case Key::GraveAccent: // '~'
-		if( _con->GetVisible() )
-		{
-			_con->SetVisible(false);
-		}
-		else
-		{
-			_con->SetVisible(true);
-			GetManager().SetFocusWnd(_con);
-		}
+	case UI::Key::GraveAccent: // '~'
+		_con->SetVisible(!_con->GetVisible());
+		UpdateFocus();
 		break;
 
-	case Key::Escape:
-		if( _con->Contains(GetManager().GetFocusWnd()) )
+	case UI::Key::Escape:
+		if( GetFocus() == _con )
 		{
 			_con->SetVisible(false);
+			UpdateFocus();
 		}
 		else
 		{
-			if (_navStack.empty())
+			if (!_navStack->GetNavFront())
 			{
 				ShowMainMenu();
 			}
-			else if(!IsOnTop<MainMenuDlg>())// || GetAppState().GetGameContext())
+			else if(!_navStack->IsOnTop<MainMenuDlg>() || GetAppState().GetGameContext())
 			{
-				PopNavStack();
+				_navStack->PopNavStack();
+				UpdateFocus();
 			}
-			if (_navStack.empty())// && !GetAppState().GetGameContext())
+			if (!_navStack->GetNavFront() && !GetAppState().GetGameContext())
 			{
 				ShowMainMenu();
 			}
 		}
 		break;
 
-	case Key::F2:
+	case UI::Key::F2:
 		OnNewDM();
 		break;
 
-	case Key::F12:
+	case UI::Key::F12:
 		OnGameSettings();
 		break;
 
-	case Key::F5:
-		if (_navStack.empty())
+	case UI::Key::F8:
+		OnMapSettings();
+		break;
+
+	case UI::Key::F5:
+		if (!_navStack->GetNavFront())
 			SetEditorMode(!GetEditorMode());
 		break;
 
@@ -538,36 +549,51 @@ bool Desktop::OnKeyPressed(Key key)
 	return true;
 }
 
-bool Desktop::OnFocus(bool focus)
+FRECT Desktop::GetChildRect(TextureManager &texman, const UI::LayoutContext &lc, const UI::StateContext &sc, const UI::Window &child) const
 {
-	return true;
+	if (_background.get() == &child)
+	{
+		float transition = (1 - std::cos(PI * _openingTime / _conf.ui_foldtime.GetFloat())) / 2;
+		if (GetAppState().GetGameContext())
+		{
+			transition = 1 - transition;
+		}
+		return MakeRectWH(vec2d{0, -lc.GetPixelSize().y * transition}, lc.GetPixelSize());
+	}
+	if (_editor.get() == &child || _game.get() == &child || _navStack.get() == &child)
+	{
+		return MakeRectWH(lc.GetPixelSize());
+	}
+	if (_con.get() == &child)
+	{
+		return MakeRectRB(Vec2dFloor(vec2d{ 10, 0 } *lc.GetScale()), Vec2dFloor(lc.GetPixelSize().x - 10 * lc.GetScale(), lc.GetPixelSize().y / 2));
+	}
+	if (_fps.get() == &child)
+	{
+		return UI::CanvasLayout(vec2d{ 1, lc.GetPixelSize().y / lc.GetScale() - 1 }, _fps->GetContentSize(texman, sc, lc.GetScale()) / lc.GetScale(), lc.GetScale());
+	}
+	if (_tierTitle.get() == &child)
+	{
+		return MakeRectWH(Vec2dFloor(lc.GetPixelSize() / 2), vec2d{});
+	}
+	return UI::Window::GetChildRect(texman, lc, sc, child);
 }
 
-void Desktop::OnSize(float width, float height)
+float Desktop::GetChildOpacity(const UI::Window &child) const
 {
-	if( _editor )
-		_editor->Resize(width, height);
-	//if( _game )
-	//	_game->Resize(width, height);
-	_con->Resize(width - 20, floorf(height * 0.5f + 0.5f));
-	_fps->Move(1, height - 1);
-
-	if (!_navStack.empty())
+	if (_tierTitle.get() == &child)
 	{
-		float transition = (1 - std::cos(PI * _navTransitionTime / 0.5f/*_conf.ui_foldtime.GetFloat()*/)) / 2;
-		float top = std::floor(_navTransitionStart * transition + GetTransitionTarget() * (1 - transition));
-
-		for (auto wnd : _navStack)
-		{
-			wnd->Move(floorf((width - wnd->GetWidth()) / 2), top);
-			top += wnd->GetHeight() + 100.0f;// _conf.ui_spacing.GetFloat();
-		}
+		if (auto *gameContext = dynamic_cast<GameContext*>(GetAppState().GetGameContext()))
+			return std::max(0.f, std::min(1.f, (5 - gameContext->GetWorld().GetTime()) / 3));
+		else
+			return 0;
 	}
+	return UI::Window::GetChildOpacity(child);
 }
 
 void Desktop::OnChangeShowFps()
 {
-	_fps->SetVisible(true);//(_conf.ui_showfps.Get());
+	_fps->SetVisible(_conf.ui_showfps.Get());
 }
 
 void Desktop::OnCommand(const std::string &cmd)
@@ -626,7 +652,7 @@ bool Desktop::OnCompleteCommand(const std::string &cmd, int &pos, std::string &r
 	if( lua_pcall(_globL.get(), 1, 1, 0) )
 	{
 		_logger.WriteLine(1, lua_tostring(_globL.get(), -1));
-        lua_pop(_globL.get(), 1); // pop error message
+		lua_pop(_globL.get(), 1); // pop error message
 	}
 	else
 	{
@@ -648,56 +674,96 @@ bool Desktop::OnCompleteCommand(const std::string &cmd, int &pos, std::string &r
 
 void Desktop::OnGameContextChanging()
 {
-	//if (_game)
-	//{
-	//	_game->Destroy();
-	//	_game = nullptr;
-	//}
+	if (_game)
+	{
+		UnlinkChild(*_game);
+		_game.reset();
+	}
 
 	if (_editor)
 	{
-		_editor->Destroy();
-		_editor = nullptr;
+		UnlinkChild(*_editor);
+		_editor.reset();
 	}
+
+	UpdateFocus();
 }
 
 void Desktop::OnGameContextChanged()
 {
-	//if (auto *gameContext = dynamic_cast<GameContext*>(GetAppState().GetGameContext()))
-	//{
-	//	assert(!_game);
-	//	_game = new GameLayout(this,
-	//	                       *gameContext,
-	//	                       _worldView,
-	//	                       gameContext->GetWorldController(),
-	//	                       _defaultCamera,
-	//	                       _conf,
-	//	                       _lang,
-	//	                       _logger);
-	//	_game->Resize(GetWidth(), GetHeight());
-	//	_game->BringToBack();
+	if (auto *gameContext = dynamic_cast<GameContext*>(GetAppState().GetGameContext()))
+	{
+		assert(!_game);
 
-	//	SetEditorMode(false);
-	//}
+		CampaignControlCommands campaignControlCommands;
+		campaignControlCommands.replayCurrent = [this, weakThis = std::weak_ptr<Window>(shared_from_this())]
+		{
+			if (!weakThis.expired())
+				_appController.StartDMCampaignMap(GetAppState(), _appConfig, _dmCampaign, GetCurrentTier(_conf, _dmCampaign), GetCurrentMap(_conf, _dmCampaign));
+		};
+		campaignControlCommands.playNext = [this, weakThis = std::weak_ptr<Window>(shared_from_this())]
+		{
+			if (!weakThis.expired())
+			{
+				int tierIndex = GetCurrentTier(_conf, _dmCampaign);
+				int nextMapIndex = (GetCurrentMap(_conf, _dmCampaign) + 1) % GetCurrentTierMapCount(_conf, _dmCampaign);
+				if (nextMapIndex == 0 && IsTierComplete(_appConfig, _dmCampaign, tierIndex))
+					tierIndex++;
+				_conf.sp_map.SetInt(nextMapIndex);
+				_conf.sp_tier.SetInt(tierIndex);
+				_appController.StartDMCampaignMap(GetAppState(), _appConfig, _dmCampaign, tierIndex, nextMapIndex);
+			}
+		};
+
+		_game = std::make_shared<GameLayout>(
+			GetManager(),
+			_texman,
+			*gameContext,
+			_worldView,
+			gameContext->GetWorldController(),
+			_conf,
+			_lang,
+			_logger,
+			std::move(campaignControlCommands));
+		_game->Resize(GetWidth(), GetHeight());
+		AddBack(_game);
+
+		int currentTier = GetCurrentTier(_conf, _dmCampaign);
+		DMCampaignTier tierDesc(&_dmCampaign.tiers.GetTable(currentTier));
+		_tierTitle->SetText(ConfBind(tierDesc.title));
+
+		SetEditorMode(false);
+	}
 
 	if (auto *editorContext = dynamic_cast<EditorContext*>(GetAppState().GetGameContext()))
 	{
 		assert(!_editor);
-		_editor = new EditorLayout(this, editorContext->GetPathfinder(), _worldView, _defaultCamera, _globL.get(), _logger);
+		_editor = std::make_shared<EditorLayout>(
+			GetManager(),
+			_texman,
+			*editorContext,
+			_worldView,
+			_conf,
+			_lang,
+			_logger);
 		_editor->Resize(GetWidth(), GetHeight());
-		_editor->BringToBack();
 		_editor->SetVisible(false);
+		AddBack(_editor);
 
 		SetEditorMode(true);
 	}
 
-	if (GetAppState().GetGameContext())
+	if (!_initializing)
 	{
-		SetDrawBackground(false);
+		_openingTime = _conf.ui_foldtime.GetFloat();
 	}
-	else
+
+	if (!GetAppState().GetGameContext())
 	{
-		SetDrawBackground(true);
 		ShowMainMenu();
 	}
+
+	_pauseButton->SetVisible(!!GetAppState().GetGameContext());
+
+	UpdateFocus();
 }

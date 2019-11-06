@@ -1,17 +1,16 @@
-// Button.h
-
 #pragma once
-
-#include "UIWindow.h"
-
+#include "Window.h"
 #include <functional>
 
-///////////////////////////////////////////////////////////////////////////////
+class TextureManager;
 
 namespace UI
 {
 
-class ButtonBase : public UIWindow
+class ButtonBase
+	: public Window
+	, private PointerSink
+	, private StateGen
 {
 public:
 	enum State
@@ -22,54 +21,56 @@ public:
 		stateDisabled,
 	};
 
-	ButtonBase(UIWindow *parent);
+	explicit ButtonBase(LayoutManager &manager);
 
 	std::function<void(void)> eventClick;
 	std::function<void(float, float)> eventMouseDown;
 	std::function<void(float, float)> eventMouseUp;
 	std::function<void(float, float)> eventMouseMove;
 
-	State GetState() const { return _state; }
+	State GetState(const LayoutContext &lc, const InputContext &ic) const;
 
-protected:
-    bool OnPointerMove(float x, float y, PointerType pointerType, unsigned int pointerID) override;
-    bool OnPointerDown(float x, float y, int button, PointerType pointerType, unsigned int pointerID) override;
-	bool OnPointerUp  (float x, float y, int button, PointerType pointerType, unsigned int pointerID) override;
-	bool OnMouseLeave() override;
-    bool OnTap(float x, float y) override;
-
-	void OnEnabledChange(bool enable, bool inherited) override;
-	virtual void OnChangeState(State state);
+	// Window
+	PointerSink* GetPointerSink() override { return this; }
+	const StateGen* GetStateGen() const override { return this; }
 
 private:
 	virtual void OnClick();
 
-	State _state;
-	void SetState(State s);
+	// PointerSink
+	void OnPointerMove(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, PointerType pointerType, unsigned int pointerID, bool captured) override;
+	bool OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, PointerType pointerType, unsigned int pointerID) override;
+	void OnPointerUp(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, PointerType pointerType, unsigned int pointerID) override;
+	void OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition) override;
+
+	// StateGen
+	void PushState(StateContext &sc, const LayoutContext &lc, const InputContext &ic) const override;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 
+class Rectangle;
+class Text;
+template<class T> struct DataSource;
+
 class Button : public ButtonBase
 {
 public:
-	static Button* Create(UIWindow *parent, const std::string &text, float x, float y, float w=-1, float h=-1);
+	Button(LayoutManager &manager, TextureManager &texman);
 
-	void SetIcon(const char *spriteName);
-
-protected:
-	Button(UIWindow *parent);
-	void SetFont(const char *fontName);
-
-	// ButtonBase
-	void OnChangeState(State state) override;
+	void SetBackground(TextureManager &texman, const char *tex, bool fitSize);
+	void SetIcon(LayoutManager &manager, TextureManager &texman, const char *spriteName);
+	void SetText(std::shared_ptr<DataSource<const std::string&>> text);
+	void SetFont(TextureManager &texman, const char *fontName);
 
 	// Window
-	void Draw(DrawingContext &dc) const override;
+	FRECT GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const override;
+	void Draw(const StateContext &sc, const LayoutContext &lc, const InputContext &ic, DrawingContext &dc, TextureManager &texman) const override;
 
 private:
-	size_t _font;
-	size_t _icon;
+	std::shared_ptr<Rectangle> _background;
+	std::shared_ptr<Rectangle> _icon;
+	std::shared_ptr<Text> _text;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -77,37 +78,17 @@ private:
 class TextButton : public ButtonBase
 {
 public:
-	static TextButton* Create(UIWindow *parent, float x, float y, const std::string &text, const char *font);
+	explicit TextButton(LayoutManager &manager, TextureManager &texman);
 
-	void SetFont(const char *fontName);
+	void SetFont(TextureManager &texman, const char *fontName);
+	void SetText(std::shared_ptr<DataSource<const std::string&>> text);
 
-	void SetDrawShadow(bool drawShadow);
-	bool GetDrawShadow() const;
-
-protected:
-	TextButton(UIWindow *parent);
-
-	void AlignSizeToContent();
-
-    void OnTextChange() override;
-	void Draw(DrawingContext &dc) const override;
-
+	// Window
+	FRECT GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const override;
+	vec2d GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const override;
 
 private:
-	size_t _fontTexture;
-	bool   _drawShadow;
-};
-
-///////////////////////////////////////////////////////////////////////////////
-
-class ImageButton : public ButtonBase
-{
-public:
-	static ImageButton* Create(UIWindow *parent, float x, float y, const char *texture);
-
-protected:
-	ImageButton(UIWindow *parent);
-	virtual void OnChangeState(State state);
+	std::shared_ptr<Text> _text;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -115,30 +96,28 @@ protected:
 class CheckBox : public ButtonBase
 {
 public:
-	static CheckBox* Create(UIWindow *parent, float x, float y, const std::string &text);
+	CheckBox(LayoutManager &manager, TextureManager &texman);
 
 	void SetCheck(bool checked);
 	bool GetCheck() const { return _isChecked; }
 
-	void SetDrawShadow(bool drawShadow);
-	bool GetDrawShadow() const;
+	const std::string& GetText() const;
+	void SetText(TextureManager &texman, const std::string &text);
 
 protected:
-	CheckBox(UIWindow *parent);
-
-	void AlignSizeToContent();
+	void AlignSizeToContent(TextureManager &texman);
 
 	void OnClick() override;
-	void OnTextChange() override;
-	void OnChangeState(State state) override;
 
 	// Window
-	void Draw(DrawingContext &dc) const override;
+	void Draw(const StateContext &sc, const LayoutContext &lc, const InputContext &ic, DrawingContext &dc, TextureManager &texman) const override;
 
 private:
+	void OnTextChange(TextureManager &texman);
+
+	std::string _text;
 	size_t _fontTexture;
 	size_t _boxTexture;
-	bool   _drawShadow;
 	bool   _isChecked;
 };
 

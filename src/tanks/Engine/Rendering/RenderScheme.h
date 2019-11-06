@@ -12,9 +12,9 @@ public:
 
 	~RenderScheme();
 
-	void RegisterDrawable(const IDrawable& drawable);
+	void RegisterDrawable(const IDrawable* drawable);
 	void Draw(DrawingContext& dc, float interpolation) const;
-	void UnegisterDrawable(const IDrawable& drawable);
+	void UnegisterDrawable(const IDrawable* drawable);
 
 	RenderScheme(const RenderScheme& rs) = delete;
 	RenderScheme(RenderScheme&& rs) = delete;
@@ -23,8 +23,8 @@ public:
 	RenderScheme& operator=(RenderScheme&& rs) = delete;
 
 private:
+    int m_firstLayer;
 	int m_lastLayer;
-	int m_firstLayer;
 
 	std::set<const IDrawable*>* m_drawables;
 };

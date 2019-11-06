@@ -1,22 +1,18 @@
-// Scroll.h
-
 #pragma once
-
-#include "UIWindow.h"
+#include "Rectangle.h"
 
 namespace UI
 {
 
-class ImageButton;
+class Button;
 
-class ScrollBarBase : public UIWindow
+class ScrollBarBase : public Rectangle
 {
 public:
+	ScrollBarBase(LayoutManager &manager, TextureManager &texman);
+
 	void SetShowButtons(bool showButtons);
 	bool GetShowButtons() const;
-
-	virtual void SetSize(float size) = 0;
-	virtual float GetSize() const = 0;
 
 	virtual void SetPos(float pos);
 	float GetPos() const;
@@ -30,25 +26,24 @@ public:
 	void  SetPageSize(float ps);
 	float GetPageSize() const;
 
-	void SetElementTextures(const char *slider, const char *upleft, const char *downright);
+	void SetElementTextures(TextureManager &texman, const char *slider, const char *upleft, const char *downright);
 
 	std::function<void(float)> eventScroll;
 
-protected:
-	ScrollBarBase(UIWindow *parent);
+	// Window
+	void Draw(const StateContext &sc, const LayoutContext &lc, const InputContext &ic, DrawingContext &dc, TextureManager &texman) const override;
+	FRECT GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const override;
 
-	virtual void OnEnabledChange(bool enable, bool inherited);
+protected:
 	virtual float Select(float x, float y) const = 0;
-	float GetScrollPaneLength() const;
+	float GetScrollPaneLength(const LayoutContext &lc) const;
 
 	float _tmpBoxPos;
-	ImageButton *_btnBox;
-	ImageButton *_btnUpLeft;
-	ImageButton *_btnDownRight;
+	std::shared_ptr<Button> _btnBox;
+	std::shared_ptr<Button> _btnUpLeft;
+	std::shared_ptr<Button> _btnDownRight;
 
 private:
-	virtual void OnSize(float width, float height);
-
 	void OnBoxMouseDown(float x, float y);
 	void OnBoxMouseUp(float x, float y);
 	void OnBoxMouseMove(float x, float y);
@@ -66,42 +61,28 @@ private:
 	bool _showButtons;
 };
 
-///////////////////////////////////////////////////////////////////////////////
-
-class ScrollBarVertical : public ScrollBarBase
+class ScrollBarVertical final : public ScrollBarBase
 {
 public:
-	static ScrollBarVertical* Create(UIWindow *parent, float x, float y, float height);
+	ScrollBarVertical(LayoutManager &manager, TextureManager &texman);
 
-	virtual void SetSize(float size);
-	virtual float GetSize() const;
-
-	virtual void SetPos(float pos);
+	// Window
+	FRECT GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const override;
 
 protected:
-	ScrollBarVertical(UIWindow *parent);
-	virtual float Select(float x, float y) const { return y; }
+	float Select(float x, float y) const override { return y; }
 };
 
-///////////////////////////////////////////////////////////////////////////////
-
-class ScrollBarHorizontal : public ScrollBarBase
+class ScrollBarHorizontal final : public ScrollBarBase
 {
 public:
-	static ScrollBarHorizontal* Create(UIWindow *parent, float x, float y, float width);
+	ScrollBarHorizontal(LayoutManager &manager, TextureManager &texman);
 
-	virtual void SetSize(float size);
-	virtual float GetSize() const;
+	// Window
+	FRECT GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const override;
 
-	virtual void SetPos(float pos);
-
-protected:
-	ScrollBarHorizontal(UIWindow *parent);
-	virtual float Select(float x, float y) const { return x; }
+private:
+	float Select(float x, float y) const override { return x; }
 };
 
-
-///////////////////////////////////////////////////////////////////////////////
-} // end of namespace UI
-
-// end of file
+} // namespace UI

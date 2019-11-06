@@ -17,9 +17,9 @@ RenderScheme::~RenderScheme()
 	delete[] m_drawables;
 }
 
-void RenderScheme::RegisterDrawable(const IDrawable& drawable)
+void RenderScheme::RegisterDrawable(const IDrawable* drawable)
 {
-	m_drawables[drawable.GetOrder() - m_firstLayer].insert(&drawable);
+	m_drawables[drawable->GetOrder() - m_firstLayer].insert(drawable);
 }
 
 void RenderScheme::Draw(DrawingContext& dc, float interpolation) const
@@ -34,7 +34,7 @@ void RenderScheme::Draw(DrawingContext& dc, float interpolation) const
 	}
 }
 
-void RenderScheme::UnegisterDrawable(const IDrawable& drawable)
+void RenderScheme::UnegisterDrawable(const IDrawable* drawable)
 {
-	assert(m_drawables[drawable.GetOrder() - m_firstLayer].erase(&drawable) == 1);
+	assert(m_drawables[drawable->GetOrder() - m_firstLayer].erase(drawable) == 1);
 }

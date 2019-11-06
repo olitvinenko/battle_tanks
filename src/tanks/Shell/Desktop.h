@@ -1,122 +1,116 @@
 #pragma once
 #include "ConfigConsoleHistory.h"
-#include "DefaultCamera.h"
-#include "WorldView.h"
-#include "UIWindow.h"
-#include <memory>
-#include <vector>
-#include "Widgets.h"
-#include "EditorLayout.h"
-#include "AppStateListener.h"
+#include <AppStateListener.h>
+#include <LuaDeleter.h>
+#include <RenderScheme.h>
+#include <WorldView.h>
+#include <Window.h>
+
+#include <functional>
+#include <string>
 
 namespace FileSystem
 {
 	class IFileSystem;
 }
 
-struct lua_State;
-
-struct LuaStateDeleter
-{
-	void operator()(lua_State *L) const;
-};
-
 namespace UI
 {
-	class ConsoleBuffer;
-	//class Console;
-	//class Oscilloscope;
-	class ButtonBase;
+	class Console;
+	class Oscilloscope;
+	class Button;
+	class Text;
 }
 
-//class AppController;
+class AppConfig;
+class AppController;
 class MainMenuDlg;
 class EditorLayout;
-//class GameLayout;
-//class FpsCounter;
-//class ConfCache;
-//class LangCache;
+class GameLayout;
+class FpsCounter;
+class ShellConfig;
+class LangCache;
+class NavStack;
 
 class Desktop
-	: public UI::UIWindow
+	: public UI::Window
+	, private UI::KeyboardSink
 	, private AppStateListener
 {
 public:
-	Desktop(UI::LayoutManager* manager,
-		FileSystem::IFileSystem &fs,
-		int width, int height);
-
-	Desktop(UI::LayoutManager* manager,
+	Desktop(UI::LayoutManager &manager,
+	        TextureManager &texman,
 	        AppState &appState,
-			FileSystem::IFileSystem &fs,
-	       // ConfCache &conf,
-	       // LangCache &lang,
+	        AppConfig &appConfig,
+	        AppController &appController,
+	        FileSystem::IFileSystem &fs,
+	        ShellConfig &conf,
+	        LangCache &lang,
+	        DMCampaign &dmCampaign,
 	        UI::ConsoleBuffer &logger);
 	virtual ~Desktop();
 
 	void ShowConsole(bool show);
-	void ShowMainMenu();
+
+	// UI::Window
+	FRECT GetChildRect(TextureManager &texman, const UI::LayoutContext &lc, const UI::StateContext &sc, const UI::Window &child) const override;
+	float GetChildOpacity(const UI::Window &child) const override;
 
 protected:
-	bool OnKeyPressed(Key key) override;
-	bool OnFocus(bool focus) override;
-	void OnSize(float width, float height) override;
-	void OnTimeStep(float dt) override;
+	UI::KeyboardSink *GetKeyboardSink() override { return this; }
+	void OnTimeStep(UI::LayoutManager &manager, float dt) override;
 
 private:
 	ConfigConsoleHistory  _history;
+	TextureManager &_texman;
+	AppConfig &_appConfig;
+	AppController &_appController;
 	FileSystem::IFileSystem &_fs;
+	ShellConfig &_conf;
+	LangCache &_lang;
+	DMCampaign &_dmCampaign;
 	UI::ConsoleBuffer &_logger;
 	std::unique_ptr<lua_State, LuaStateDeleter> _globL;
 
-	EditorLayout *_editor = nullptr;
-	//GameLayout   *_game = nullptr;
-	UI::Console  *_con = nullptr;
-	FpsCounter   *_fps = nullptr;
-	UI::ButtonBase *_pauseButton = nullptr;
-	std::vector<UI::UIWindow*> _navStack;
-	float _navTransitionTime = 0;
-	float _navTransitionStart = 0;
+	std::shared_ptr<EditorLayout> _editor;
+	std::shared_ptr<GameLayout> _game;
+	std::shared_ptr<UI::Rectangle> _background;
+	std::shared_ptr<UI::Console> _con;
+	std::shared_ptr<FpsCounter> _fps;
+	std::shared_ptr<UI::Button> _pauseButton;
+	std::shared_ptr<NavStack> _navStack;
+	std::shared_ptr<UI::Text> _tierTitle;
+	float _openingTime = 0;
 
-	//RenderScheme _renderScheme;
+	RenderScheme _renderScheme;
 	WorldView _worldView;
-	DefaultCamera _defaultCamera;
+
+	bool _initializing = true;
 
 	void OnNewCampaign();
 	void OnNewDM();
 	void OnNewMap();
-	void OnOpenMap(std::string fileName);
-	void OnExportMap(std::string fileName);
+	void OnOpenMap();
+	void OnExportMap();
 	void OnGameSettings();
-
-	//network
-	void OnHost();
-	void OnJoin();
-
+	void OnMapSettings();
 	bool GetEditorMode() const;
 	void SetEditorMode(bool editorMode);
-	bool IsGamePaused() const;
+	void ShowMainMenu();
 
 	void OnChangeShowFps();
 
 	void OnCommand(const std::string &cmd);
 	bool OnCompleteCommand(const std::string &cmd, int &pos, std::string &result);
 
-	void OnCloseChild(UI::UIWindow *child, int result);
-	void ClearNavStack();
-	void PopNavStack(UI::UIWindow *wnd = nullptr);
-	void PushNavStack(UI::UIWindow &wnd);
+	void OnCloseChild(std::shared_ptr<UI::Window> child, int result);
 
-	template <class T>
-	bool IsOnTop() const
-	{
-		return !_navStack.empty() && !!dynamic_cast<T*>(_navStack.back());
-	}
-
-	float GetNavStackSize() const;
-	float GetTransitionTarget() const;
+	void UpdateFocus();
 
 	// AppStateListener
 	void OnGameContextChanging() override;
 	void OnGameContextChanged() override;
+
+	// UI::KeyboardSink
+	bool OnKeyPressed(UI::InputContext &ic, UI::Key key) override;
 };

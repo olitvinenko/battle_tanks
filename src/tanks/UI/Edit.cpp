@@ -1,43 +1,32 @@
 #include "Edit.h"
+#include "Clipboard.h"
+#include "InputContext.h"
+#include "LayoutContext.h"
 #include "GuiManager.h"
 #include "Keys.h"
-#include "Base/IInput.h"
-#include "Base/IClipboard.h"
+#include "UIInput.h"
+#include <TextureManager.h>
+#include <DrawingContext.h>
 
 #include <algorithm>
 #include <cstring>
 #include <sstream>
-#include "Rendering/TextureManager.h"
-#include "Rendering/DrawingContext.h"
 
-namespace UI
-{
+using namespace UI;
 
-Edit* Edit::Create(UIWindow *parent, float x, float y, float width)
-{
-	Edit *res = new Edit(parent);
-	res->Move(x, y);
-	res->Resize(width, res->GetHeight());
-	return res;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-Edit::Edit(UIWindow *parent)
-  : UIWindow(parent)
+Edit::Edit(LayoutManager &manager, TextureManager &texman)
+  : Rectangle(manager)
   , _selStart(-1)
   , _selEnd(-1)
   , _offset(0)
-  , _time(0)
-  , _font(GetManager().GetTextureManager().FindSprite("font_small"))
-  , _cursor(GetManager().GetTextureManager().FindSprite("ui/editcursor"))
-  , _selection(GetManager().GetTextureManager().FindSprite("ui/editsel"))
+  , _font(texman.FindSprite("font_small"))
+  , _cursor(texman.FindSprite("ui/editcursor"))
+  , _selection(texman.FindSprite("ui/editsel"))
 {
-	SetTexture("ui/edit", true);
+	SetTexture(texman, "ui/edit", true);
 	SetDrawBorder(true);
 	SetClipChildren(true);
 	SetSel(0, 0);
-	Resize(GetWidth(), GetManager().GetTextureManager().GetCharHeight(_font) + 2);
 }
 
 int Edit::GetTextLength() const
@@ -49,12 +38,12 @@ void Edit::SetInt(int value)
 {
 	std::ostringstream tmp;
 	tmp << value;
-	SetText(tmp.str());
+	SetText(GetManager().GetTextureManager(), tmp.str());
 }
 
 int Edit::GetInt() const
 {
-    std::istringstream tmp(GetText());
+	std::istringstream tmp(GetText());
 	int result = 0;
 	tmp >> result;
 	return result;
@@ -64,41 +53,46 @@ void Edit::SetFloat(float value)
 {
 	std::ostringstream tmp;
 	tmp << value;
-	SetText(tmp.str());
+	SetText(GetManager().GetTextureManager(), tmp.str());
 }
 
 float Edit::GetFloat() const
 {
-    std::istringstream tmp(GetText());
+	std::istringstream tmp(GetText());
 	float result = 0;
 	tmp >> result;
 	return result;
 }
 
-void Edit::SetSel(int begin, int end)
+void Edit::SetSel(int begin, int end, LayoutContext *optionalLC)
 {
 	assert(begin >= -1 && end >= -1);
 
 	_selStart = begin <= GetTextLength() ? begin : -1;
 	_selEnd   = end <= GetTextLength() ? end : -1;
-	_time     = 0;
+	_lastCursortime = GetManager().GetTime();
 
-	float w = GetManager().GetTextureManager().GetFrameWidth(_font, 0) - 1;
-	float cpos = GetSelEnd() * w;
-	if( cpos - (float) (_offset * w) > GetWidth() - 10 || cpos - (float) (_offset * w) < 10 )
+	if (optionalLC)
 	{
-		_offset = size_t(std::max<float>(0, cpos - GetWidth() * 0.5f) / w);
+		float pxWidth = optionalLC->GetPixelSize().x;
+		float w = std::floor(GetManager().GetTextureManager().GetFrameWidth(_font, 0) * optionalLC->GetScale()) - 1;
+		float cpos = GetSelEnd() * w;
+		const float pxScrollThreshold = 10 * optionalLC->GetScale();
+		if (cpos - (float)(_offset * w) > pxWidth - pxScrollThreshold || cpos - (float)(_offset * w) < pxScrollThreshold)
+		{
+			_offset = size_t(std::max<float>(0, cpos - pxWidth / 2) / w);
+		}
 	}
 }
 
 int Edit::GetSelStart() const
 {
-	return static_cast<unsigned>(_selStart) <= static_cast<unsigned>(GetTextLength()) ? _selStart : GetTextLength();
+	return (unsigned) _selStart <= (unsigned) GetTextLength() ? _selStart : GetTextLength();
 }
 
 int Edit::GetSelEnd() const
 {
-	return static_cast<unsigned>(_selEnd) <= static_cast<unsigned>(GetTextLength()) ? _selEnd : GetTextLength();
+	return (unsigned) _selEnd <= (unsigned) GetTextLength() ? _selEnd : GetTextLength();
 }
 
 int Edit::GetSelLength() const
@@ -116,96 +110,99 @@ int Edit::GetSelMax() const
 	return std::max(GetSelStart(), GetSelEnd());
 }
 
-void Edit::Draw(DrawingContext &dc) const
+void Edit::Draw(const StateContext &sc, const LayoutContext &lc, const InputContext &ic, DrawingContext &dc, TextureManager &texman) const
 {
-	UIWindow::Draw(dc);
+	const_cast<Edit*>(this)->SetFrame(lc.GetEnabledCombined() ? 0 : 1);
 
-	float w = GetManager().GetTextureManager().GetFrameWidth(_font, 0) - 1;
+	Rectangle::Draw(sc, lc, ic, dc, texman);
+
+    float pxCharWidth = std::floor((texman.GetFrameWidth(_font, 0) - 1) * lc.GetScale());
 
 	// selection
-	if( GetSelLength() && GetTimeStep() )
+	if( GetSelLength() && ic.GetFocused() )
 	{
-		math::RectFloat rt;
-		rt.left = 1 + (GetSelMin() - static_cast<float>(_offset)) * w;
+		FRECT rt;
+		rt.left = 1 + (GetSelMin() - (float) _offset) * pxCharWidth;
 		rt.top = 0;
-		rt.right = rt.left + w * GetSelLength() - 1;
-		rt.bottom = rt.top + GetHeight();
-		dc.DrawSprite(&rt, _selection, 0xffffffff, 0);
+		rt.right = rt.left + pxCharWidth * GetSelLength() - 1;
+		rt.bottom = rt.top + lc.GetPixelSize().y;
+		dc.DrawSprite(rt, _selection, 0xffffffff, 0);
 	}
 
 	// text
-	Color c = GetEnabledCombined() ? 0xffffffff : 0xaaaaaaaa;
+	SpriteColor c = lc.GetEnabledCombined() ? 0xffffffff : 0xaaaaaaaa;
 	if( _offset < GetSelMin() )
 	{
-		dc.DrawBitmapText(0, 1, _font, c, GetText().substr(_offset, GetSelMin() - _offset));
+		dc.DrawBitmapText(vec2d{ 0, 1 }, lc.GetScale(), _font, c, GetText().substr(_offset, GetSelMin() - _offset));
 	}
-	dc.DrawBitmapText((GetSelMin() - _offset) * w, 1, _font, 0xffff0000, GetText().substr(GetSelMin(), GetSelLength()));
-	dc.DrawBitmapText((GetSelMax() - _offset) * w, 1, _font, c, GetText().substr(GetSelMax()));
+	dc.DrawBitmapText(vec2d{ (GetSelMin() - _offset) * pxCharWidth, 1 }, lc.GetScale(), _font, 0xffff0000, GetText().substr(GetSelMin(), GetSelLength()));
+	dc.DrawBitmapText(vec2d{ (GetSelMax() - _offset) * pxCharWidth, 1 }, lc.GetScale(), _font, c, GetText().substr(GetSelMax()));
+
+	float time = GetManager().GetTime() - _lastCursortime;
 
 	// cursor
-	if( this == GetManager().GetFocusWnd() && fmodf(_time, 1.0f) < 0.5f )
+	if( ic.GetFocused() && fmodf(time, 1.0f) < 0.5f )
 	{
-		math::RectFloat rt;
-		rt.left = (GetSelEnd() - (float) _offset) * w;
-		rt.top = 0;
-		rt.right = rt.left + GetManager().GetTextureManager().GetFrameWidth(_cursor, 0);
-		rt.bottom = rt.top + GetHeight();
-		dc.DrawSprite(&rt, _cursor, 0xffffffff, 0);
+		FRECT rt = MakeRectWH(
+            vec2d{(GetSelEnd() - (float) _offset) * pxCharWidth, 0},
+            vec2d{std::floor(texman.GetFrameWidth(_cursor, 0) * lc.GetScale()), lc.GetPixelSize().y});
+		dc.DrawSprite(rt, _cursor, 0xffffffff, 0);
 	}
 }
 
 bool Edit::OnChar(int c)
 {
-	if( isprint(static_cast<unsigned char>(c)) && '\t' != c )
+	if( isprint((unsigned char) c) && '\t' != c )
 	{
 		int start = GetSelMin();
-		SetText(GetText().substr(0, start) + static_cast<std::string::value_type>(c) + GetText().substr(GetSelMax()));
+		SetText(GetManager().GetTextureManager(), GetText().substr(0, start) + (std::string::value_type) c + GetText().substr(GetSelMax()));
 		SetSel(start + 1, start + 1);
 		return true;
 	}
 	return false;
 }
 
-bool Edit::OnKeyPressed(Key key)
+bool Edit::OnKeyPressed(InputContext &ic, Key key)
 {
-    bool shift = GetManager().GetInput().GetKey(Key::LeftShift) ||
-        GetManager().GetInput().GetKey(Key::RightShift);
-    bool control = GetManager().GetInput().GetKey(Key::LeftCtrl) ||
-        GetManager().GetInput().GetKey(Key::RightCtrl);
+	TextureManager &texman = GetManager().GetTextureManager();
+	bool shift = ic.GetInput().IsKeyPressed(Key::LeftShift) ||
+		ic.GetInput().IsKeyPressed(Key::RightShift);
+	bool control = ic.GetInput().IsKeyPressed(Key::LeftCtrl) ||
+		ic.GetInput().IsKeyPressed(Key::RightCtrl);
 	int tmp;
 	switch(key)
 	{
 	case Key::Insert:
-        if( shift )
+		if( shift )
 		{
-			Paste();
+			Paste(texman, ic);
 			return true;
 		}
 		else if( control )
 		{
-			Copy();
+			Copy(ic);
 			return true;
 		}
 		break;
 	case Key::V:
 		if( control )
 		{
-			Paste();
+			Paste(texman, ic);
 			return true;
 		}
 		break;
 	case Key::C:
 		if( control )
 		{
-			Copy();
+			Copy(ic);
 			return true;
 		}
 		break;
 	case Key::X:
 		if( 0 != GetSelLength() && control )
 		{
-			Copy();
-			SetText(GetText().substr(0, GetSelMin()) + GetText().substr(GetSelMax()));
+			Copy(ic);
+			SetText(texman, GetText().substr(0, GetSelMin()) + GetText().substr(GetSelMax()));
 			SetSel(GetSelMin(), GetSelMin());
 			return true;
 		}
@@ -213,16 +210,16 @@ bool Edit::OnKeyPressed(Key key)
 	case Key::Delete:
 		if( 0 == GetSelLength() && GetSelEnd() < GetTextLength() )
 		{
-			SetText(GetText().substr(0, GetSelStart())
+			SetText(texman, GetText().substr(0, GetSelStart())
 				+ GetText().substr(GetSelEnd() + 1, GetTextLength() - GetSelEnd() - 1));
 		}
 		else
 		{
 			if( shift )
 			{
-				Copy();
+				Copy(ic);
 			}
-			SetText(GetText().substr(0, GetSelMin()) + GetText().substr(GetSelMax()));
+			SetText(texman, GetText().substr(0, GetSelMin()) + GetText().substr(GetSelMax()));
 		}
 		SetSel(GetSelMin(), GetSelMin());
 		return true;
@@ -230,12 +227,12 @@ bool Edit::OnKeyPressed(Key key)
 		tmp = std::max(0, 0 == GetSelLength() ? GetSelStart() - 1 : GetSelMin());
 		if( 0 == GetSelLength() && GetSelStart() > 0 )
 		{
-			SetText(GetText().substr(0, GetSelStart() - 1)
+			SetText(texman, GetText().substr(0, GetSelStart() - 1)
 				+ GetText().substr(GetSelEnd(), GetTextLength() - GetSelEnd()));
 		}
 		else
 		{
-			SetText(GetText().substr(0, GetSelMin()) + GetText().substr(GetSelMax()));
+			SetText(texman, GetText().substr(0, GetSelMin()) + GetText().substr(GetSelMax()));
 		}
 		SetSel(tmp, tmp);
 		return true;
@@ -285,101 +282,96 @@ bool Edit::OnKeyPressed(Key key)
 		return true;
 	case Key::Space:
 		return true;
-            
-    default:
-        break;
+
+	default:
+		break;
 	}
 	return false;
 }
 
-bool Edit::OnPointerDown(float x, float y, int button, PointerType pointerType, unsigned int pointerID)
+bool Edit::OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, PointerType pointerType, unsigned int pointerID)
 {
-	if( 1 == button && !GetManager().HasCapturedPointers(this) )
+	if( pointerType == PointerType::Mouse && 1 == button && !ic.HasCapturedPointers(this) )
 	{
-		GetManager().SetCapture(pointerID, this);
-		float w = GetManager().GetTextureManager().GetFrameWidth(_font, 0) - 1;
-		int sel = std::min(GetTextLength(), std::max(0, int(x / w)) + (int) _offset);
+        int sel = HitTest(texman, pointerPosition, lc.GetScale());
 		SetSel(sel, sel);
+		return true;
 	}
-    return true;
+	return false;
 }
 
-bool Edit::OnPointerMove(float x, float y, PointerType pointerType, unsigned int pointerID)
+void Edit::OnPointerMove(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, PointerType pointerType, unsigned int pointerID, bool captured)
 {
-	if( GetManager().GetCapture(pointerID) == this )
+	if( captured )
 	{
-		float w = GetManager().GetTextureManager().GetFrameWidth(_font, 0) - 1;
-		int sel = std::min(GetTextLength(), std::max(0, int(x / w)) + (int) _offset);
+        int sel = HitTest(texman, pointerPosition, lc.GetScale());
 		SetSel(GetSelStart(), sel);
 	}
-    return true;
 }
 
-bool Edit::OnPointerUp(float x, float y, int button, PointerType pointerType, unsigned int pointerID)
+void Edit::OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition)
 {
-	if( 1 == button && GetManager().GetCapture(pointerID) == this )
-	{
-		GetManager().SetCapture(pointerID, nullptr);
-	}
-    return true;
+    if (!ic.HasCapturedPointers(this))
+    {
+        int sel = HitTest(texman, pointerPosition, lc.GetScale());
+        SetSel(sel, sel);
+    }
 }
 
-bool Edit::OnFocus(bool focus)
+KeyboardSink* Edit::GetKeyboardSink()
 {
-	_time = 0;
-	SetTimeStep(focus);
-	return true;
+	// FIXME: gross hack
+	_lastCursortime = GetManager().GetTime();
+	return this;
 }
 
-void Edit::OnEnabledChange(bool enable, bool inherited)
+const std::string& Edit::GetText() const
 {
-	if( !enable )
-	{
-		SetSel(0, 0);
-		SetFrame(1);
-	}
-	else
-	{
-		SetFrame(0);
-	}
+	return _text;
 }
 
-void Edit::OnTextChange()
+void Edit::SetText(TextureManager &texman, const std::string &text)
+{
+	_text.assign(text);
+	OnTextChange(texman);
+}
+
+void Edit::OnTextChange(TextureManager &texman)
 {
 	SetSel(_selStart, _selEnd);
 	if( eventChange )
 		eventChange();
 }
 
-void Edit::OnTimeStep(float dt)
+int Edit::HitTest(TextureManager &texman, vec2d px, float scale) const
 {
-	_time += dt;
+    float pxCharWidth = std::floor((texman.GetFrameWidth(_font, 0) - 1) * scale);
+    return std::min(GetTextLength(), std::max(0, int(px.x / pxCharWidth)) + (int) _offset);
 }
 
-void Edit::Paste()
+void Edit::Paste(TextureManager &texman, InputContext &ic)
 {
-    if( const char *data = GetManager().GetClipboard().GetText().c_str() )
-    {
-        std::ostringstream buf;
-        buf << GetText().substr(0, GetSelMin());
-        buf << data;
-        buf << GetText().substr(GetSelMax(), GetText().length() - GetSelMax());
-        SetText(buf.str());
-        SetSel(GetSelMin() + std::strlen(data), GetSelMin() + std::strlen(data));
-    }
+	if( const char *data = ic.GetClipboard().GetClipboardText() )
+	{
+		std::ostringstream buf;
+		buf << GetText().substr(0, GetSelMin());
+		buf << data;
+		buf << GetText().substr(GetSelMax(), GetText().length() - GetSelMax());
+		SetText(texman, buf.str());
+		SetSel(GetSelMin() + std::strlen(data), GetSelMin() + std::strlen(data));
+	}
 }
 
-void Edit::Copy() const
+void Edit::Copy(InputContext &ic) const
 {
 	std::string str = GetText().substr(GetSelMin(), GetSelLength());
 	if( !str.empty() )
 	{
-        GetManager().GetClipboard().SetText(std::move(str));
+		ic.GetClipboard().SetClipboardText(std::move(str));
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////
-} // end of namespace UI
-
-// end of file
-
+vec2d Edit::GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const
+{
+	return vec2d{ 0, std::floor(texman.GetFrameHeight(_font, 0) * scale) + 2 };
+}

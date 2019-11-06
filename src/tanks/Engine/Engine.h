@@ -4,7 +4,7 @@
 #include "GameStatesController.h"
 #include "GameLoop.h"
 
-#include "Rendering/RenderingEngine.h";
+#include "Rendering/RenderingEngine.h"
 
 #include <memory>
 
@@ -28,7 +28,7 @@ public:
 
 	void Update(float realDeltaTime) override;
 	void FixedUpdate(float fixedDeltaTime) override;
-	void Render(float interpolation) const override;
+	void Render(float interpolation) override;
 
 	void Launch();
 	void Shutdown();
@@ -61,7 +61,6 @@ private:
 	// game
 	GameLoop m_loop;	
 	GameStatesController m_statesController;
-	
 
 	bool m_running;
 };

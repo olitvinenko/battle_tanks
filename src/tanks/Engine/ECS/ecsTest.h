@@ -56,7 +56,7 @@ public:
 		gravityAmount = amount;
 	}
 
-	void configure(World* world) override
+	void configure(ECSWorld* world) override
 	{
 		world->subscribe<OnComponentAssigned<Position>>(this);
 		world->subscribe<OnComponentRemoved<Position>>(this);
@@ -65,7 +65,7 @@ public:
 		world->subscribe<MyEvent>(this);
 	}
 
-	void unconfigure(World* world) override
+	void unconfigure(ECSWorld* world) override
 	{
 		world->unsubscribe<OnComponentAssigned<Position>>(this);
 		world->unsubscribe<OnComponentRemoved<Position>>(this);
@@ -74,32 +74,32 @@ public:
 		world->unsubscribe<MyEvent>(this);
 	}
 
-	void receive(World* world, const MyEvent& event) override
+	void receive(ECSWorld* world, const MyEvent& event) override
 	{
-		cout << "receive::MyEvent" << endl;
+		std::cout << "receive::MyEvent" << std::endl;
 	}
 
-	void receive(World* world, const OnComponentAssigned<Position>& event) override
+	void receive(ECSWorld* world, const OnComponentAssigned<Position>& event) override
 	{
-		cout << "receive::OnComponentAssigned" << endl;
+		std::cout << "receive::OnComponentAssigned" << std::endl;
 	}
 
-	void receive(World* world, const OnComponentRemoved<Position>& event) override
+	void receive(ECSWorld* world, const OnComponentRemoved<Position>& event) override
 	{
-		cout << "receive::OnComponentRemoved" << endl;
+		std::cout << "receive::OnComponentRemoved" << std::endl;
 	}
 
-	void receive(World* world, const OnEntityCreated& event) override
+	void receive(ECSWorld* world, const OnEntityCreated& event) override
 	{
-		cout << "receive::OnEntityCreated" << endl;
+		std::cout << "receive::OnEntityCreated" << std::endl;
 	}
 
-	void receive(World* world, const OnEntityDestroyed& event) override
+	void receive(ECSWorld* world, const OnEntityDestroyed& event) override
 	{
-		cout << "receive::OnEntityDestroyed" << endl;
+		std::cout << "receive::OnEntityDestroyed" << std::endl;
 	}
 
-	void tick(World* world, float deltaTime) override
+	void tick(ECSWorld* world, float deltaTime) override
 	{
 		world->each<Position>([&](Entity* ent, ComponentHandle<Position> position) {
 			position->y += gravityAmount * deltaTime;
@@ -115,7 +115,7 @@ private:
 //TODO:: a.litvinenko: for testing only
 void ECSTest()
 {
-	World* world = World::createWorld();
+	ECSWorld* world = ECSWorld::createWorld();
 	world->registerSystem(new GravitySystem(-9.8f));
 
 	Entity* ent = world->create();

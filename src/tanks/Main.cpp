@@ -1,147 +1,160 @@
-#include "Configuration.h"
-#include "FileSystem.h"
-#include "GlfwAppWindow.h"
-#include "ConsoleBuffer.h"
-#include "GameLoop.h"
-#include "AppController.h"
-#include "View.h"
+#include <tzod.h>
+#include <View.h>
+#include <AppConstants.h>
+#include <FileSystem.h>
+#include <GlfwAppWindow.h>
+#include <Timer.h>
+#include <ConsoleBuffer.h>
 
 #include <exception>
-#include "Engine.h"
-#include "Keys.h"
-#include "GlfwKeys.h"
-
-#include "Base/MouseButton.h"
-#include "Base/IInput.h"
-#include "Base/IClipboard.h"
-#include "Base/IWindow.h"
-#include "GLFW/glfw3.h"
-
-#include "GlfwWindow.h"
-#include "GlfwClipboard.h"
-#include "GlfwInput.h"
-#include "States/LoadDataState.h"
-
-#include "GameStatesController.h"
-#include "Rendering/RenderOpenGL.h"
-
-#include "GameController.h"
-
-#include "MainMenu.h"
-#include "Button.h"
-#include "RenderOrder.h"
-
-#include "Engine/ECS/ecsTest.h"
-#include <json.h>
 
 namespace
 {
 	class ConsoleLog final
 		: public UI::IConsoleLog
 	{
-	public:
-		ConsoleLog() { }
-
-		void WriteLine(int severity, const std::string &str) override
-		{
-			std::cout << str << std::endl;
-		}
-
-		void Release() override
-		{
-		}
-
-	private:
-		
+		FILE *_file;
 		ConsoleLog(const ConsoleLog&) = delete;
 		ConsoleLog& operator= (const ConsoleLog&) = delete;
+	public:
+		explicit ConsoleLog(const char *filename)
+			: _file(fopen(filename, "w"))
+		{
+		}
+		virtual ~ConsoleLog()
+		{
+			if( _file )
+				fclose(_file);
+		}
+
+		// IConsoleLog
+		void WriteLine(int severity, const std::string &str) override
+		{
+			if( _file )
+			{
+				fputs(str.c_str(), _file);
+				fputs("\n", _file);
+				fflush(_file);
+			}
+			puts(str.c_str());
+		}
+		void Release() override
+		{
+			delete this;
+		}
 	};
 }
 
-static void print_what(UI::ConsoleBuffer &logger, const std::exception &e, std::string prefix = std::string())
-{
-	logger.Format(1) << prefix << e.what();
 
-	try
+static void print_what(UI::ConsoleBuffer &logger, const std::exception &e, std::string prefix = std::string());
+
+static UI::ConsoleBuffer s_logger(100, 500);
+
+//static long xxx = _CrtSetBreakAlloc(12649);
+
+#include <stdio.h>  /* defines FILENAME_MAX */
+// #define WINDOWS  /* uncomment this line to use it for windows.*/
+#ifdef WINDOWS
+#include <direct.h>
+#define GetCurrentDir _getcwd
+#else
+#include <unistd.h>
+#define GetCurrentDir getcwd
+#endif
+#include<iostream>
+ 
+std::string GetCurrentWorkingDir( void ) {
+  char buff[FILENAME_MAX];
+  GetCurrentDir( buff, FILENAME_MAX );
+  std::string current_working_dir(buff);
+  return current_working_dir;
+}
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <windef.h>
+int APIENTRY WinMain( HINSTANCE, // hInstance
+                      HINSTANCE, // hPrevInstance
+                      LPSTR, // lpCmdLine
+                      int) // nCmdShow
+#else
+int main(int, const char**)
+#endif
+try
+{
+    auto a = GetCurrentWorkingDir();
+    
+	srand((unsigned int) time(nullptr));
+//	Variant::Init();
+
+#if defined(_DEBUG) && defined(_WIN32) // memory leaks detection
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+	UI::ConsoleBuffer &logger = s_logger;
+
+	logger.SetLog(new ConsoleLog("log.txt"));
+	logger.Printf(0, "%s", TXT_VERSION);
+
+	logger.Printf(0, "Mount file system");
+	std::shared_ptr<FileSystem::IFileSystem> fs = FileSystem::CreateOSFileSystem("data");
+
+	TzodApp app(*fs, logger);
+
+	logger.Printf(0, "Create GL context");
+	GlfwAppWindow appWindow(
+		TXT_VERSION,
+		false, // conf.r_fullscreen.Get(),
+		1024, // conf.r_width.GetInt(),
+		768 // conf.r_height.GetInt()
+	);
+
+    TzodView view(*fs, logger, app, appWindow);
+
+	Timer timer;
+	timer.SetMaxDt(0.05f);
+	timer.Start();
+	for (GlfwAppWindow::PollEvents(); !appWindow.ShouldClose(); GlfwAppWindow::PollEvents())
 	{
-		rethrow_if_nested(e);
+		float dt = timer.GetDt();
+
+		// controller pass
+		view.Step(dt); // this also sends user controller state to WorldController
+		app.Step(dt);
+
+		// view pass
+		view.Render(appWindow.GetPixelWidth(), appWindow.GetPixelHeight(), appWindow.GetLayoutScale());
+		appWindow.Present();
 	}
-	catch (const std::exception &nested)
-	{
+
+	app.Exit();
+
+	logger.Printf(0, "Normal exit.");
+
+	return 0;
+}
+catch (const std::exception &e)
+{
+	print_what(s_logger, e);
+#ifdef _WIN32
+	MessageBoxA(nullptr, e.what(), TXT_VERSION, MB_ICONERROR);
+#endif
+	return 1;
+}
+
+// recursively print exception whats:
+static void print_what(UI::ConsoleBuffer &logger, const std::exception &e, std::string prefix)
+{
+#ifdef _WIN32
+	OutputDebugStringA((prefix + e.what() + "\n").c_str());
+#endif
+	logger.Format(1) << prefix << e.what();
+	try {
+		std::rethrow_if_nested(e);
+	}
+	catch (const std::exception &nested) {
 		print_what(logger, nested, prefix + "> ");
 	}
 }
 
-static UI::ConsoleBuffer s_logger(100, 500);
 
-
-int main(int, const char**)
-{
-	try
-	{
-		srand(static_cast<unsigned int>(time(nullptr)));
-
-#if defined(_DEBUG) && defined(_WIN32) // memory leaks detection
-		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
-		UI::ConsoleBuffer &logger = s_logger;
-
-		logger.SetLog(new ConsoleLog());
-		logger.Printf(0, "%s", TXT_VERSION);
-
-		logger.Printf(0, "Mount file system");
-		std::shared_ptr<FileSystem::IFileSystem> fs = FileSystem::CreateOSFileSystem("data");
-
-		//--------------------------------------------------------------------------------------------------
-
-		std::shared_ptr<GlfwWindow> window = std::make_shared<GlfwWindow>(TXT_VERSION, 1024, 768, false);
-		std::shared_ptr<IClipboard> clipboard = std::make_shared<GlfwClipboard>(window);
-		std::shared_ptr<IInput> input = std::make_shared<GlfwInput>(window);
-
-		RenderOpenGL render;
-
-		Engine tanksEngine(window, clipboard, input, fs, &render, static_cast<int>(RenderOrder::Last));
-
-		GameController game(tanksEngine);
-		game.Launch();
-
-		// engine loop
-		tanksEngine.Launch();
-
-		game.Shutdown();
-		return 0;
-
-		//--------------------------------------------------------------------------------------------------
-
-
-		GameLoop loop;
-
-		logger.Printf(0, "Create GL context");
-		GlfwAppWindow appWindow(TXT_VERSION, false, 1024, 768);
-
-		AppController controller(loop, *fs, logger);
-		View view(loop, *fs, logger, controller, appWindow);
-
-		loop.Start();
-		while (!appWindow.ShouldClose())
-		{
-			appWindow.PollEvents();
-
-			loop.Tick();
-
-			appWindow.SwapBuffers();
-		}
-
-		controller.Exit();
-
-		logger.Printf(0, "Normal exit.");
-
-		return 0;
-	}
-	catch (const std::exception &e)
-	{
-		print_what(s_logger, e);
-		return 1;
-	}
-}

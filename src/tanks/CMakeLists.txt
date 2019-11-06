@@ -7,7 +7,8 @@ link_directories(${Boost_LIBRARY_DIR})
 include_directories(
 	${Utf8cpp_SOURCE_DIR}	
 	${GLFW_SOURCE_DIR}/include
-	${Lua_SOURCE_DIR}/src	
+	${Lua_SOURCE_DIR}/src
+	${pluto_SOURCE_DIR}
 	${box2d_SOURCE_DIR}
 	${jsoncpp_SOURCE_DIR}
 )
@@ -26,19 +27,6 @@ file(GLOB_RECURSE SRC_PLATFORM
 
 source_group("platform" FILES ${SRC_PLATFORM})
 
-#########################################################################
-
-############################ MATH UTILS ################################
-include_directories(
-	Math
-)
-
-file(GLOB_RECURSE SRC_MATH
-	"Math/*.cpp"
-	"Math/*.h"
-)
-
-source_group("mathutils" FILES ${SRC_MATH})
 #########################################################################
 
 ############################ FILE SYSTEM ################################
@@ -100,22 +88,9 @@ endif()
 source_group("render" FILES ${SRC_RENDER})
 #########################################################################
 
-############################ APPLICATION ################################
-include_directories(
-	Application
-)
-
-file(GLOB_RECURSE SRC_APPLICATION
-    "Application/*.cpp"
-    "Application/*.h"
-)
-
-source_group("application" FILES ${SRC_APPLICATION})
-#########################################################################
-
 ############################ SHELL ######################################
 include_directories(
-	Shell
+	shell
 )
 
 file(GLOB_RECURSE SRC_SHELL
@@ -139,35 +114,229 @@ file(GLOB_RECURSE SRC_UI
 source_group("ui" FILES ${SRC_UI})
 #########################################################################
 
-############################ GUI #########################################
+############################ AI #########################################
 include_directories(
-	GUI
+	ai
 )
 
-file(GLOB_RECURSE SRC_GUI
-    "GUI/*.cpp"
-    "GUI/*.h"
+file(GLOB_RECURSE SRC_AI
+    "ai/*.cpp"
+    "ai/*.h"
 )
 
-source_group("gui" FILES ${SRC_GUI})
+source_group("ai" FILES ${SRC_AI})
 #########################################################################
+
+############################ APP #########################################
+include_directories(
+	app
+)
+
+file(GLOB_RECURSE SRC_APP
+    "app/*.cpp"
+    "app/*.h"
+)
+
+source_group("app" FILES ${SRC_APP})
+#########################################################################
+
+############################ AS #########################################
+include_directories(
+    as
+)
+
+file(GLOB_RECURSE SRC_AS
+    "as/*.cpp"
+    "as/*.h"
+)
+
+source_group("as" FILES ${SRC_AS})
+#########################################################################
+
+############################ MATH UTILS ################################
+include_directories(
+    Math
+)
+
+file(GLOB_RECURSE SRC_MATH
+    "Math/*.cpp"
+    "Math/*.h"
+)
+
+source_group("mathutils" FILES ${SRC_MATH})
+#########################################################################
+
+############################ CONFIG ################################
+include_directories(
+    config
+)
+
+file(GLOB_RECURSE SRC_CONFIG
+    "config/*.cpp"
+    "config/*.h"
+)
+
+source_group("config" FILES ${SRC_CONFIG})
+#########################################################################
+
+############################ CTX ################################
+include_directories(
+    ctx
+)
+
+file(GLOB_RECURSE SRC_CTX
+    "ctx/*.cpp"
+    "ctx/*.h"
+)
+
+source_group("ctx" FILES ${SRC_CTX})
+#########################################################################
+
+############################ gc ################################
+include_directories(
+    gc
+)
+
+file(GLOB_RECURSE SRC_GC
+    "gc/*.cpp"
+    "gc/*.h"
+)
+
+source_group("gc" FILES ${SRC_GC})
+#########################################################################
+
+############################ gv ################################
+include_directories(
+    gv
+)
+
+file(GLOB_RECURSE SRC_GV
+    "gv/*.cpp"
+    "gv/*.h"
+)
+
+source_group("gv" FILES ${SRC_GV})
+#########################################################################
+
+############################ loc ################################
+include_directories(
+    loc
+)
+
+file(GLOB_RECURSE SRC_LOC
+    "loc/*.cpp"
+    "loc/*.h"
+)
+
+source_group("loc" FILES ${SRC_LOC})
+#########################################################################
+
+############################ LUA ETC ################################
+include_directories(
+    luaetc
+)
+
+file(GLOB_RECURSE SRC_LUAETC
+    "luaetc/*.cpp"
+    "luaetc/*.h"
+)
+
+source_group("luaetc" FILES ${SRC_LUAETC})
+#########################################################################
+
+############################ MF ################################
+include_directories(
+    mf
+)
+
+file(GLOB_RECURSE SRC_MP
+    "mf/*.cpp"
+    "mf/*.h"
+)
+
+source_group("mf" FILES ${SRC_MP})
+#########################################################################
+
+############################ PLATGLFW ################################
+include_directories(
+    platglfw
+)
+
+file(GLOB_RECURSE SRC_PLATGLFW
+    "platglfw/*.cpp"
+    "platglfw/*.h"
+)
+
+source_group("platglfw" FILES ${SRC_PLATGLFW})
+#########################################################################
+
+############################ RENDER ################################
+include_directories(
+    render
+)
+
+file(GLOB_RECURSE SRC_RENDER
+    "render/*.cpp"
+    "render/*.h"
+)
+
+source_group("render" FILES ${SRC_RENDER})
+#########################################################################
+
+############################ SCRIPT ################################
+include_directories(
+    script
+)
+
+file(GLOB_RECURSE SRC_SCRIPT
+    "script/*.cpp"
+    "script/*.h"
+)
+
+source_group("script" FILES ${SRC_SCRIPT})
+#########################################################################
+
+############################ VIDEO ################################
+include_directories(
+    video
+)
+
+file(GLOB_RECURSE SRC_VIDEO
+    "video/*.cpp"
+    "video/*.h"
+)
+
+source_group("video" FILES ${SRC_VIDEO})
+#########################################################################
+
+############################ GCLUA ################################
+include_directories(
+    gclua
+)
+
+file(GLOB_RECURSE SRC_GCLUA
+    "gclua/*.cpp"
+    "gclua/*.h"
+)
+
+source_group("gclua" FILES ${SRC_GCLUA})
 
 ############################ GLFW #######################################
 include_directories(
-	GLFW
+	#GLFW
 )
 
 file(GLOB_RECURSE SRC_GLFW
-    "GLFW/*.cpp"
-    "GLFW/*.h"
+   # "GLFW/*.cpp"
+   # "GLFW/*.h"
 )
 
-source_group("glfw" FILES ${SRC_GLFW})
+#source_group("glfw" FILES ${SRC_GLFW})
 #########################################################################
 
 ############################ PATHFINDING ################################
 include_directories(
-	Pathfinding
+	#Pathfinding
 )
 
 file(GLOB_RECURSE SRC_PATHFINDING
@@ -180,7 +349,7 @@ source_group("pathfinding" FILES ${SRC_PATHFINDING})
 
 ############################ ENGINE #######################################
 include_directories(
-	Engine
+	#Engine
 )
 
 file(GLOB_RECURSE SRC_ENGINE
@@ -209,7 +378,7 @@ endif()
 
 ############################ GAME #######################################
 include_directories(
-	Game
+	#Game
 )
 
 file(GLOB_RECURSE SRC_GAME
@@ -238,22 +407,35 @@ endif()
 
 
 set(tanks_SOURCES
+	${SRC_AI}
+    ${SRC_APP}
+    ${SRC_AS}
 	${SRC_MATH}
-	${SRC_PLATFORM}
-	${SRC_FILE_SYSTEM}
-	${SRC_RENDER}
-	${SRC_UI}
-	${SRC_GUI}
-	${SRC_GLFW}
-	${SRC_ENGINE}
-	${SRC_GAME}
-	${SRC_APPLICATION}
-	${SRC_SHELL}
-	${SRC_PATHFINDING}
+    ${SRC_CONFIG}
+    ${SRC_CTX}
+    ${SRC_GC}
+    ${SRC_GV}
+    ${SRC_LOC}
+    ${SRC_LUAETC}
+    ${SRC_MP}
+    ${SRC_PLATGLFW}
+    ${SRC_RENDER}
+    ${SRC_SCRIPT}
+    ${SRC_SHELL}
+    ${SRC_VIDEO}
+    ${SRC_GCLUA}
+    ${SRC_UI}
+
+    ${SRC_FILE_SYSTEM}
+    
+	#${SRC_PLATFORM}
+	#${SRC_GLFW}
+	#${SRC_ENGINE}
+	#${SRC_PATHFINDING}
 )
 
 if(WIN32)
-	add_definitions(-D_WIN32_WINNT=0x0501) # Windows XP
+	add_definitions(-D_WIN32_WINNT=0x0501)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-DNOMINMAX)
 	
@@ -277,6 +459,7 @@ if(WIN32)
 		lua
 		box2d
 		jsoncpp
+		pluto
 		${GLFW_LIBRARIES}
 	)
 elseif(UNIX)
@@ -288,6 +471,7 @@ elseif(UNIX)
 		lua
 		box2d
 		jsoncpp
+		pluto
 		${GLFW_LIBRARIES}
 		${OPENGL_LIBRARIES}
 	)

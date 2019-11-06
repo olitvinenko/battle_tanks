@@ -1,43 +1,31 @@
-// Text.h
-
 #pragma once
-
-#include "UIWindow.h"
-#include "Rendering/DrawingContext.h"
+#include "Window.h"
+#include "DrawingContext.h"
 
 namespace UI
 {
+template<class T> struct DataSource;
 
-// static text
-class Text : public UIWindow
+class Text : public Window
 {
 public:
-	static Text* Create(UIWindow *parent, float x, float y, const std::string &text, AlignTextKind align);
+	Text(LayoutManager &manager, TextureManager &texman);
 
-	void SetDrawShadow(bool drawShadow);
-	bool GetDrawShadow() const;
+	void SetAlign(enumAlignText align);
+	void SetFont(TextureManager &texman, const char *fontName);
+	void SetFontColor(std::shared_ptr<DataSource<SpriteColor>> color);
 
-	void SetAlign(AlignTextKind align);
-	void SetFont(const char *fontName);
-	void SetFontColor(Color color);
+	void SetText(std::shared_ptr<DataSource<const std::string&>> text);
 
-	float GetCharWidth();
-	float GetCharHeight();
-
-	void Draw(DrawingContext &dc) const override;
-	void OnTextChange() override;
-
-protected:
-	Text(UIWindow *parent);
+	// Window
+	void Draw(const StateContext &sc, const LayoutContext &lc, const InputContext &ic, DrawingContext &dc, TextureManager &texman) const override;
+	vec2d GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const override;
 
 private:
-	size_t         _lineCount;
-	size_t         _maxline;
-	AlignTextKind  _align;
+	enumAlignText  _align;
 	size_t         _fontTexture;
-	Color    _fontColor;
-
-	bool           _drawShadow;
+	std::shared_ptr<DataSource<SpriteColor>> _fontColor;
+	std::shared_ptr<DataSource<const std::string&>> _text;
 };
 
 } // namespace UI

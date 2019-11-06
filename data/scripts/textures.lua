@@ -242,10 +242,10 @@ return {
 {
    file="textures/gui/fonts.tga",
    content={
-     font_small={left=100, right=212, top=0, bottom=140, xframes=16, yframes=14, xpivot=0, ypivot=0},
-     font_default={left=212, top=0, right=512, bottom=240, xframes=20, yframes=12, xpivot=0, ypivot=0},
-     font_digits_red={left=0, top=-64, right=95, bottom=128, xframes=5, yframes=6, xpivot=0, ypivot=0},
-     font_digits_green={left=0, top=64, right=95, bottom=256, xframes=5, yframes=6, xpivot=0, ypivot=0},
+     font_small={left=100, right=212, top=0, bottom=140, xframes=16, yframes=14, xpivot=0, ypivot=0, magfilter=false},
+     font_default={left=212, top=0, right=512, bottom=240, xframes=20, yframes=12, xpivot=0, ypivot=0, magfilter=false},
+     font_digits_red={left=0, top=-64, right=95, bottom=128, xframes=5, yframes=6, xpivot=0, ypivot=0, magfilter=false},
+     font_digits_green={left=0, top=64, right=95, bottom=256, xframes=5, yframes=6, xpivot=0, ypivot=0, magfilter=false},
    }
 },
 {
@@ -276,6 +276,7 @@ return {
      ["ui/direction"]={left=112, top=0, right=176, bottom=64, xpivot=32, ypivot=32, xframes=1, yframes=1},
      ["ui/target"]={left=192, top=0, right=256, bottom=64, xpivot=32, ypivot=32, xframes=1, yframes=1},
      ["ui/play"]={left=16, top=208, right=96, bottom=256, xpivot=40, ypivot=24, xframes=1, yframes=1, xscale=2, yscale=2},
+     ["ui/star"]={left=96, top=192, right=192, bottom=240, xpivot=24, ypivot=24, xframes=2, yframes=1},
    }
 },
 {

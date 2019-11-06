@@ -141,7 +141,7 @@ void RenderOpenGL::SetMode(RenderMode mode)
 	m_mode = mode;
 }
 
-bool RenderOpenGL::TexCreate(GlTexture &tex, const IImage &img)
+bool RenderOpenGL::TexCreate(GlTexture &tex, const IImage &img, bool magFilter)
 {
 	glGenTextures(1, &tex.index);
 	glBindTexture(GL_TEXTURE_2D, tex.index);
@@ -158,7 +158,7 @@ bool RenderOpenGL::TexCreate(GlTexture &tex, const IImage &img)
 		img.GetData()                      // pixels
 	);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, /*GL_NEAREST*/ GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  magFilter ? GL_LINEAR : GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, /*GL_NEAREST*/ GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);

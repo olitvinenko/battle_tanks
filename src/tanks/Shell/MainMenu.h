@@ -1,82 +1,40 @@
 #pragma once
-#include "../ui/UIWindow.h"
+#include <StackLayout.h>
 #include <functional>
-#include "GetFileName.h"
 
-namespace FileSystem
+namespace FS
 {
-	class IFileSystem;
+	class FileSystem;
 }
 
 namespace UI
 {
 	class ConsoleBuffer;
-	class Text;
 }
+
+class LangCache;
 
 struct MainMenuCommands
 {
 	std::function<void()> newCampaign;
 	std::function<void()> newDM;
 	std::function<void()> newMap;
-	std::function<void(std::string)> openMap;
-	std::function<void(std::string)> exportMap;
+	std::function<void()> openMap;
+	std::function<void()> exportMap;
+	std::function<void()> mapSettings;
 	std::function<void()> gameSettings;
-	std::function < void() > close;
-
-	//network
-	std::function < void() > onJoin;
-	std::function < void() > onHost;
+	std::function<void()> close;
 };
 
-class MainMenuDlg : public UI::UIWindow
+class MainMenuDlg : public UI::StackLayout
 {
-	void OnEditor();
-	void OnMapSettings();
-	void OnImportMap();
-	void OnImportMapSelect(int result);
-	void OnExportMap();
-	void OnExportMapSelect(int result);
-
-	void OnSettings();
-
-
-	enum PanelType
-	{
-		PT_NONE,
-		PT_EDITOR,
-	};
-
-	enum PanelState
-	{
-		PS_NONE,
-		PS_APPEARING,
-		PS_DISAPPEARING,
-	};
-
-	UI::UIWindow    *_panel = nullptr;
-	UI::UIWindow    *_panelFrame = nullptr;
-	UI::Text      *_panelTitle = nullptr;
-	PanelType  _ptype;
-	PanelState _pstate;
-
-	GetFileNameDlg *_fileDlg;
-	FileSystem::IFileSystem &_fs;
-	UI::ConsoleBuffer &_logger;
-	MainMenuCommands _commands;
-
 public:
-	MainMenuDlg(UIWindow *parent,
-				FileSystem::IFileSystem &fs,
-	            UI::ConsoleBuffer &logger,
+	MainMenuDlg(UI::LayoutManager &manager,
+	            TextureManager &texman,
+	            LangCache &lang,
 	            MainMenuCommands commands);
-	virtual ~MainMenuDlg();
-	bool OnKeyPressed(Key key) override;
-	bool OnFocus(bool) override { return true; }
 
-protected:
-	void OnTimeStep(float dt) override;
-	void OnCloseChild(int result);
-	void CreatePanel(); // create panel of current _ptype and go to PS_APPEARING state
-	void SwitchPanel(PanelType newtype);
+private:
+	LangCache &_lang;
+	MainMenuCommands _commands;
 };

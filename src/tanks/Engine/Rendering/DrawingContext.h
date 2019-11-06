@@ -26,36 +26,43 @@ enum AlignTextKind
 class DrawingContext
 {
 public:
-	DrawingContext(const TextureManager &tm, IRender* render, unsigned int width, unsigned int height);
+    DrawingContext(const TextureManager &tm, IRender* render, unsigned int width, unsigned int height);
 
-	void PushClippingRect(math::RectInt rect);
-	void PopClippingRect();
+    void PushClippingRect(RectInt rect);
+    void PopClippingRect();
 
-	void PushTransform(Vector2 offset);
-	void PopTransform();
+    void PushTransform(Vector2 offset, float opacityCombined = 1);
+    void PopTransform();
 
-	void DrawSprite(const math::RectFloat *dst, size_t sprite, Color color, unsigned int frame);
-	void DrawBorder(const math::RectFloat &dst, size_t sprite, Color color, unsigned int frame);
-	void DrawBitmapText(float sx, float sy, size_t tex, Color color, const std::string &str, AlignTextKind align = alignTextLT);
-	void DrawSprite(size_t tex, unsigned int frame, Color color, float x, float y, Vector2 dir);
-	void DrawSprite(size_t tex, unsigned int frame, Color color, float x, float y, float width, float height, Vector2 dir);
-	void DrawIndicator(size_t tex, float x, float y, float value) const;
-	void DrawLine(size_t tex, Color color, float x0, float y0, float x1, float y1, float phase);
-	void DrawBackground(size_t tex, float sizeX, float sizeY) const;
+    RectInt GetVisibleRegion() const;
 
-	void DrawPointLight(float intensity, float radius, Vector2 pos);
-	void DrawSpotLight(float intensity, float radius, Vector2 pos, Vector2 dir, float offset, float aspect);
-	void DrawDirectLight(float intensity, float radius, Vector2 pos, Vector2 dir, float length);
+    void DrawSprite(const RectFloat dst, size_t sprite, Color color, unsigned int frame);
+    void DrawBorder(const RectFloat &dst, size_t sprite, Color color, unsigned int frame);
+    void DrawBitmapText(Vector2 origin, float scale, size_t tex, Color color, const std::string &str, AlignTextKind align = alignTextLT);
+    void DrawSprite(size_t tex, unsigned int frame, Color color, float x, float y, Vector2 dir);
+    void DrawSprite(size_t tex, unsigned int frame, Color color, float x, float y, float width, float height, Vector2 dir);
+    void DrawIndicator(size_t tex, float x, float y, float value);
+    void DrawLine(size_t tex, Color color, float x0, float y0, float x1, float y1, float phase);
+    void DrawBackground(size_t tex, RectFloat bounds) const;
 
-	void Camera(const math::RectInt &viewport, float x, float y, float scale);
-	void SetAmbient(float ambient);
-	void SetMode(RenderMode mode);
+    void DrawPointLight(float intensity, float radius, Vector2 pos);
+    void DrawSpotLight(float intensity, float radius, Vector2 pos, Vector2 dir, float offset, float aspect);
+    void DrawDirectLight(float intensity, float radius, Vector2 pos, Vector2 dir, float length);
+
+    void Camera(RectInt viewport, float x, float y, float scale);
+    void SetAmbient(float ambient);
+    void SetMode(const RenderMode mode);
 
 private:
-	const TextureManager &_tm;
-
-	IRender* m_render;
-	std::stack<math::RectInt> _clipStack;
-	std::stack<Vector2> _transformStack;
-	math::RectInt _viewport;
+    struct Transform
+    {
+        Vector2 offset;
+        uint32_t opacity;
+    };
+    const TextureManager &_tm;
+    IRender* _render;
+    std::stack<RectInt> _clipStack;
+    std::stack<Transform> _transformStack;
+    RectInt _viewport;
+    RenderMode _mode;
 };

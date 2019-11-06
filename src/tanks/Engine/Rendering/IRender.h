@@ -9,11 +9,10 @@ struct Vertex;
 
 enum RenderMode
 {
+    UNDEFINED = -1,
 	LIGHT = 0,
 	WORLD = 1,
 	INTERFACE = 2,
-	//-------------------
-	FORCE32BIT = 0xffffffff
 };
 
 struct IRender
@@ -34,7 +33,7 @@ struct IRender
 	//
 	// texture management
 	//
-	virtual bool TexCreate(GlTexture &tex, const IImage &img) = 0;
+	virtual bool TexCreate(GlTexture &tex, const IImage &img, bool magFilter) = 0;
 	virtual void TexFree(GlTexture tex) = 0;
 
 	//

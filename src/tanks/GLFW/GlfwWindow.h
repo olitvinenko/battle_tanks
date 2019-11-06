@@ -22,6 +22,8 @@ public:
 
 	float GetAspectRatio() const override;
 
+    float GetLayoutScale() const override;
+
 	bool ShouldClose() const override;
 
 	void SwapBuffers() override;
@@ -32,6 +34,10 @@ public:
 	{
 		return m_name;
 	}
+    
+    Vector2 GetCursorPosInPixels() const override;
+    Vector2 GetCursorPosInPixels(double xoffset, double yoffset) const override;
+    Vector2 GetPixelSize() const override;
 
 private:
 

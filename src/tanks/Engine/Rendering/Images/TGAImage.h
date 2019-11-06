@@ -10,6 +10,7 @@ class TgaImage : public IImage
 {
 public:
 	explicit TgaImage(std::shared_ptr<FileSystem::File::Memory> file);
+    TgaImage(const void *data, unsigned long size);
 
 	~TgaImage();
 

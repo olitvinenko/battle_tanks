@@ -1,17 +1,15 @@
-// Console.cpp
-
 #include "Console.h"
 #include "Edit.h"
 #include "Scroll.h"
 #include "ConsoleBuffer.h"
 #include "GuiManager.h"
 #include "Keys.h"
+#include "LayoutContext.h"
+#include <TextureManager.h>
+#include <DrawingContext.h>
 #include <algorithm>
-#include "Rendering/DrawingContext.h"
-#include "Rendering/TextureManager.h"
 
-namespace UI
-{
+using namespace UI;
 
 ConsoleHistoryDefault::ConsoleHistoryDefault(size_t maxSize)
   : _maxSize(maxSize)
@@ -39,38 +37,37 @@ const std::string& ConsoleHistoryDefault::GetItem(size_t index) const
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Console* Console::Create(UIWindow *parent, float x, float y, float w, float h, ConsoleBuffer *buf)
+std::shared_ptr<Console> Console::Create(Window *parent, TextureManager &texman, float x, float y, float w, float h, ConsoleBuffer *buf)
 {
-	Console *res = new Console(parent);
+	auto res = std::make_shared<Console>(parent->GetManager(), texman);
 	res->Move(x, y);
 	res->Resize(w, h);
 	res->SetBuffer(buf);
+	parent->AddFront(res);
 	return res;
 }
 
-Console::Console(UIWindow *parent)
-  : UIWindow(parent)
+Console::Console(LayoutManager &manager, TextureManager &texman)
+  : Rectangle(manager)
   , _cmdIndex(0)
-  , _font(GetManager().GetTextureManager().FindSprite("font_small"))
+  , _font(texman.FindSprite("font_small"))
   , _buf(nullptr)
   , _history(nullptr)
   , _echo(true)
   , _autoScroll(true)
 {
-	_input = Edit::Create(this, 0, 0, 0);
-	_scroll = ScrollBarVertical::Create(this, 0, 0, 0);
-	_scroll->eventScroll = std::bind(&Console::OnScroll, this, std::placeholders::_1);
-	SetTexture("ui/console", false);
+	_input = std::make_shared<Edit>(manager, texman);
+	AddFront(_input);
+	SetFocus(_input);
+	_scroll = std::make_shared<ScrollBarVertical>(manager, texman);
+	_scroll->eventScroll = std::bind(&Console::OnScrollBar, this, std::placeholders::_1);
+	AddFront(_scroll);
+	SetTexture(texman, "ui/console", false);
 	SetDrawBorder(true);
 	SetTimeStep(true); // FIXME: workaround
 }
 
-float Console::GetInputHeight() const
-{
-	return _input->GetHeight();
-}
-
-void Console::SetColors(const Color *colors, size_t count)
+void Console::SetColors(const SpriteColor *colors, size_t count)
 {
 	_colors.assign(colors, colors + count);
 }
@@ -92,13 +89,7 @@ void Console::SetEcho(bool echo)
 	_echo = echo;
 }
 
-bool Console::OnChar(int c)
-{
-	GetManager().SetFocusWnd(_input);
-	return true;
-}
-
-bool Console::OnKeyPressed(Key key)
+bool Console::OnKeyPressed(InputContext &ic, Key key)
 {
 	switch(key)
 	{
@@ -115,7 +106,7 @@ bool Console::OnKeyPressed(Key key)
 			if( _cmdIndex > 0 )
 			{
 				--_cmdIndex;
-				_input->SetText(_history->GetItem(_cmdIndex));
+				_input->SetText(GetManager().GetTextureManager(), _history->GetItem(_cmdIndex));
 			}
 		}
 		break;
@@ -131,11 +122,11 @@ bool Console::OnKeyPressed(Key key)
 			++_cmdIndex;
 			if( _cmdIndex < _history->GetItemCount() )
 			{
-				_input->SetText(_history->GetItem(_cmdIndex));
+				_input->SetText(GetManager().GetTextureManager(), _history->GetItem(_cmdIndex));
 			}
 			else
 			{
-				_input->SetText(std::string());
+				_input->SetText(GetManager().GetTextureManager(), std::string());
 				_cmdIndex = _history->GetItemCount();
 			}
 		}
@@ -164,7 +155,7 @@ bool Console::OnKeyPressed(Key key)
 			}
 			if( eventOnSendCommand )
 				eventOnSendCommand(cmd.c_str());
-			_input->SetText(std::string());
+			_input->SetText(GetManager().GetTextureManager(), std::string());
 		}
 		_scroll->SetPos(_scroll->GetDocumentSize());
 		_autoScroll = true;
@@ -185,7 +176,7 @@ bool Console::OnKeyPressed(Key key)
 	case Key::Escape:
 		if( _input->GetText().empty() )
 			return false;
-		_input->SetText(std::string());
+		_input->SetText(GetManager().GetTextureManager(), std::string());
 		break;
 	case Key::Tab:
 		if( eventOnRequestCompleteCommand )
@@ -194,7 +185,7 @@ bool Console::OnKeyPressed(Key key)
 			int pos = _input->GetSelEnd();
 			if( eventOnRequestCompleteCommand(_input->GetText(), pos, result) )
 			{
-				_input->SetText(result);
+				_input->SetText(GetManager().GetTextureManager(), result);
 				_input->SetSel(pos, pos);
 			}
 			_scroll->SetPos(_scroll->GetDocumentSize());
@@ -207,91 +198,70 @@ bool Console::OnKeyPressed(Key key)
 	return true;
 }
 
-bool Console::OnMouseWheel(float x, float y, float z)
+void Console::OnScroll(TextureManager &texman, const InputContext &ic, const LayoutContext &lc, const StateContext &sc, vec2d pointerPosition, vec2d scrollOffset)
 {
-	_scroll->SetPos(_scroll->GetPos() - z * 3);
+	_scroll->SetPos(_scroll->GetPos() - scrollOffset.y * 3);
 	_autoScroll = _scroll->GetPos() + _scroll->GetPageSize() >= _scroll->GetDocumentSize();
-	return true;
 }
 
-bool Console::OnPointerDown(float x, float y, int button, PointerType pointerType, unsigned int pointerID)
-{
-	return true;
-}
-
-bool Console::OnPointerUp(float x, float y, int button, PointerType pointerType, unsigned int pointerID)
-{
-	return true;
-}
-
-bool Console::OnPointerMove(float x, float y, PointerType pointerType, unsigned int pointerID)
-{
-	return true;
-}
-
-void Console::OnTimeStep(float dt)
+void Console::OnTimeStep(LayoutManager &manager, float dt)
 {
 	// FIXME: workaround
+	_scroll->SetLineSize(1);
+	_scroll->SetPageSize(20); // textAreaHeight / GetManager().GetTextureManager().GetFrameHeight(_font, 0));
 	_scroll->SetDocumentSize(_buf ? (float) _buf->GetLineCount() + _scroll->GetPageSize() - 1 : 0);
 	if( _autoScroll )
 		_scroll->SetPos(_scroll->GetDocumentSize());
 }
 
-void Console::Draw(DrawingContext &dc) const
+void Console::Draw(const StateContext &sc, const LayoutContext &lc, const InputContext &ic, DrawingContext &dc, TextureManager &texman) const
 {
-	UIWindow::Draw(dc);
+	Rectangle::Draw(sc, lc, ic, dc, texman);
 
 	if( _buf )
 	{
 		_buf->Lock();
 
-		float h = GetManager().GetTextureManager().GetFrameHeight(_font, 0);
-		size_t visibleLineCount = size_t(_input->GetY() / h);
+		FRECT inputRect = GetChildRect(texman, lc, sc, *_input);
+		float textAreaHeight = inputRect.top;
+
+		float h = std::floor(texman.GetFrameHeight(_font, 0) * lc.GetScale());
+		size_t visibleLineCount = size_t(textAreaHeight / h);
 		size_t scroll  = std::min(size_t(_scroll->GetDocumentSize() - _scroll->GetPos() - _scroll->GetPageSize()), _buf->GetLineCount());
 		size_t lineMax = _buf->GetLineCount() - scroll;
 		size_t count   = std::min(lineMax, visibleLineCount);
 
-		float y = -fmod(_input->GetY(), h) + (float) (visibleLineCount - count) * h;
+		float y = -fmod(textAreaHeight, h) + (float) (visibleLineCount - count) * h;
 
 		for( size_t line = lineMax - count; line < lineMax; ++line )
 		{
 			unsigned int sev = _buf->GetSeverity(line);
-			Color color = sev < _colors.size() ? _colors[sev] : 0xffffffff;
-			dc.DrawBitmapText(4, y, _font, color, _buf->GetLine(line));
+			SpriteColor color = sev < _colors.size() ? _colors[sev] : 0xffffffff;
+			dc.DrawBitmapText(vec2d{ 4, y }, lc.GetScale(), _font, color, _buf->GetLine(line));
 			y += h;
 		}
 
 		_buf->Unlock();
-
-		if( _autoScroll )
-		{
-			// FIXME: magic number
-			dc.DrawBitmapText(_scroll->GetX() - 2, _input->GetY(), _font, 0x7f7f7f7f, "auto", alignTextRB);
-		}
 	}
 }
 
-void Console::OnSize(float width, float height)
+FRECT Console::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
 {
-	_input->Move(0, height - _input->GetHeight());
-	_input->Resize(width, _input->GetHeight());
-	_scroll->Move(width - _scroll->GetWidth(), 0);
-	_scroll->Resize(_scroll->GetWidth(), height - _input->GetHeight());
-	_scroll->SetPageSize(_input->GetY() / GetManager().GetTextureManager().GetFrameHeight(_font, 0));
-	_scroll->SetDocumentSize(_buf ? (float) _buf->GetLineCount() + _scroll->GetPageSize() : 0);
+	if (_input.get() == &child)
+	{
+		float inputHeight = _input->GetContentSize(texman, sc, lc.GetScale()).y;
+		return MakeRectRB(vec2d{0, lc.GetPixelSize().y - inputHeight}, lc.GetPixelSize());
+	}
+	if (_scroll.get() == &child)
+	{
+		float scrollWidth = std::floor(_scroll->GetWidth() * lc.GetScale());
+		return MakeRectRB(vec2d{lc.GetPixelSize().x - scrollWidth}, lc.GetPixelSize());
+	}
+	return Rectangle::GetChildRect(texman, lc, sc, child);
 }
 
-bool Console::OnFocus(bool focus)
-{
-	return true;
-}
-
-void Console::OnScroll(float pos)
+void Console::OnScrollBar(float pos)
 {
 	_autoScroll = pos + _scroll->GetPageSize() >= _scroll->GetDocumentSize();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-} // end of namespace UI
-
-// end of file

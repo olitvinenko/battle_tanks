@@ -1,6 +1,7 @@
 #pragma once
-#include "../UI/Dialog.h"
+#include <Dialog.h>
 
+class LangCache;
 class TextureManager;
 
 namespace FileSystem
@@ -12,25 +13,21 @@ namespace UI
 {
 	class ListDataSourceDefault;
 	class List;
-    class UIWindow;
-
 	template <class, class> class ListAdapter;
 }
 
 class NewCampaignDlg : public UI::Dialog
 {
-    typedef UI::ListAdapter<UI::ListDataSourceDefault, UI::List> DefaultListBox;
-    
 public:
-	NewCampaignDlg(UI::UIWindow* parent, FileSystem::IFileSystem &fs);
+	NewCampaignDlg(UI::LayoutManager &manager, TextureManager &texman, FileSystem::IFileSystem &fs, LangCache &lang);
 	~NewCampaignDlg();
-
-    std::function<void(std::string)> eventCampaignSelected;
+	std::function<void(std::shared_ptr<NewCampaignDlg>, std::string)> eventCampaignSelected;
 
 private:
 	void OnOK();
 	void OnCancel();
 
-	DefaultListBox *_files;
-	FileSystem::IFileSystem& _fs;
+	typedef UI::ListAdapter<UI::ListDataSourceDefault, UI::List> DefaultListBox;
+	std::shared_ptr<DefaultListBox> _files;
+	FileSystem::IFileSystem &_fs;
 };

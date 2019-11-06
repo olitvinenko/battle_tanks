@@ -1,18 +1,17 @@
-// Scroll.cpp
-
 #include "Scroll.h"
 #include "Button.h"
+#include "DataSource.h"
+#include "GuiManager.h"
+#include "LayoutContext.h"
 #include <algorithm>
 #include <cmath>
 
-namespace UI
-{
+static const float MIN_THUMB_SIZE = 10.f;
 
-///////////////////////////////////////////////////////////////////////////////
-// scrollbar class implementation
+using namespace UI;
 
-ScrollBarBase::ScrollBarBase(UIWindow *parent)
-    : UIWindow(parent)
+ScrollBarBase::ScrollBarBase(LayoutManager &manager, TextureManager &texman)
+    : Rectangle(manager)
     , _tmpBoxPos(-1)
     , _pos(0)
     , _lineSize(0.1f)
@@ -20,9 +19,12 @@ ScrollBarBase::ScrollBarBase(UIWindow *parent)
     , _documentSize(1.0f)
     , _showButtons(true)
 {
-	_btnBox        = ImageButton::Create(this, 0, 0, nullptr);
-	_btnUpLeft     = ImageButton::Create(this, 0, 0, nullptr);
-	_btnDownRight  = ImageButton::Create(this, 0, 0, nullptr);
+	_btnBox = std::make_shared<Button>(manager, texman);
+	AddFront(_btnBox);
+	_btnUpLeft = std::make_shared<Button>(manager, texman);
+	AddFront(_btnUpLeft);
+	_btnDownRight = std::make_shared<Button>(manager, texman);
+	AddFront(_btnDownRight);
 
 	_btnUpLeft->eventClick = std::bind(&ScrollBarBase::OnUpLeft, this);
 	_btnDownRight->eventClick = std::bind(&ScrollBarBase::OnDownRight, this);
@@ -30,7 +32,6 @@ ScrollBarBase::ScrollBarBase(UIWindow *parent)
 	_btnBox->eventMouseUp = std::bind(&ScrollBarBase::OnBoxMouseUp, this, std::placeholders::_1, std::placeholders::_2);
 	_btnBox->eventMouseDown = std::bind(&ScrollBarBase::OnBoxMouseDown, this, std::placeholders::_1, std::placeholders::_2);
 	_btnBox->eventMouseMove = std::bind(&ScrollBarBase::OnBoxMouseMove, this, std::placeholders::_1, std::placeholders::_2);
-	_btnBox->SetDrawBorder(true);
 
 	SetDrawBorder(true);
 	SetShowButtons(true);
@@ -41,7 +42,6 @@ void ScrollBarBase::SetShowButtons(bool showButtons)
 	_showButtons = showButtons;
 	_btnUpLeft->SetVisible(showButtons);
 	_btnDownRight->SetVisible(showButtons);
-	SetPos(GetPos());  // to update scroll box position
 }
 
 bool ScrollBarBase::GetShowButtons() const
@@ -93,19 +93,11 @@ float ScrollBarBase::GetLineSize() const
 	return _lineSize;
 }
 
-void ScrollBarBase::SetElementTextures(const char *slider, const char *upleft, const char *downright)
+void ScrollBarBase::SetElementTextures(TextureManager &texman, const char *slider, const char *upleft, const char *downright)
 {
-	_btnBox->SetTexture(slider, true);
-	_btnUpLeft->SetTexture(upleft, true);
-	_btnDownRight->SetTexture(downright, true);
-
-	_btnBox->Move((GetWidth() - _btnBox->GetWidth()) / 2, (GetHeight() - _btnBox->GetHeight()) / 2);
-	SetPos(GetPos()); // update scroll position
-}
-
-void ScrollBarBase::OnEnabledChange(bool enable, bool inherited)
-{
-	SetFrame(enable ? 0 : 1);
+	_btnBox->SetBackground(texman, slider, true);
+	_btnUpLeft->SetBackground(texman, upleft, true);
+	_btnDownRight->SetBackground(texman, downright, true);
 }
 
 void ScrollBarBase::OnBoxMouseDown(float x, float y)
@@ -120,9 +112,9 @@ void ScrollBarBase::OnBoxMouseUp(float x, float y)
 
 void ScrollBarBase::OnBoxMouseMove(float x, float y)
 {
-	if( _tmpBoxPos < 0 )
+/*	if( _tmpBoxPos < 0 )
 		return;
-	float pos = Select(_btnBox->GetX() + x, _btnBox->GetY() + y) - _tmpBoxPos;
+	float pos = Select(_boxPos.x + x, _boxPos.y + y) - _tmpBoxPos;
 	if( _showButtons )
 	{
 		pos -= Select(_btnUpLeft->GetWidth(), _btnUpLeft->GetHeight());
@@ -130,7 +122,7 @@ void ScrollBarBase::OnBoxMouseMove(float x, float y)
 	pos /= GetScrollPaneLength() - Select(_btnBox->GetWidth(), _btnBox->GetHeight());
 	SetPos(pos * (_documentSize - _pageSize));
 	if( eventScroll )
-		eventScroll(GetPos());
+		eventScroll(GetPos());*/
 }
 
 void ScrollBarBase::OnUpLeft()
@@ -151,24 +143,17 @@ void ScrollBarBase::OnLimitsChanged()
 {
 	bool needScroll = _documentSize > _pageSize;
 	_btnBox->SetVisible(needScroll);
-	_btnUpLeft->SetEnabled(needScroll);
-	_btnDownRight->SetEnabled(needScroll);
+	_btnUpLeft->SetEnabled(std::make_shared<StaticValue<bool>>(needScroll));
+	_btnDownRight->SetEnabled(std::make_shared<StaticValue<bool>>(needScroll));
 	if( !needScroll )
 	{
 		SetPos(0);
 	}
 }
 
-void ScrollBarBase::OnSize(float width, float height)
+float ScrollBarBase::GetScrollPaneLength(const LayoutContext &lc) const
 {
-	_btnDownRight->Move( Select(width - _btnDownRight->GetWidth(), _btnDownRight->GetX()),
-	                     Select(_btnDownRight->GetY(), height - _btnDownRight->GetHeight()) );
-	SetPos(GetPos());  // to update scroll box position
-}
-
-float ScrollBarBase::GetScrollPaneLength() const
-{
-	float result = Select(GetWidth(), GetHeight());
+	float result = Select(lc.GetPixelSize().x / lc.GetScale(), lc.GetPixelSize().y / lc.GetScale());
 	if( _showButtons )
 	{
 		result -= Select( _btnDownRight->GetWidth() + _btnUpLeft->GetWidth(),
@@ -177,87 +162,75 @@ float ScrollBarBase::GetScrollPaneLength() const
 	return result;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-ScrollBarVertical* ScrollBarVertical::Create(UIWindow *parent, float x, float y, float height)
+void ScrollBarBase::Draw(const StateContext &sc, const LayoutContext &lc, const InputContext &ic, DrawingContext &dc, TextureManager &texman) const
 {
-	ScrollBarVertical *result = new ScrollBarVertical(parent);
-	result->Move(x, y);
-	result->SetSize(height);
-	return result;
+	const_cast<ScrollBarBase*>(this)->SetFrame(lc.GetEnabledCombined() ? 0 : 1);
+	Rectangle::Draw(sc, lc, ic, dc, texman);
 }
 
-ScrollBarVertical::ScrollBarVertical(UIWindow *parent)
-  : ScrollBarBase(parent)
+FRECT ScrollBarBase::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
 {
-	_btnBox->SetTexture("ui/scroll_vert", true);
-	_btnUpLeft->SetTexture("ui/scroll_up", true);
-	_btnDownRight->SetTexture("ui/scroll_down", true);
-	SetTexture("ui/scroll_back_vert", true);
-}
+	float scale = lc.GetScale();
+	vec2d size = lc.GetPixelSize();
 
-void ScrollBarVertical::SetSize(float size)
-{
-	Resize(GetWidth(), size);
-}
+	if (_btnDownRight.get() == &child)
+	{
+		return CanvasLayout(size / scale - child.GetSize(), child.GetSize(), scale);
+	}
 
-float ScrollBarVertical::GetSize() const
-{
-	return GetHeight();
-}
-
-void ScrollBarVertical::SetPos(float pos)
-{
-	ScrollBarBase::SetPos(pos);
-
-	float mult = GetShowButtons() ? 1.0f : 0.0f;
-	_btnBox->Resize(_btnBox->GetWidth(),
-		std::max(GetScrollPaneLength() * GetPageSize() / GetDocumentSize(), _btnBox->GetTextureHeight()));
-	_btnBox->Move(_btnBox->GetX(), floor(_btnUpLeft->GetHeight() * mult + (GetHeight() - _btnBox->GetHeight()
-		- (_btnDownRight->GetHeight() + _btnUpLeft->GetHeight()) * mult ) * GetPos() / (GetDocumentSize() - GetPageSize()) + 0.5f));
+	return Rectangle::GetChildRect(texman, lc, sc, child);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ScrollBarHorizontal* ScrollBarHorizontal::Create(UIWindow *parent, float x, float y, float height)
+ScrollBarVertical::ScrollBarVertical(LayoutManager &manager, TextureManager &texman)
+	: ScrollBarBase(manager, texman)
 {
-	ScrollBarHorizontal *result = new ScrollBarHorizontal(parent);
-	result->Move(x, y);
-	result->SetSize(height);
-	return result;
+	_btnBox->SetBackground(texman, "ui/scroll_vert", true);
+	_btnUpLeft->SetBackground(texman, "ui/scroll_up", true);
+	_btnDownRight->SetBackground(texman, "ui/scroll_down", true);
+	SetTexture(texman, "ui/scroll_back_vert", true);
 }
 
-ScrollBarHorizontal::ScrollBarHorizontal(UIWindow *parent)
-  : ScrollBarBase(parent)
+FRECT ScrollBarVertical::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
 {
-	_btnBox->SetTexture("ui/scroll_hor", true);
-	_btnUpLeft->SetTexture("ui/scroll_left", true);
-	_btnDownRight->SetTexture("ui/scroll_right", true);
-	SetTexture("ui/scroll_back_hor", true);
-}
+	if (_btnBox.get() == &child)
+	{
+		float height = lc.GetPixelSize().y / lc.GetScale();
+		float mult = GetShowButtons() ? 1.0f : 0.0f;
+		vec2d thumbSize = { _btnBox->GetWidth(), std::max(GetScrollPaneLength(lc) * GetPageSize() / GetDocumentSize(), MIN_THUMB_SIZE) };
+		vec2d thumbOffset = { 0, _btnUpLeft->GetHeight() * mult + (height - thumbSize.y
+			- (_btnDownRight->GetHeight() + _btnUpLeft->GetHeight()) * mult) * GetPos() / (GetDocumentSize() - GetPageSize()) };
 
-void ScrollBarHorizontal::SetSize(float size)
-{
-	Resize(size, GetHeight());
-}
+		return CanvasLayout(thumbOffset, thumbSize, lc.GetScale());
+	}
 
-float ScrollBarHorizontal::GetSize() const
-{
-	return GetWidth();
-}
-
-void ScrollBarHorizontal::SetPos(float pos)
-{
-	ScrollBarBase::SetPos(pos);
-
-	float mult = GetShowButtons() ? 1.0f : 0.0f;
-	_btnBox->Resize(std::max(GetScrollPaneLength() * GetPageSize() / GetDocumentSize(), _btnBox->GetTextureWidth()),
-		_btnBox->GetHeight());
-	_btnBox->Move(floor(_btnUpLeft->GetWidth() * mult + (GetWidth() - _btnBox->GetWidth()
-		- (_btnUpLeft->GetWidth() + _btnDownRight->GetWidth()) * mult) * GetPos() / (GetDocumentSize() - GetPageSize()) + 0.5f), _btnBox->GetY());
+	return ScrollBarBase::GetChildRect(texman, lc, sc, child);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-} // end of namespace UI
 
-// end of file
+ScrollBarHorizontal::ScrollBarHorizontal(LayoutManager &manager, TextureManager &texman)
+	: ScrollBarBase(manager, texman)
+{
+	_btnBox->SetBackground(texman, "ui/scroll_hor", true);
+	_btnUpLeft->SetBackground(texman, "ui/scroll_left", true);
+	_btnDownRight->SetBackground(texman, "ui/scroll_right", true);
+	SetTexture(texman, "ui/scroll_back_hor", true);
+}
+
+FRECT ScrollBarHorizontal::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
+{
+	if (_btnBox.get() == &child)
+	{
+		float width = lc.GetPixelSize().x / lc.GetScale();
+		float mult = GetShowButtons() ? 1.0f : 0.0f;
+		vec2d thumbSize = { std::max(GetScrollPaneLength(lc) * GetPageSize() / GetDocumentSize(), MIN_THUMB_SIZE), _btnBox->GetHeight() };
+		vec2d thumbOffset = { _btnUpLeft->GetWidth() * mult + (width - thumbSize.x
+			- (_btnUpLeft->GetWidth() + _btnDownRight->GetWidth()) * mult) * GetPos() / (GetDocumentSize() - GetPageSize()), 0 };
+
+		return CanvasLayout(thumbOffset, thumbSize, lc.GetScale());
+	}
+
+	return ScrollBarBase::GetChildRect(texman, lc, sc, child);
+}

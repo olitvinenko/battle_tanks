@@ -1,6 +1,6 @@
 #pragma once
 
-class World;
+class ECSWorld;
 
 /**
 	 * A system that acts on entities. Generally, this will act on a subset of entities using World::each().
@@ -14,14 +14,14 @@ struct EntitySystem
 	/**
 	 * Called when this system is added to a world.
 	 */
-	virtual void configure(World* world)
+	virtual void configure(ECSWorld* world)
 	{
 	}
 
 	/**
 	 * Called when this system is being removed from a world.
 	 */
-	virtual void unconfigure(World* world)
+	virtual void unconfigure(ECSWorld* world)
 	{
 	}
 
@@ -29,7 +29,7 @@ struct EntitySystem
 	 * Called when World::tick() is called. See ECS_TICK_TYPE at the top of this file for more
 	 * information about passing data to tick.
 	 */
-	virtual void tick(World* world, float data)
+	virtual void tick(ECSWorld* world, float data)
 	{
 	}
 };

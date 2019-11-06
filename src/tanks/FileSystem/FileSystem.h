@@ -29,44 +29,48 @@ namespace FileSystem
 	FileOpenMode operator |(FileOpenMode lhs, FileOpenMode rhs);
 	FileOpenMode operator &(FileOpenMode lhs, FileOpenMode rhs);
 
+    class File;
+
+    class Stream
+    {
+    public:
+        explicit Stream(std::shared_ptr<File> file);
+        ~Stream();
+
+        size_t Read(void *dst, size_t size, size_t count) const;
+        void Write(const void *src, size_t size) const;
+
+        void SeekGet(long long amount, SeekMethod method) const;
+        void SeekPut(long long amount, SeekMethod method) const;
+
+        long long TellGet() const;
+        long long TellPut() const;
+    private:
+        std::shared_ptr<File> _parent;
+    };
+
+    class Memory
+    {
+    public:
+        explicit Memory(std::shared_ptr<File> file);
+        ~Memory();
+
+        char* GetData() const;
+        unsigned long GetSize() const;
+
+    private:
+        char* _data;
+        unsigned long _size;
+        std::shared_ptr<File> _parent;
+    };
+
 	class File : public std::enable_shared_from_this<File>
 	{
+        friend class Memory;
+        friend class Stream;
 	public:
 		File(const std::string& path, FileOpenMode mode);
 		~File();
-
-		class Memory
-		{
-		public:
-			explicit Memory(std::shared_ptr<File> file);
-			~Memory();
-
-			char* GetData() const;
-			unsigned long GetSize() const;
-
-		private:
-			char* _data;
-			unsigned long _size;
-			std::shared_ptr<File> _parent;
-		};
-
-		class Stream
-		{
-		public:
-			explicit Stream(std::shared_ptr<File> file);
-			~Stream();
-
-			size_t Read(void *dst, size_t size, size_t count) const;
-			void Write(const void *src, size_t size) const;
-
-			void SeekGet(long long amount, SeekMethod method) const;
-			void SeekPut(long long amount, SeekMethod method) const;
-
-			long long TellGet() const;
-			long long TellPut() const;
-		private:
-			std::shared_ptr<File> _parent;
-		};
 		
 		std::shared_ptr<Memory> AsMemory();
 		std::shared_ptr<Stream> AsStream();
@@ -94,7 +98,8 @@ namespace FileSystem
         
 		std::shared_ptr<File> Open(const std::string &path, FileOpenMode mode = FileOpenMode::Read | FileOpenMode::Binary);
 		void Mount(const std::string &nodeName, std::shared_ptr<IFileSystem> fs);
-
+        
+        const std::string& GetRootDirectory() const { return _rootDirectory; }
 	protected:
 		explicit IFileSystem(const std::string& rootDirectory);
     

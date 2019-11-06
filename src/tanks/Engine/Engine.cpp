@@ -69,7 +69,7 @@ void Engine::FixedUpdate(float fixedDeltaTime)
 }
 
 
-void Engine::Render(float interpolation) const
+void Engine::Render(float interpolation)
 {
 	m_rendering->PreRender();
 

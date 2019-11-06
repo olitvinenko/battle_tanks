@@ -1,30 +1,17 @@
 #include "Dialog.h"
+#include "InputContext.h"
 #include "GuiManager.h"
 #include "Keys.h"
+#include "UIInput.h"
 
-namespace UI
+using namespace UI;
+
+Dialog::Dialog(LayoutManager &manager, TextureManager &texman)
+  : Rectangle(manager)
 {
-
-///////////////////////////////////////////////////////////////////////////////
-// Dialog class implementation
-
-Dialog::Dialog(UIWindow *parent, float width, float height, bool modal)
-  : UIWindow(/*modal ? new Substrate(parent) :*/ parent)
-  , _mouseX(0)
-  , _mouseY(0)
-  , _easyMove(false)
-{
-	SetTexture("ui/window", false);
-	Resize(width, height);
-    Move(std::floor((parent->GetWidth() - GetWidth()) / 2), std::floor((parent->GetHeight() - GetHeight()) / 2));
+	SetTexture(texman, "ui/window", false);
 	SetDrawBorder(true);
 	SetDrawBackground(true);
-	GetManager().SetFocusWnd(this);
-}
-
-void Dialog::SetEasyMove(bool enable)
-{
-	_easyMove = enable;
 }
 
 void Dialog::Close(int result)
@@ -32,95 +19,84 @@ void Dialog::Close(int result)
 	if (OnClose(result))
 	{
 		if (eventClose)
-			eventClose(result);
-		Destroy();
+			eventClose(std::static_pointer_cast<Dialog>(shared_from_this()), result);
 	}
 }
 
-
-//
-// capture mouse messages
-//
-
-bool Dialog::OnPointerDown(float x, float y, int button, PointerType pointerType, unsigned int pointerID)
+void Dialog::NextFocus(bool wrap)
 {
-	if( _easyMove && 1 == button && !GetManager().HasCapturedPointers(this) )
+	auto &children = GetChildren();
+	if (auto focus = GetFocus())
 	{
-		GetManager().SetCapture(pointerID, this);
-		_mouseX = x;
-		_mouseY = y;
+		auto focusIt = std::find(children.rbegin(), children.rend(), focus);
+		for (;;)
+		{
+			while (focusIt != children.rbegin())
+			{
+				focusIt--;
+				if (TrySetFocus(*focusIt))
+					return;
+			}
+			if (!wrap)
+				break;
+			wrap = false;
+			focusIt = children.rend();
+		}
 	}
-	return true;
-}
-bool Dialog::OnPointerUp(float x, float y, int button, PointerType pointerType, unsigned int pointerID)
-{
-	if( 1 == button && GetManager().GetCapture(pointerID) == this )
-	{
-        GetManager().SetCapture(pointerID, nullptr);
-	}
-	return true;
-}
-bool Dialog::OnPointerMove(float x, float y, PointerType pointerType, unsigned int pointerID)
-{
-	if( this == GetManager().GetCapture(pointerID) )
-	{
-		Move(GetX() + x - _mouseX, GetY() + y - _mouseY);
-	}
-	return true;
-}
-bool Dialog::OnMouseEnter(float x, float y)
-{
-	return true;
-}
-bool Dialog::OnMouseLeave()
-{
-	return true;
 }
 
-bool Dialog::OnKeyPressed(Key key)
+void Dialog::PrevFocus(bool wrap)
 {
+	auto &children = GetChildren();
+	if (auto focus = GetFocus())
+	{
+		auto focusIt = std::find(children.begin(), children.end(), focus);
+		for (;;)
+		{
+			while (focusIt != children.begin())
+			{
+				focusIt--;
+				if (TrySetFocus(*focusIt))
+					return;
+			}
+			if (!wrap)
+				break;
+			wrap = false;
+			focusIt = children.end();
+		}
+	}
+}
+
+bool Dialog::TrySetFocus(const std::shared_ptr<Window> &child)
+{
+	if (child->GetVisible() &&
+		//child->GetEnabled() &&
+		NeedsFocus(child.get()))
+	{
+		SetFocus(child);
+		return true;
+	}
+	return false;
+}
+
+bool Dialog::OnKeyPressed(InputContext &ic, Key key)
+{
+	bool shift = ic.GetInput().IsKeyPressed(Key::LeftShift) ||
+		ic.GetInput().IsKeyPressed(Key::RightShift);
+
 	switch( key )
 	{
 	case Key::Up:
-		if( GetManager().GetFocusWnd() && this != GetManager().GetFocusWnd() )
-		{
-			// try to pass focus to previous siblings
-			UIWindow *r = GetManager().GetFocusWnd()->GetPrevSibling();
-			for( ; r; r = r->GetPrevSibling() )
-			{
-				if( r->GetVisibleCombined() && r->GetEnabledCombined() && GetManager().SetFocusWnd(r) ) break;
-			}
-		}
+		PrevFocus(false);
 		break;
 	case Key::Down:
-		if( GetManager().GetFocusWnd() && this != GetManager().GetFocusWnd() )
-		{
-			// try to pass focus to next siblings
-			UIWindow *r = GetManager().GetFocusWnd()->GetNextSibling();
-			for( ; r; r = r->GetNextSibling() )
-			{
-				if( r->GetVisibleCombined() && r->GetEnabledCombined() && GetManager().SetFocusWnd(r) ) break;
-			}
-		}
+		NextFocus(false);
 		break;
 	case Key::Tab:
-		if( GetManager().GetFocusWnd() && this != GetManager().GetFocusWnd() )
-		{
-			// try to pass focus to next siblings ...
-			UIWindow *r = GetManager().GetFocusWnd()->GetNextSibling();
-			for( ; r; r = r->GetNextSibling() )
-			{
-				if( r->GetVisibleCombined() && r->GetEnabledCombined() && GetManager().SetFocusWnd(r) ) break;
-			}
-			if( r ) break;
-
-			// ... and then start from first one
-			r = GetFirstChild();
-			for( ; r; r = r->GetNextSibling() )
-			{
-				if( r->GetVisibleCombined() && r->GetEnabledCombined() && GetManager().SetFocusWnd(r) ) break;
-			}
-		}
+		if (shift)
+			PrevFocus(true);
+		else
+			NextFocus(true);
 		break;
 	case Key::Enter:
 	case Key::NumEnter:
@@ -134,14 +110,4 @@ bool Dialog::OnKeyPressed(Key key)
 	}
 	return true;
 }
-
-bool Dialog::OnFocus(bool focus)
-{
-	return true;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-} // end of namespace UI
-
-// end of file
 

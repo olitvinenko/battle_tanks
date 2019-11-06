@@ -1,37 +1,70 @@
 #include "NewMap.h"
-#include "Button.h"
-#include "Edit.h"
-#include "GuiManager.h"
-#include "Text.h"
+#include "ConfigBinding.h"
+#include "Configuration.h"
+#include <WorldCfg.h>
+#include <Language.h>
+#include <Button.h>
+#include <Edit.h>
+#include <GuiManager.h>
+#include <Text.h>
 #include <algorithm>
-#include "WorldCfg.h"
 
-NewMapDlg::NewMapDlg(UIWindow *parent)
-	: Dialog(parent, 256, 256)
+NewMapDlg::NewMapDlg(UI::LayoutManager &manager, TextureManager &texman, ShellConfig &conf, LangCache &lang)
+	: Dialog(manager, texman)
+	, _conf(conf)
 {
-	UI::Text *header = UI::Text::Create(this, 128, 20, "newmap_title", alignTextCT);
-	header->SetFont("font_default");
+    Resize(256, 256);
+    
+	// Title
+	auto text = std::make_shared<UI::Text>(manager, texman);
+	text->Move(128, 20);
+	text->SetText(ConfBind(lang.newmap_title));
+	text->SetAlign(alignTextCT);
+	text->SetFont(texman, "font_default");
+	AddFront(text);
 
-	const int Def_width = 24;
-	const int Def_height = 32;
+	text = std::make_shared<UI::Text>(manager, texman);
+	text->Move(40, 75);
+	text->SetText(ConfBind(lang.newmap_width));
+	AddFront(text);
 
-	UI::Text::Create(this, 40, 75, "Width", alignTextLT);
-	_width = UI::Edit::Create(this, 60, 90, 80);
-	_width->SetInt(Def_width);
+	_width = std::make_shared<UI::Edit>(manager, texman);
+	_width->Move(60, 90);
+	_width->SetWidth(80);
+	_width->SetInt(_conf.ed_width.GetInt());
+	AddFront(_width);
 
-	UI::Text::Create(this, 40, 115, "Height", alignTextLT);
-	_height = UI::Edit::Create(this, 60, 130, 80);
-	_height->SetInt(Def_height);
+	text = std::make_shared<UI::Text>(manager, texman);
+	text->Move(40, 115);
+	text->SetText(ConfBind(lang.newmap_height));
+	AddFront(text);
 
-	UI::Button::Create(this, "OK", 20, 200)->eventClick = std::bind(&NewMapDlg::OnOK, this);
-	UI::Button::Create(this, "Cancel", 140, 200)->eventClick = std::bind(&NewMapDlg::OnCancel, this);
+	_height = std::make_shared<UI::Edit>(manager, texman);
+	_height->Move(60, 130);
+	_height->SetWidth(80);
+	_height->SetInt(_conf.ed_height.GetInt());
+	AddFront(_height);
 
-	GetManager().SetFocusWnd(_width);
+	auto btn = std::make_shared<UI::Button>(manager, texman);
+	btn->SetText(ConfBind(lang.common_ok));
+	btn->Move(20, 200);
+	btn->eventClick = std::bind(&NewMapDlg::OnOK, this);
+	AddFront(btn);
+
+	btn = std::make_shared<UI::Button>(manager, texman);
+	btn->SetText(ConfBind(lang.common_cancel));
+	btn->Move(140, 200);
+	btn->eventClick = std::bind(&NewMapDlg::OnCancel, this);
+	AddFront(btn);
+
+	SetFocus(_width);
 }
 
 void NewMapDlg::OnOK()
 {
-	onOkCallback(std::max(LEVEL_MINSIZE, std::min(LEVEL_MAXSIZE, _width->GetInt())), std::max(LEVEL_MINSIZE, std::min(LEVEL_MAXSIZE, _height->GetInt())));
+	_conf.ed_width.SetInt(std::max(LEVEL_MINSIZE, std::min(LEVEL_MAXSIZE, _width->GetInt())));
+	_conf.ed_height.SetInt(std::max(LEVEL_MINSIZE, std::min(LEVEL_MAXSIZE, _height->GetInt())));
+
 	Close(_resultOK);
 }
 

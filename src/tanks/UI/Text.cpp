@@ -1,114 +1,74 @@
-// Text.cpp
-
 #include "Text.h"
+#include "DataSource.h"
 #include "GuiManager.h"
-#include "Rendering/TextureManager.h"
+#include "LayoutContext.h"
+#include <TextureManager.h>
+#include <DrawingContext.h>
 
-namespace UI
-{
+using namespace UI;
 
-Text* Text::Create(UIWindow *parent, float x, float y, const std::string &text, AlignTextKind align)
-{
-	Text *t = new Text(parent);
-	t->Move(x, y);
-	t->SetText(text);
-	t->SetAlign(align);
-	return t;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Text class implementation
-
-Text::Text(UIWindow *parent)
-  : UIWindow(parent)
-  , _lineCount(1)
-  , _maxline(0)
+Text::Text(LayoutManager &manager, TextureManager &texman)
+  : Window(manager)
   , _align(alignTextLT)
   , _fontTexture(0)
-  , _fontColor(0xffffffff)
-  , _drawShadow(true)
 {
-	SetFont("font_small");
-	SetTexture(nullptr, false);
+	SetFont(texman, "font_small");
 }
 
-void Text::SetDrawShadow(bool drawShadow)
-{
-	_drawShadow = drawShadow;
-}
-
-bool Text::GetDrawShadow() const
-{
-	return _drawShadow;
-}
-
-void Text::SetAlign(AlignTextKind align)
+void Text::SetAlign(enumAlignText align)
 {
 	_align = align;
 }
 
-void Text::SetFont(const char *fontName)
+void Text::SetFont(TextureManager &texman, const char *fontName)
 {
-	_fontTexture = GetManager().GetTextureManager().FindSprite(fontName);
-	float w = GetManager().GetTextureManager().GetFrameWidth(_fontTexture, 0);
-	float h = GetManager().GetTextureManager().GetFrameHeight(_fontTexture, 0);
-	Resize((w - 1) * (float) _maxline, h * (float) _lineCount);
+	_fontTexture = texman.FindSprite(fontName);
 }
 
-void Text::SetFontColor(Color color)
+void Text::SetFontColor(std::shared_ptr<DataSource<SpriteColor>> color)
 {
-	_fontColor = color;
+	_fontColor = std::move(color);
 }
 
-float Text::GetCharWidth()
+void Text::SetText(std::shared_ptr<DataSource<const std::string&>> text)
 {
-	return GetManager().GetTextureManager().GetFrameWidth(_fontTexture, 0) - 1;
+	_text = std::move(text);
 }
 
-float Text::GetCharHeight()
+void Text::Draw(const StateContext &sc, const LayoutContext &lc, const InputContext &ic, DrawingContext &dc, TextureManager &texman) const
 {
-	return GetManager().GetTextureManager().GetFrameHeight(_fontTexture, 0);
-}
-
-void Text::Draw(DrawingContext &dc) const
-{
-	UIWindow::Draw(dc);
-
-	if( _drawShadow )
+	if (_text)
 	{
-		dc.DrawBitmapText(1, 1, _fontTexture, 0xff000000, GetText(), _align);
+		dc.DrawBitmapText(vec2d{}, lc.GetScale(), _fontTexture, _fontColor ? _fontColor->GetValue(sc) : 0xffffffff, _text->GetValue(sc), _align);
 	}
-	dc.DrawBitmapText(0, 0, _fontTexture, _fontColor, GetText(), _align);
 }
 
-void Text::OnTextChange()
+vec2d Text::GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const
 {
-	// update lines
-	_lineCount = 1;
-	_maxline = 0;
+	if (!_text)
+		return vec2d{};
+
+	unsigned int lineCount = 1;
+	unsigned  maxline = 0;
 	size_t count = 0;
-	for( size_t n = 0; n != GetText().size(); ++n )
+	const std::string &text = _text->GetValue(sc);
+	for( size_t n = 0; n != text.size(); ++n )
 	{
-		if( '\n' == GetText()[n] )
+		if( '\n' == text[n] )
 		{
-			if( _maxline < count )
-				_maxline = count;
-			++_lineCount;
+			if( maxline < count )
+				maxline = count;
+			++lineCount;
 			count = 0;
 		}
 		++count;
 	}
-	if( 1 == _lineCount )
+	if( 1 == lineCount )
 	{
-		_maxline = GetText().size();
+		maxline = text.size();
 	}
-	float w = GetManager().GetTextureManager().GetFrameWidth(_fontTexture, 0);
-	float h = GetManager().GetTextureManager().GetFrameHeight(_fontTexture, 0);
-	Resize((w - 1) * (float) _maxline, h * (float) _lineCount);
+	float w = std::floor(texman.GetFrameWidth(_fontTexture, 0) * scale);
+	float h = std::floor(texman.GetFrameHeight(_fontTexture, 0) * scale);
+	return vec2d{ (w - 1) * (float)maxline, h * (float)lineCount };
 }
-
-///////////////////////////////////////////////////////////////////////////////
-} // end of namespace UI
-
-// end of file
 

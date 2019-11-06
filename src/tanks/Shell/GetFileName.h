@@ -1,8 +1,10 @@
 #pragma once
-#include "../ui/Dialog.h"
+#include <Dialog.h>
 #include <string>
 #include <memory>
 
+class LangCache;
+class TextureManager;
 namespace FileSystem
 {
 	class IFileSystem;
@@ -11,16 +13,16 @@ namespace FileSystem
 namespace UI
 {
 	class ListDataSourceDefault;
-	class List;
+	class ListBox;
 	class Edit;
 	template<class, class> class ListAdapter;
 }
 
 class GetFileNameDlg : public UI::Dialog
 {
-	typedef UI::ListAdapter<UI::ListDataSourceDefault, UI::List> DefaultListBox;
-	DefaultListBox *_files;
-	UI::Edit *_fileName;
+	typedef UI::ListAdapter<UI::ListDataSourceDefault, UI::ListBox> DefaultListBox;
+	std::shared_ptr<DefaultListBox> _files;
+	std::shared_ptr<UI::Edit> _fileName;
 	std::string _ext;
 	std::shared_ptr<FileSystem::IFileSystem> _folder;
 
@@ -29,21 +31,23 @@ class GetFileNameDlg : public UI::Dialog
 public:
 	struct Params
 	{
+		std::string blank;
 		std::string title;
 		std::string extension;
 		std::shared_ptr<FileSystem::IFileSystem> folder;
 	};
 
-	GetFileNameDlg(UIWindow *parent, const Params &param);
+	GetFileNameDlg(UI::LayoutManager &manager, TextureManager &texman, const Params &param, LangCache &lang);
 	virtual ~GetFileNameDlg();
 
+	bool IsBlank() const;
 	std::string GetFileName() const;
 	std::string GetFileTitle() const;
 
 protected:
 	void OnSelect(int index);
 	void OnChangeName();
-	bool OnKeyPressed(Key key);
+	bool OnKeyPressed(UI::InputContext &ic, UI::Key key);
 
 	void OnOK();
 	void OnCancel();

@@ -1,61 +1,56 @@
-// Combo.h
-
 #pragma once
-
-#include "UIWindow.h"
-
+#include "Rectangle.h"
 #include <functional>
+
+class TextureManager;
 
 namespace UI
 {
 
 struct ListDataSource;
 class List;
+class ListBox;
 class TextButton;
-class ButtonBase;
+class Button;
 
-class ComboBox : public UIWindow
+class ComboBox
+	: public Rectangle
+	, private KeyboardSink
 {
 public:
-	static ComboBox* Create(UIWindow *parent, ListDataSource *dataSource)
-	{
-		return new ComboBox(parent, dataSource);
-	}
+	ComboBox(LayoutManager &manager, TextureManager &texman, ListDataSource *dataSource);
 
-	void Resize(float width) { UIWindow::Resize(width, GetHeight()); }
+	void Resize(float width) { Window::Resize(width, GetHeight()); }
 
 	ListDataSource* GetData() const;
 
 	void SetCurSel(int index);
 	int GetCurSel() const;
 
-	List* GetList() const;
+	std::shared_ptr<List> GetList() const;
 	void DropList();
 
 	std::function<void(int)> eventChangeCurSel;
 
-protected:
-	ComboBox(UIWindow *parent, ListDataSource *dataSource);
+	// Window
+	void Draw(const StateContext &sc, const LayoutContext &lc, const InputContext &ic, DrawingContext &dc, TextureManager &texman) const override;
+	FRECT GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const override;
 
-	void OnEnabledChange(bool enable, bool inherited);
-	bool OnKeyPressed(Key key);
-	bool OnFocus(bool focus);
-	void OnSize(float width, float height);
+protected:
+	KeyboardSink *GetKeyboardSink() override { return this; }
 
 	void OnClickItem(int index);
 	void OnChangeSelection(int index);
-
 	void OnListLostFocus();
 
 private:
-	TextButton  *_text;
-	ButtonBase  *_btn;
-	List        *_list;
+	std::shared_ptr<TextButton> _text;
+	std::shared_ptr<Button> _btn;
+	std::shared_ptr<ListBox> _list;
 	int _curSel;
+
+	// KeyboardSink
+	bool OnKeyPressed(InputContext &ic, Key key) override;
 };
 
-
-///////////////////////////////////////////////////////////////////////////////
-} // end of namespace UI
-
-// end of file
+} // namespace UI

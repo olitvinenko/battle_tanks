@@ -8,7 +8,7 @@ namespace Internal
 	};
 }
 
-class World;
+class ECSWorld;
 
 /**
  * Subclass this as EventSubscriber<EventType> and then call World::subscribe() in order to subscribe to events. Make sure
@@ -23,5 +23,5 @@ public:
 	/**
 	 * Called when an event is emitted by the world.
 	 */
-	virtual void receive(World* world, const T& event) = 0;
+	virtual void receive(ECSWorld* world, const T& event) = 0;
 };

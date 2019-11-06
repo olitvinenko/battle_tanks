@@ -19,7 +19,7 @@ struct IFixedUpdatable
 
 struct IRenderable
 {
-	virtual void Render(float interpolation) const = 0;
+	virtual void Render(float interpolation) = 0;
 	virtual ~IRenderable() = default;
 };
 
