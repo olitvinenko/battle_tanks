@@ -95,10 +95,10 @@ void ConfVar::FireValueUpdate(ConfVar *pVar)
 		eventChange();
 }
 
-const char* ConfVar::GetTypeName() const
-{
-	return "nil";
-}
+//const char* ConfVar::GetTypeName() const
+//{
+//	return "nil";
+//}
 
 void ConfVar::SetType(Type type)
 {
@@ -190,10 +190,10 @@ ConfVarNumber::~ConfVarNumber()
 	_type = typeNil;
 }
 
-const char* ConfVarNumber::GetTypeName() const
-{
-	return "number";
-}
+//const char* ConfVarNumber::GetTypeName() const
+//{
+//	return "number";
+//}
 
 double ConfVarNumber::GetRawNumber() const
 {
@@ -272,10 +272,10 @@ ConfVarBool::~ConfVarBool()
 	_type = typeNil;
 }
 
-const char* ConfVarBool::GetTypeName() const
-{
-	return "boolean";
-}
+//const char* ConfVarBool::GetTypeName() const
+//{
+//	return "boolean";
+//}
 
 bool ConfVarBool::Get() const
 {
@@ -322,10 +322,10 @@ ConfVarString::~ConfVarString()
 	_type = typeNil;
 }
 
-const char* ConfVarString::GetTypeName() const
-{
-	return "string";
-}
+//const char* ConfVarString::GetTypeName() const
+//{
+//	return "string";
+//}
 
 const std::string& ConfVarString::Get() const
 {
@@ -399,10 +399,10 @@ ConfVarArray::~ConfVarArray()
 	_type = typeNil;
 }
 
-const char* ConfVarArray::GetTypeName() const
-{
-	return "array";
-}
+//const char* ConfVarArray::GetTypeName() const
+//{
+//	return "array";
+//}
 
 std::pair<ConfVar*, bool> ConfVarArray::GetVar(size_t index, ConfVar::Type type)
 {
@@ -637,10 +637,10 @@ ConfVarTable::~ConfVarTable()
 	_type = typeNil;
 }
 
-const char* ConfVarTable::GetTypeName() const
-{
-	return "table";
-}
+//const char* ConfVarTable::GetTypeName() const
+//{
+//	return "table";
+//}
 
 ConfVar* ConfVarTable::Find(const std::string &name)  // returns nullptr if variable not found
 {
@@ -881,8 +881,8 @@ bool ConfVarTable::Rename(const std::string &oldName, std::string newName)
 
 bool ConfVarTable::Write(FILE *file, int indent) const
 {
-	if( indent )
-		fprintf(file, "{%s\n", GetHelpString().empty() ? "" : (std::string(" -- ") + GetHelpString()).c_str());
+//	if( indent )
+//		fprintf(file, "{%s\n", GetHelpString().empty() ? "" : (std::string(" -- ") + GetHelpString()).c_str());
 
 	for( auto it = _val.asTable->begin(); _val.asTable->end() != it; ++it )
 	{
@@ -944,11 +944,11 @@ bool ConfVarTable::Write(FILE *file, int indent) const
 		fputs(indent ? ",":";", file);
 
 		// help string
-		if( !it->second->GetHelpString().empty() )
-		{
-			fputs("  -- ", file);
-			fputs(it->second->GetHelpString().c_str(), file);
-		}
+//		if( !it->second->GetHelpString().empty() )
+//		{
+//			fputs("  -- ", file);
+//			fputs(it->second->GetHelpString().c_str(), file);
+//		}
 		fputs("\n", file);
 	}
 	if( indent )
@@ -1218,50 +1218,33 @@ int ConfVarTable::luaT_conftablenext(lua_State *L)
 
 
 // map config to the conf lua variable
-void ConfVarTable::InitConfigLuaBinding(lua_State *L, const char *globName)
-{
-	int top = lua_gettop(L);
+//void ConfVarTable::InitConfigLuaBinding(lua_State *L, const char *globName)
+//{
+//	int top = lua_gettop(L);
+//
+//	luaL_newmetatable(L, "conf_table");  // metatable for tables
+//	 lua_pushcfunction(L, luaT_setconftable);
+//	  lua_setfield(L, -2, "__newindex");
+//	 lua_pushcfunction(L, luaT_getconftable);
+//	  lua_setfield(L, -2, "__index");
+//	 lua_pushcfunction(L, luaT_conftostring);
+//	  lua_setfield(L, -2, "__tostring");
+//	 lua_pushcfunction(L, luaT_conftablenext);
+//	  lua_setfield(L, -2, "__next");
+//	 lua_pop(L, 1); // pop the metatable
+//
+//	luaL_newmetatable(L, "conf_array");  // metatable for arrays
+//	 lua_pushcfunction(L, luaT_setconfarray);  // push handler function
+//	  lua_setfield(L, -2, "__newindex");        // this also pops function from the stack
+//	 lua_pushcfunction(L, luaT_getconfarray);  // push handler function
+//	  lua_setfield(L, -2, "__index");           // this also pops function from the stack
+//	 lua_pushcfunction(L, luaT_conftostring);  // push handler function
+//	  lua_setfield(L, -2, "__tostring");        // this also pops function from the stack
+//	 lua_pop(L, 1); // pop the metatable
+//
+//	Push(L);
+//	 lua_setglobal(L, globName);    // set global and pop one element from stack
+//
+//	assert(lua_gettop(L) == top);
+//}
 
-	luaL_newmetatable(L, "conf_table");  // metatable for tables
-	 lua_pushcfunction(L, luaT_setconftable);
-	  lua_setfield(L, -2, "__newindex");
-	 lua_pushcfunction(L, luaT_getconftable);
-	  lua_setfield(L, -2, "__index");
-	 lua_pushcfunction(L, luaT_conftostring);
-	  lua_setfield(L, -2, "__tostring");
-	 lua_pushcfunction(L, luaT_conftablenext);
-	  lua_setfield(L, -2, "__next");
-	 lua_pop(L, 1); // pop the metatable
-
-	luaL_newmetatable(L, "conf_array");  // metatable for arrays
-	 lua_pushcfunction(L, luaT_setconfarray);  // push handler function
-	  lua_setfield(L, -2, "__newindex");        // this also pops function from the stack
-	 lua_pushcfunction(L, luaT_getconfarray);  // push handler function
-	  lua_setfield(L, -2, "__index");           // this also pops function from the stack
-	 lua_pushcfunction(L, luaT_conftostring);  // push handler function
-	  lua_setfield(L, -2, "__tostring");        // this also pops function from the stack
-	 lua_pop(L, 1); // pop the metatable
-
-	Push(L);
-	 lua_setglobal(L, globName);    // set global and pop one element from stack
-
-	assert(lua_gettop(L) == top);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-LuaConfigCacheBase::LuaConfigCacheBase()
-{
-}
-
-LuaConfigCacheBase::~LuaConfigCacheBase()
-{
-}
-
-LuaConfigCacheBase::helper* LuaConfigCacheBase::operator ->()
-{
-	return &_helper;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// end of file

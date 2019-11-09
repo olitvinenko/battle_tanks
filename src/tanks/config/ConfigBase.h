@@ -29,12 +29,9 @@ public:
 	ConfVar();
 	virtual ~ConfVar();
 
-	void SetHelpString(std::string str) { _help = std::move(str); }
-	const std::string& GetHelpString() const { return _help; }
-
 	void SetType(Type type);
 	Type GetType() const { return _type; }
-	virtual const char* GetTypeName() const;
+	//virtual const char* GetTypeName() const;
 
 	// type casting
 	ConfVarNumber& AsNum();
@@ -71,7 +68,6 @@ protected:
 
 	Type  _type;
 	Value _val;
-	std::string _help;
 	bool _frozen;    // frozen value can not change its type and also its content in case of table
 };
 
@@ -92,7 +88,7 @@ public:
 	void SetInt(int value);
 
 	// ConfVar
-	virtual const char* GetTypeName() const;
+	//virtual const char* GetTypeName() const;
 	virtual void Push(lua_State *L) const;
 	virtual bool Assign(lua_State *L);
 	virtual bool Write(FILE *file, int indent) const;
@@ -108,7 +104,7 @@ public:
 	void Set(bool value);
 
 	// ConfVar
-	virtual const char* GetTypeName() const;
+	//virtual const char* GetTypeName() const;
 	virtual void Push(lua_State *L) const;
 	virtual bool Assign(lua_State *L);
 	virtual bool Write(FILE *file, int indent) const;
@@ -125,7 +121,7 @@ public:
 	void Set(std::string value);
 
 	// ConfVar
-	virtual const char* GetTypeName() const;
+	//virtual const char* GetTypeName() const;
 	virtual void Push(lua_State *L) const;
 	virtual bool Assign(lua_State *L);
 	virtual bool Write(FILE *file, int indent) const;
@@ -167,7 +163,7 @@ public:
 	ConfVar&  PushBack(Type type);
 
 	// ConfVar
-	virtual const char* GetTypeName() const;
+	//virtual const char* GetTypeName() const;
 	virtual void Push(lua_State *L) const;
 	virtual bool Assign(lua_State *L);
 	virtual bool Write(FILE *file, int indent) const;
@@ -215,30 +211,11 @@ public:
 	void InitConfigLuaBinding(lua_State *L, const char *globName);
 
 	// ConfVar
-	virtual const char* GetTypeName() const;
+	//virtual const char* GetTypeName() const;
 	virtual void Push(lua_State *L) const;
 	virtual bool Assign(lua_State *L);
 	virtual bool Write(FILE *file, int indent) const;
 
 protected:
 	static int luaT_conftablenext(lua_State *L);
-};
-
-///////////////////////////////////////////////////////////////////////////////
-// config cache
-
-class LuaConfigCacheBase
-{
-	class helper
-	{
-		ConfVarTable *_root;
-	public:
-		void InitLuaBinding(lua_State *L, const char *name);
-	};
-	helper _helper;
-
-public:
-	LuaConfigCacheBase();
-	virtual ~LuaConfigCacheBase();
-	helper* operator -> ();
 };

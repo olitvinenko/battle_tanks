@@ -7,8 +7,11 @@
 #include <ConsoleBuffer.h>
 #include "FileSystem.h"
 
+#include "JsonConfigBase.h"
+
 #define FILE_CONFIG      "config.cfg"
 #define FILE_DMCAMPAIGN  "/dmcampaign.cfg"
+#define FILE_JSON_DMCAMPAIGN  "/campaignConfig.json"
 
 static std::map<std::string, std::string> s_localizations = {
     {"ru", "data/lang.cfg"}
@@ -48,6 +51,9 @@ TzodApp::TzodApp(FileSystem::IFileSystem &fs, UI::ConsoleBuffer &logger, const c
 {
     LoadConfigNoThrow(_impl->combinedConfig, logger, FILE_CONFIG);
     LoadConfigNoThrow(_impl->dmCampaign, logger, std::string(fs.GetRootDirectory() + FILE_DMCAMPAIGN).c_str());
+    
+    JsonConfig::Load(std::string(fs.GetRootDirectory() + FILE_JSON_DMCAMPAIGN).c_str());
+    
     if (language)
     {
         auto it = s_localizations.find(language);
