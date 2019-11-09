@@ -338,6 +338,8 @@ namespace Json {
       Value removeMember( const char* key );
       /// Same as removeMember(const char*)
       Value removeMember( const std::string &key );
+       
+      bool removeIndex(ArrayIndex index, Value* removed);
 
       /// Return true if the object has a member named key.
       bool isMember( const char *key ) const;
