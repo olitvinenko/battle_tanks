@@ -1215,36 +1215,3 @@ int ConfVarTable::luaT_conftablenext(lua_State *L)
 	it->second->Push(L);                    // value
 	return 2;
 }
-
-
-// map config to the conf lua variable
-//void ConfVarTable::InitConfigLuaBinding(lua_State *L, const char *globName)
-//{
-//	int top = lua_gettop(L);
-//
-//	luaL_newmetatable(L, "conf_table");  // metatable for tables
-//	 lua_pushcfunction(L, luaT_setconftable);
-//	  lua_setfield(L, -2, "__newindex");
-//	 lua_pushcfunction(L, luaT_getconftable);
-//	  lua_setfield(L, -2, "__index");
-//	 lua_pushcfunction(L, luaT_conftostring);
-//	  lua_setfield(L, -2, "__tostring");
-//	 lua_pushcfunction(L, luaT_conftablenext);
-//	  lua_setfield(L, -2, "__next");
-//	 lua_pop(L, 1); // pop the metatable
-//
-//	luaL_newmetatable(L, "conf_array");  // metatable for arrays
-//	 lua_pushcfunction(L, luaT_setconfarray);  // push handler function
-//	  lua_setfield(L, -2, "__newindex");        // this also pops function from the stack
-//	 lua_pushcfunction(L, luaT_getconfarray);  // push handler function
-//	  lua_setfield(L, -2, "__index");           // this also pops function from the stack
-//	 lua_pushcfunction(L, luaT_conftostring);  // push handler function
-//	  lua_setfield(L, -2, "__tostring");        // this also pops function from the stack
-//	 lua_pop(L, 1); // pop the metatable
-//
-//	Push(L);
-//	 lua_setglobal(L, globName);    // set global and pop one element from stack
-//
-//	assert(lua_gettop(L) == top);
-//}
-

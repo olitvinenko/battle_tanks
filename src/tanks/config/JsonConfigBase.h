@@ -1,6 +1,7 @@
 #pragma once
-
+ 
 #include "json.h"
+#include "WrappedJsonValue.h"
 
 #include <map>
 #include <unordered_map>
@@ -12,213 +13,349 @@
 #include <memory>
 #include <deque>
 
-class JsonConfigValue
+class JsonConfig2
 {
 public:
-    void Print() const
-    {
-        std::cout << _val.toStyledString() << std::endl;
-    }
-
-private:
-    static Json::Value nullV;
-    static JsonConfigValue null;
-    
-    
-public:
-    
-    JsonConfigValue();
-    JsonConfigValue(const std::string& memberName, Json::Value& value);
-    JsonConfigValue(int memberIndex, Json::Value& value);
-    JsonConfigValue(JsonConfigValue&& o) noexcept;
-    ~JsonConfigValue();
-    
-    template<typename T> T Get() const;
-    
-    template<> bool Get() const;
-    template<> int Get() const;
-    template<> float Get() const;
-    template<> double Get() const;
-    template<> std::string Get() const;
-    
-    template<> const std::map<int, JsonConfigValue>& Get() const;
-    
-    void Set(bool value) { Set<bool>(std::forward<bool>(value)); }
-    void Set(int&& value) { Set<int>(std::forward<int>(value)); }
-    void Set(float&& value){ Set<float>(std::forward<float>(value)); }
-    void Set(double&& value) { Set<double>(std::forward<double>(value)); }
-    void Set(std::string&& value) { Set<std::string>(std::forward<std::string>(value)); }
-    void Set(Json::Value&& value) { Set<Json::Value>(std::forward<Json::Value>(value)); }
-    
-    void Add(bool value) { Add<bool>(std::forward<bool>(value)); }
-    void Add(int&& value) { Add<int>(std::forward<int>(value)); }
-    void Add(float&& value){ Add<float>(std::forward<float>(value)); }
-    void Add(double&& value) { Add<double>(std::forward<double>(value)); }
-    void Add(std::string&& value) { Set<std::string>(std::forward<std::string>(value)); }
-    void Add(Json::Value&& value) { Add<Json::Value>(std::forward<Json::Value>(value)); }
-    
-    void Remove(const std::string& name);
-    void Remove(int index);
-    
-    JsonConfigValue& GetValueByPath(const std::string& path);
-    const JsonConfigValue& GetValueByPath(const std::string& path) const;
-    
-    JsonConfigValue& operator[](const std::string &path);
-    const JsonConfigValue& operator[](const std::string &path) const;
-    
-    JsonConfigValue& operator[](int index);
-    JsonConfigValue& operator=(const JsonConfigValue& other);
-    
-    bool IsNull() const { return this == &null; }
-    
-    std::function<void(Json::Value&)> eventChange;
-private:
-    JsonConfigValue(const JsonConfigValue& o);
-    void swap( JsonConfigValue &other );
-    
-    template<typename T>
-    void Set(T&& value);
-        
-    template<typename T>
-    void Add(T&& value);
-    
-    std::vector<std::string> split(const std::string& ss) const;
-    void ExpandFrom(Json::Value& value);
-    void InvokeOnValueChanged();
-    
-    union Data
-    {
-        std::map<std::string, JsonConfigValue>*   _childrenByName;
-        std::map<int, JsonConfigValue>*           _childrenByIndex;
-    };
-private:
-    Json::Value& _val;
-    std::string _memberName;
-    int         _memberIndex { 0 };
-    Data        _impl;
-};
-
-template<typename T>
-void JsonConfigValue::Set(T&& value)
-{
-    assert(!_val.isNull());
-    assert(!_memberName.empty());
-        
-    Json::Value temp(value);
-    bool changed = temp != _val;
-    _val = value;
-        
-    std::string tName = _memberName;
-    std::function<void(Json::Value&)> tEvent = eventChange;
-        
-    this->~JsonConfigValue(); // manually call the destructor
-#pragma push_macro("new")
-#undef new
-    new(this) JsonConfigValue(tName, _val);
-#pragma pop_macro("new")
-    eventChange = tEvent;
-        
-    if (changed)
-        InvokeOnValueChanged();
-}
-    
-template<typename T>
-void JsonConfigValue::Add(T&& value)
-{
-    assert(!_val.isNull());
-    assert(_val.type() == Json::ValueType::arrayValue);
-    assert(_impl._childrenByIndex);
-    
-    Json::Value temp(value);
-    int nextIndex = _impl._childrenByIndex->size();
-    
-    _impl._childrenByIndex->insert({nextIndex, JsonConfigValue(nextIndex, temp)});
-    
-    _val.append(temp);
-    InvokeOnValueChanged();
-}
-
-class JsonConfig
-{
-public:
-    JsonConfig(Json::Value& value)
+    JsonConfig2(Json::Value& value)
     :_val(value)
     ,_root("root", _val)
     {
     }
     
-    static void Load(const char* fileName)
+    static void TestGetInt()
     {
-        const char* str = R"(
-{
-    "test":{
-        "str": "2020303",
-        "int": 1010,
-        "arr":[ 1, 2, 3, 4 ]
-    },
-        
-    "tiers": [
-      {
-        "title": "Tier 1",
-        "maps": [
-                  {
-                    "map_name": "dm1",
-                    "timelimit": 2,
-                    "fraglimit": 5,
-                    "bot_names": [ "Insert" ]
-                  },
-                  {
-                    "map_name": "dm2",
-                    "timelimit": 3,
-                    "fraglimit": 10,
-                    "bot_names": [ "Insert", "Sulik" ]
-                  },
-                  {
-                    "map_name": "dm3",
-                    "timelimit": 3,
-                    "fraglimit": 10,
-                    "bot_names": [ "Insert", "Sulik" ]
-                  },
-                  {
-                    "map_name": "dm5",
-                    "timelimit": 10,
-                    "fraglimit": 15,
-                    "bot_names": [ "Insert", "Sulik", "Frank" ]
-                  }
-        ]
-      }
-    ]
-}
-                            )";
+        const char* str = R"({
+            "var": 100500
+        })";
         
         Json::Value val2;
         Json::Reader rd;
         if (!rd.parse(str, val2))
             return;
-        
-        JsonConfig config(val2);
-        JsonConfigValue& val = config.GetValueByPath("test,arr");
-    
-        val.eventChange = [](Json::Value& val) { std::cout << val.toStyledString() << std::endl; };
-        val[3].Print();
-        
-        //val.Set(10);
-        val.Add(10);
-        config.Print();
-        config.GetValueByPath("test").Remove("str");
-        config.GetValueByPath("test").Remove("int");
-        
-        val.Remove(0);
-        val.Remove(2);
-       // config.GetValueByPath("test").Remove("arr");
-        
             
+        JsonConfig2 config(val2);
+        WrappedJsonValue& val = config.GetValueByPath("var");
+        assert(!val.IsNull());
         config.Print();
     }
     
-    JsonConfigValue& GetValueByPath(const std::string& path)
+    static void TestGetInnerInt()
     {
-        return _root.GetValueByPath(path);
+        const char* str = R"({
+            "var": {
+                "innerVar": 1050
+            }
+        })";
+        
+        Json::Value val2;
+        Json::Reader rd;
+        if (!rd.parse(str, val2))
+            return;
+            
+        JsonConfig2 config(val2);
+        WrappedJsonValue& val = config.GetValueByPath("var,innerVar");
+        assert(!val.IsNull());
+        config.Print();
+    }
+    
+    static void TestIntOnChange()
+    {
+        const char* str = R"({
+            "var": 100500
+        })";
+        
+        Json::Value val2;
+        Json::Reader rd;
+        if (!rd.parse(str, val2))
+            return;
+            
+        JsonConfig2 config(val2);
+        WrappedJsonValue& val = config.GetValueByPath("var");
+        
+        bool changed = false;
+        val.eventChange = [&changed](Json::Value& val) {
+            changed = true;
+            std::cout << val.toStyledString() << std::endl;
+        };
+        
+        val.Set(10);
+        
+        auto var = val.Get<int>();
+        assert(changed && var == 10);
+        config.Print();
+    }
+    
+    static void TestInnerIntOnChange()
+    {
+        const char* str = R"({
+            "var": {
+                "innerVar": 1050
+            }
+        })";
+        
+        Json::Value val2;
+        Json::Reader rd;
+        if (!rd.parse(str, val2))
+            return;
+            
+        JsonConfig2 config(val2);
+        WrappedJsonValue& val = config.GetValueByPath("var,innerVar");
+        
+        bool changed = false;
+        val.eventChange = [&changed](Json::Value& val) {
+            changed = true;
+            std::cout << val.toStyledString() << std::endl;
+        };
+        
+        val.Set(10);
+        
+        auto var = val.Get<int>();
+        assert(changed && var == 10);
+        config.Print();
+    }
+    
+    static void TestGetArray()
+    {
+        const char* str = R"({
+            "var": [1, 2, 3, 4, 5]
+        })";
+        
+        Json::Value val2;
+        Json::Reader rd;
+        if (!rd.parse(str, val2))
+            return;
+            
+        JsonConfig2 config(val2);
+        WrappedJsonValue& val = config.GetValueByPath("var");
+        
+        assert(!val.IsNull());
+    }
+    
+    static void TestRemoveFromArray()
+    {
+        const char* str = R"({
+            "var": [1, 2, 3, 4, 5]
+        })";
+        
+        Json::Value val2;
+        Json::Reader rd;
+        if (!rd.parse(str, val2))
+            return;
+            
+        JsonConfig2 config(val2);
+        WrappedJsonValue& val = config.GetValueByPath("var");
+        
+        bool changed = false;
+        val.eventChange = [&changed](Json::Value& val) {
+            changed = true;
+            std::cout << val.toStyledString() << std::endl;
+        };
+        
+        assert(val.Remove(0));
+        assert(changed);
+        
+        changed = false;
+        assert(val.Remove(0));
+        assert(changed);
+        
+        config.Print();
+    }
+    
+    static void TestAddToArray()
+    {
+        const char* str = R"({
+            "var": [1, 2, 3, 4, 5]
+        })";
+        
+        Json::Value val2;
+        Json::Reader rd;
+        if (!rd.parse(str, val2))
+            return;
+            
+        JsonConfig2 config(val2);
+        WrappedJsonValue& val = config.GetValueByPath("var");
+        
+        bool changed = false;
+        val.eventChange = [&changed](Json::Value& val) {
+            changed = true;
+            std::cout << val.toStyledString() << std::endl;
+        };
+        
+        val.Add(100400);
+        val.Add(true);
+        assert(changed);
+        
+        config.Print();
+    }
+    
+    static void TestArrayIndexer()
+    {
+        const char* str = R"({
+            "var": [1, 2, 3, 4, 5]
+        })";
+        
+        Json::Value val2;
+        Json::Reader rd;
+        if (!rd.parse(str, val2))
+            return;
+            
+        JsonConfig2 config(val2);
+        WrappedJsonValue& val = config.GetValueByPath("var");
+        
+        WrappedJsonValue& zero = val[0];
+        WrappedJsonValue& first = val[1];
+        
+        assert(!zero.IsNull());
+        assert(!first.IsNull());
+        
+        zero.eventChange = [](Json::Value& val) { std::cout << val.toStyledString() << std::endl; };
+        zero.Set(10);
+        zero.Set(100);
+        
+        zero.Print();
+        first.Print();
+        
+        config.Print();
+    }
+    
+    static void TestAssignOperator()
+    {
+        const char* str = R"({
+            "var": [1, 2, 3, 4, 5]
+        })";
+        
+        Json::Value val2;
+        Json::Reader rd;
+        if (!rd.parse(str, val2))
+            return;
+            
+        JsonConfig2 config(val2);
+        WrappedJsonValue& val = config.GetValueByPath("var");
+        
+        WrappedJsonValue& zero = val[0];
+        WrappedJsonValue& first = val[1];
+        
+        assert(!zero.IsNull());
+        assert(!first.IsNull());
+        
+        zero.eventChange = [](Json::Value& val) { std::cout << val.toStyledString() << std::endl; };
+        zero = first;
+        
+        zero.Print();
+        first.Print();
+        
+        zero.Set(53);
+        first.Set(1040);
+        
+        config.Print();
+    }
+    
+    static void TestRemoveMemberByName()
+    {
+        const char* str = R"({
+            "var": {
+                "member1": 1,
+                "member2": 2,
+                "member3": {
+                    "iM": 10
+                }
+            }
+        })";
+        
+        Json::Value val2;
+        Json::Reader rd;
+        if (!rd.parse(str, val2))
+            return;
+            
+        JsonConfig2 config(val2);
+        WrappedJsonValue& val = config.GetValueByPath("var");
+        
+        assert(!val.IsNull());
+
+        val.eventChange = [](Json::Value& val) { std::cout << val.toStyledString() << std::endl; };
+
+        val.Remove("member3");
+        
+        config.Print();
+    }
+    
+    static void TestTrivialAssignOps()
+    {
+        const char* str = R"({
+            "var": 1
+        })";
+        
+        Json::Value val2;
+        Json::Reader rd;
+        if (!rd.parse(str, val2))
+            return;
+            
+        JsonConfig2 config(val2);
+        WrappedJsonValue& val = config.GetValueByPath("var");
+        
+        val.eventChange = [](Json::Value& val) { std::cout << val.toStyledString() << std::endl; };
+        
+        val = 10;
+        val = 11.0f;
+        val = 20.0;
+        val = "abc";
+        val = false;
+        val = val2;
+        
+        config.Print();
+    }
+    
+    static void TestComplexCases()
+    {
+        const char* str = R"({
+            "var": 1
+        })";
+        
+        Json::Value val2;
+        Json::Reader rd;
+        if (!rd.parse(str, val2))
+            return;
+            
+        JsonConfig2 config(val2);
+        WrappedJsonValue& val = config.GetValueByPath("var");
+        
+        val.eventChange = [](Json::Value& val) { std::cout << val.toStyledString() << std::endl; };
+        
+        val = 10;
+        val = 11.0f;
+        val = 20.0;
+        val = "abc";
+        val = false;
+        val = val2;
+        
+        WrappedJsonValue& val3 = val.GetValueByPath("var");
+        val3.Set(10.9);
+        
+        config.Print();
+    }
+    
+    static void Load(const char* fileName)
+    {
+        TestGetInt();
+        TestGetInnerInt();
+        TestIntOnChange();
+        TestInnerIntOnChange();
+        
+        TestGetArray();
+        TestRemoveFromArray();
+        TestAddToArray();
+        TestArrayIndexer();
+        TestAssignOperator();
+        
+        TestRemoveMemberByName();
+        TestTrivialAssignOps();
+        
+        TestComplexCases();
+    }
+    
+    WrappedJsonValue& GetValueByPath(const std::string& name)
+    {
+        return _root.GetValueByPath(name);
     }
     
     void Print() const
@@ -227,5 +364,5 @@ public:
     }
 private:
     Json::Value _val;
-    JsonConfigValue _root;
+    WrappedJsonValue _root;
 };

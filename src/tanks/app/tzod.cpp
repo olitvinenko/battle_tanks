@@ -52,7 +52,7 @@ TzodApp::TzodApp(FileSystem::IFileSystem &fs, UI::ConsoleBuffer &logger, const c
     LoadConfigNoThrow(_impl->combinedConfig, logger, FILE_CONFIG);
     LoadConfigNoThrow(_impl->dmCampaign, logger, std::string(fs.GetRootDirectory() + FILE_DMCAMPAIGN).c_str());
     
-    JsonConfig::Load(std::string(fs.GetRootDirectory() + FILE_JSON_DMCAMPAIGN).c_str());
+//    JsonConfig::Load(std::string(fs.GetRootDirectory() + FILE_JSON_DMCAMPAIGN).c_str());
     
     if (language)
     {

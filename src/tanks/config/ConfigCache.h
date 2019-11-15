@@ -47,9 +47,6 @@
         };
     }
 
-#define NO_HELP
-#define HELPSTRING(h)
-
 #define REFLECTION_BEGIN(ReflectionName)                           \
     REFLECTION_BEGIN_(ReflectionName, config_detail::ReflectionBase)
 
@@ -78,10 +75,6 @@
 #ifndef CONFIG_CACHE_PASS2_INCLUDED
 #define CONFIG_CACHE_PASS2_INCLUDED
 
-
-#undef NO_HELP
-#undef HELPSTRING
-
 #undef REFLECTION_BEGIN
 #undef REFLECTION_BEGIN_
  #undef VAR_FLOAT
@@ -93,28 +86,16 @@
  #undef VAR_REFLECTION
 #undef REFLECTION_END
 
-ConfVarNumber& InitIntType(ConfVarNumber &var, const char *type, const char *help = nullptr);
-ConfVarNumber& InitIntRange(ConfVarNumber &var, int iMin, int iMax, const char *help = nullptr);
-ConfVarNumber& InitFloat(ConfVarNumber &var, const char *help = nullptr);
-ConfVarBool& InitBool(ConfVarBool &var, const char *help = nullptr);
-ConfVarArray& InitArray(ConfVarArray &var, const char *help = nullptr);
-ConfVarTable& InitTable(ConfVarTable &var, const char *help = nullptr);
-ConfVarNumber& InitFloatRange(ConfVarNumber &var, float fMin, float fMax, const char *help = nullptr);
-ConfVarString& InitStrType(ConfVarString &var, const char *type, const char *help = nullptr);
-
-
-#define HELPSTRING(h)     ,(h)
-
 #define REFLECTION_BEGIN_(ReflectionName, Base) ReflectionName::ReflectionName(ConfVarTable *root, bool freeze): Base(root, (false
 #define REFLECTION_BEGIN(ReflectionName) REFLECTION_BEGIN_(ReflectionName, config_detail::ReflectionBase)
 
-#define VAR_FLOAT( var, def )               )), var( InitFloat(_root->GetNum(#var, (float) (def))
-#define VAR_INT(   var, def )               )), var( InitIntType(_root->GetNum(#var, (int) (def)), nullptr
-#define VAR_BOOL(  var, def )               )), var( InitBool(_root->GetBool(#var, (def))
-#define VAR_STR(   var, def )               )), var( InitStrType(_root->GetStr(#var, (def)), nullptr
-#define VAR_ARRAY( var, def )               )), var( InitArray(_root->GetArray(#var, (def))
-#define VAR_TABLE( var, def )               )), var( InitTable(_root->GetTable(#var, (def))
-#define VAR_REFLECTION( var, type )         )), var( &InitTable(_root->GetTable(#var, nullptr)
+#define VAR_FLOAT( var, def )               )), var( _root->GetNum(#var, (float) (def)
+#define VAR_INT(   var, def )               )), var( _root->GetNum(#var, (int) (def)
+#define VAR_BOOL(  var, def )               )), var( _root->GetBool(#var, (def)
+#define VAR_STR(   var, def )               )), var( _root->GetStr(#var, (def)
+#define VAR_ARRAY( var, def )               )), var( _root->GetArray(#var, (def)
+#define VAR_TABLE( var, def )               )), var( _root->GetTable(#var, (def)
+#define VAR_REFLECTION( var, type )         )), var( &_root->GetTable(#var, nullptr
 
 #define REFLECTION_END()                    )) { if (freeze) _root->Freeze(true); }
 

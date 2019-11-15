@@ -207,9 +207,6 @@ public:
 	bool Save(const char *filename) const;
 	bool Load(const char *filename);
 
-	// Lua binding
-	void InitConfigLuaBinding(lua_State *L, const char *globName);
-
 	// ConfVar
 	//virtual const char* GetTypeName() const;
 	virtual void Push(lua_State *L) const;
