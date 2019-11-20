@@ -4,9 +4,9 @@
 
 class JsonConfig
 {
+private:
+    JsonConfig();
 public:
-    explicit JsonConfig(const std::string& rawConfig);
-    
     operator WrappedJsonValue&() { return m_root; }
     
     WrappedJsonValue* operator->() { return &m_root; }

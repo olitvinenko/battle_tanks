@@ -1,6 +1,5 @@
-#include <cassert>
-
 #include "FileSystem.h"
+#include <cassert>
 
 namespace FileSystem
 {
@@ -64,7 +63,8 @@ namespace FileSystem
 	File::File(const std::string& path, FileOpenMode mode)
 		: _file(path, toCppMode(mode))
 		, _mode(mode)
-	{ }
+	{
+    }
 
 	File::~File()
 	{
@@ -166,10 +166,26 @@ namespace FileSystem
 		_parent->_file.seekg(amount, toCppSeek(method));
 	}
 
+    void Stream::SeekGet(long long amount) const
+    {
+        _parent->_file.seekg(amount);
+    }
+
 	void Stream::SeekPut(long long amount, SeekMethod method) const
 	{
 		_parent->_file.seekp(amount, toCppSeek(method));
 	}
+
+    std::string Stream::GetContent() const
+    {
+        SeekGet(0, SeekMethod::End);
+        size_t size = TellGet();
+        std::string buffer(size, ' ');
+        SeekGet(0);
+        Read(&buffer[0], sizeof(char), size);
+        SeekGet(0, SeekMethod::Begin);
+        return buffer;
+    }
 
 	long long Stream::TellGet() const
 	{

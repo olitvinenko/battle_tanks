@@ -59,6 +59,8 @@ public:
     WrappedJsonValue& operator[](int index);
     
     WrappedJsonValue& operator=(const WrappedJsonValue& other);
+    WrappedJsonValue& operator=(WrappedJsonValue&& other) noexcept;
+    
     WrappedJsonValue& operator=(int&& value) { return Assign<int>(std::forward<int>(value)); }
     WrappedJsonValue& operator=(float&& value) { return Assign<float>(std::forward<float>(value)); }
     WrappedJsonValue& operator=(double&& value) { return Assign<double>(std::forward<double>(value)); }

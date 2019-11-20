@@ -41,7 +41,10 @@ namespace FileSystem
         void Write(const void *src, size_t size) const;
 
         void SeekGet(long long amount, SeekMethod method) const;
+        void SeekGet(long long amount) const;
         void SeekPut(long long amount, SeekMethod method) const;
+        
+        std::string GetContent() const;
 
         long long TellGet() const;
         long long TellPut() const;

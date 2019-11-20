@@ -62,15 +62,15 @@ WrappedJsonValue::WrappedJsonValue(const WrappedJsonValue& o)
     {
         m_impl.childrenByName = new std::map<std::string, WrappedJsonValue>();
         
-        for(auto it = o.m_impl.childrenByIndex->begin(); it != o.m_impl.childrenByIndex->end(); ++it)
-            m_impl.childrenByIndex->operator[](it->first) = it->second;
+        for(auto it = o.m_impl.childrenByName->begin(); it != o.m_impl.childrenByName->end(); ++it)
+            m_impl.childrenByName->operator[](it->first) = it->second;
     }
     else if (m_val.isArray())
     {
         m_impl.childrenByIndex = new std::map<int, WrappedJsonValue>();
         
-        for(auto it = o.m_impl.childrenByName->begin(); it != o.m_impl.childrenByName->end(); ++it)
-            m_impl.childrenByName->operator[](it->first) = it->second;
+        for(auto it = o.m_impl.childrenByIndex->begin(); it != o.m_impl.childrenByIndex->end(); ++it)
+            m_impl.childrenByIndex->operator[](it->first) = it->second;
     }
 }
 
@@ -273,6 +273,28 @@ WrappedJsonValue& WrappedJsonValue::operator=(const WrappedJsonValue& other)
     
     if (changed)
         InvokeOnValueChanged();
+    
+    return *this;
+}
+
+WrappedJsonValue& WrappedJsonValue::operator=(WrappedJsonValue&& other) noexcept
+{
+    m_memberName = std::move(other.m_memberName);
+    m_memberIndex = std::move(other.m_memberIndex);
+    
+    m_impl.childrenByName = std::move(other.m_impl.childrenByName);
+    m_impl.childrenByIndex = std::move(other.m_impl.childrenByIndex);
+    
+    other.m_impl.childrenByName = nullptr;
+    other.m_impl.childrenByIndex = nullptr;
+    
+    eventChange = std::move(other.eventChange);
+    other.eventChange = nullptr;
+    
+    m_val = std::move(other.m_val);
+    other.m_val = Json::nullValue;
+    
+    InvokeOnValueChanged();
     
     return *this;
 }
