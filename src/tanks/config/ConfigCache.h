@@ -2,6 +2,9 @@
 // this file is designed to be included twice
 
 #include "ConfigBase.h"
+#include "JsonConfig.h"
+
+#include "FileSystem.h"
 
 #include <cassert>
 
@@ -13,6 +16,18 @@
 
     namespace config_detail
     {
+        class JsonReflectionBase
+        {
+        public:
+            JsonReflectionBase(std::shared_ptr<FileSystem::Stream> stream)
+                : m_config(JsonConfig::MakeFrom(stream->GetContent()))
+            {
+            }
+            
+        protected:
+            std::shared_ptr<JsonConfig> m_config;
+        };
+    
         class ReflectionBase
         {
         public:
@@ -23,7 +38,7 @@
         protected:
             ReflectionBase(ConfVarTable *root, bool)
                 : _root(root)
-                , _isOwner(nullptr == root)
+                , _isOwner(root == nullptr)
             {
                 if (_isOwner)
                 {

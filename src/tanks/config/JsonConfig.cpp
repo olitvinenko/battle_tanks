@@ -5,7 +5,7 @@ JsonConfig::JsonConfig()
 {
 }
 
-std::shared_ptr<JsonConfig> JsonConfig::MakeFrom(const std::string& rawConfig)
+std::shared_ptr<JsonConfig> JsonConfig::MakeFrom(std::string&& rawConfig)
 {
     Json::Value value;
     Json::Reader reader;
