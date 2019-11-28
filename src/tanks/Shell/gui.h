@@ -93,7 +93,7 @@ class EditPlayerDlg : public UI::Dialog
 	ConfPlayerLocal _info;
 
 public:
-	EditPlayerDlg(UI::LayoutManager &manager, TextureManager &texman, ConfVarTable &info, ShellConfig &conf, LangCache &lang);
+	EditPlayerDlg(UI::LayoutManager &manager, TextureManager &texman, VariableTable &info, ShellConfig &conf, LangCache &lang);
 
 protected:
 	void OnChangeSkin(int index);
@@ -120,7 +120,7 @@ class EditBotDlg : public UI::Dialog
 	ConfPlayerAI _info;
 
 public:
-	EditBotDlg(UI::LayoutManager &manager, TextureManager &texman, ConfVarTable &info, LangCache &lang);
+	EditBotDlg(UI::LayoutManager &manager, TextureManager &texman, VariableTable &info, LangCache &lang);
 
 protected:
 	void OnOK();

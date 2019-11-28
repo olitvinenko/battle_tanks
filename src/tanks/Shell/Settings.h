@@ -72,7 +72,7 @@ public:
 	void OnTimeStep(UI::LayoutManager &manager, float dt) override;
 
 private:
-	void AddAction(ConfVarString &var, std::string actionDisplayName);
+	void AddAction(VariableString &var, std::string actionDisplayName);
 
 	void OnOK();
 	void OnCancel();

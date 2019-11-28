@@ -29,7 +29,7 @@ namespace
 	class TierProgressBinding : public UI::DataSource<unsigned int>
 	{
 	public:
-		TierProgressBinding(unsigned int tier, ConfVarArray &tiersProgress)
+		TierProgressBinding(unsigned int tier, VariableArray &tiersProgress)
 			: _tier(tier)
 			, _tiersProgress(tiersProgress)
 		{}
@@ -38,7 +38,7 @@ namespace
 		{
 			if (_tier < _tiersProgress.GetSize())
 			{
-				ConfVarArray &tierProgress = _tiersProgress.GetArray(_tier);
+				VariableArray &tierProgress = _tiersProgress.GetArray(_tier);
 				unsigned int index = sc.GetItemIndex();
 				return index < tierProgress.GetSize() ? tierProgress.GetNum(index).GetInt() : 0;
 			}
@@ -50,7 +50,7 @@ namespace
 
 	private:
 		unsigned int _tier;
-		ConfVarArray &_tiersProgress; // array of arrays
+		VariableArray &_tiersProgress; // array of arrays
 	};
 }
 

@@ -9,7 +9,7 @@ PlayerView::PlayerView(UI::LayoutManager &manager, TextureManager &texman)
 {
 }
 
-void PlayerView::SetPlayerConfig(ConfVarTable &playerConf, TextureManager &texman)
+void PlayerView::SetPlayerConfig(VariableTable &playerConf, TextureManager &texman)
 {
 	_playerConfCache.reset(new ConfPlayerLocal(&playerConf));
 	_texSkin = texman.FindSprite(std::string("skin/") + _playerConfCache->skin.Get());

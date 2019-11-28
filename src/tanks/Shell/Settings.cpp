@@ -406,7 +406,7 @@ void ControlProfileDlg::SetActiveIndex(int index)
 	}
 }
 
-void ControlProfileDlg::AddAction(ConfVarString &keyName, std::string actionDisplayName)
+void ControlProfileDlg::AddAction(VariableString &keyName, std::string actionDisplayName)
 {
 	_keyBindings.push_back(GetKeyCode(keyName.Get()));
 	int index = _actions->GetData()->AddItem(std::move(actionDisplayName), reinterpret_cast<size_t>(&keyName));
@@ -423,7 +423,7 @@ void ControlProfileDlg::OnOK()
 
 	for( int i = 0; i < _actions->GetData()->GetItemCount(); ++i )
 	{
-		reinterpret_cast<ConfVarString*>(_actions->GetData()->GetItemData(i))->Set(GetKeyName(_keyBindings[i]));
+		reinterpret_cast<VariableString*>(_actions->GetData()->GetItemData(i))->Set(GetKeyName(_keyBindings[i]));
 	}
 
 	_profile.aim_to_mouse.Set(_aimToMouseChkBox->GetCheck());

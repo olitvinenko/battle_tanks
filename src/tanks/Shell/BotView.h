@@ -2,7 +2,7 @@
 #include <Window.h>
 #include <memory>
 
-class ConfVarTable;
+class VariableTable;
 class ConfPlayerAI;
 
 class BotView : public UI::Window
@@ -10,7 +10,7 @@ class BotView : public UI::Window
 public:
 	BotView(UI::LayoutManager &manager, TextureManager &texman);
 
-	void SetBotConfig(ConfVarTable &botConf, TextureManager &texman);
+	void SetBotConfig(VariableTable &botConf, TextureManager &texman);
 
 	// UI::Window
 	void Draw(const UI::StateContext &sc, const UI::LayoutContext &lc, const UI::InputContext &ic, DrawingContext &dc, TextureManager &texman) const override;

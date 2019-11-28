@@ -11,7 +11,7 @@ BotView::BotView(UI::LayoutManager &manager, TextureManager &texman)
 {
 }
 
-void BotView::SetBotConfig(ConfVarTable &botConf, TextureManager &texman)
+void BotView::SetBotConfig(VariableTable &botConf, TextureManager &texman)
 {
 	_botConfCache.reset(new ConfPlayerAI(&botConf));
 	_texSkin = texman.FindSprite(std::string("skin/") + _botConfCache->skin.Get());

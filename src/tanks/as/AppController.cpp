@@ -59,7 +59,7 @@ void AppController::Step(AppState &appState, AppConfig &appConfig, float dt)
 					if (campaignGC->GetCampaignTier() >= 0 && campaignGC->GetCampaignMap() >= 0)
 					{
 						appConfig.sp_tiersprogress.EnsureIndex(campaignGC->GetCampaignTier());
-						ConfVarArray &tierprogress = appConfig.sp_tiersprogress.GetArray(campaignGC->GetCampaignTier());
+						VariableArray &tierprogress = appConfig.sp_tiersprogress.GetArray(campaignGC->GetCampaignTier());
 						tierprogress.EnsureIndex(campaignGC->GetCampaignMap());
 						int currentRating = tierprogress.GetNum(campaignGC->GetCampaignMap()).GetInt();
 						tierprogress.SetNum(campaignGC->GetCampaignMap(), std::max(currentRating, gameplay->GetRating()));

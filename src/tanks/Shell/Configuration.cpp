@@ -1,9 +1,10 @@
-#include <ConfigBase.h>
+#include "VariableTable.h"
+#include "VariableArray.h"
 
 // first pass to define the structure
 #include "Configuration.h"
 
-static void InitProfiles(ConfVarTable &profiles)
+static void InitProfiles(VariableTable &profiles)
 {
 	ConfControllerProfile(&profiles.GetTable("WASD"));
 
@@ -24,9 +25,9 @@ static void InitProfiles(ConfVarTable &profiles)
 	arrows.arcade_style.Set(false);
 }
 
-static void InitLobbyList(ConfVarArray &lobby_servers)
+static void InitLobbyList(VariableArray &lobby_servers)
 {
-	lobby_servers.PushBack(ConfVar::typeString).AsStr().Set("tzod.fatal.ru/lobby");
+	lobby_servers.PushBack(VariableBase::typeString).AsStr().Set("tzod.fatal.ru/lobby");
 }
 
 // second time include it to implement initialize function

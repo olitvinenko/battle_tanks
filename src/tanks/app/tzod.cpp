@@ -7,7 +7,6 @@
 #include <ConsoleBuffer.h>
 #include "FileSystem.h"
 
-#include "JsonConfigBase.h"
 #include "ConfigCache.h"
 
 #define FILE_CONFIG      "config.cfg"
@@ -52,9 +51,6 @@ TzodApp::TzodApp(FileSystem::IFileSystem &fs, UI::ConsoleBuffer &logger, const c
 {
     LoadConfigNoThrow(_impl->combinedConfig, logger, FILE_CONFIG);
     LoadConfigNoThrow(_impl->dmCampaign, logger, std::string(fs.GetRootDirectory() + FILE_DMCAMPAIGN).c_str());
-    
-//    JsonConfig::Load(std::string(fs.GetRootDirectory() + FILE_JSON_DMCAMPAIGN).c_str());
-    config_detail::JsonReflectionBase reflTest(fs.Open("campaignConfig.json", FileSystem::FileOpenMode::Read)->AsStream());
     
     if (language)
     {

@@ -1,5 +1,3 @@
-#include "ConfigBase.h"
-
 // first pass to define the structure
 #include "CombinedConfig.h"
 

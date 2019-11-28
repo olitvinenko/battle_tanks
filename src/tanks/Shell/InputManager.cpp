@@ -42,8 +42,8 @@ void InputManager::OnProfilesChange()
 	{
 		_controllers.emplace_back();
 
-		ConfVar *p = _conf.dm_profiles.Find(key.c_str());
-		if (p && ConfVar::typeTable == p->GetType())
+		VariableBase *p = _conf.dm_profiles.Find(key.c_str());
+		if (p && VariableBase::typeTable == p->GetType())
 		{
 			ConfControllerProfile t(&p->AsTable());
 			_controllers.back().SetProfile(t);

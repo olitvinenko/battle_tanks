@@ -292,7 +292,7 @@ void NewGameDlg::OnAddPlayer()
 	std::vector<std::string> skinNames;
 	_texman.GetTextureNames(skinNames, "skin/");
 
-	ConfVarTable &p = _conf.dm_players.PushBack(ConfVar::typeTable).AsTable();
+	VariableTable &p = _conf.dm_players.PushBack(VariableBase::typeTable).AsTable();
 	p.SetStr("skin", skinNames[rand() % skinNames.size()]);
 
 	_newPlayer = true;
@@ -348,7 +348,7 @@ void NewGameDlg::OnAddBot()
 	std::vector<std::string> skinNames;
 	_texman.GetTextureNames(skinNames, "skin/");
 
-	ConfVarTable &p = _conf.dm_bots.PushBack(ConfVar::typeTable).AsTable();
+	VariableTable &p = _conf.dm_bots.PushBack(VariableBase::typeTable).AsTable();
 	p.SetStr("skin", skinNames[rand() % skinNames.size()]);
 
 	_newPlayer = true;
@@ -454,7 +454,7 @@ bool NewGameDlg::OnKeyPressed(UI::InputContext &ic, UI::Key key)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-EditPlayerDlg::EditPlayerDlg(UI::LayoutManager &manager, TextureManager &texman, ConfVarTable &info, ShellConfig &conf, LangCache &lang)
+EditPlayerDlg::EditPlayerDlg(UI::LayoutManager &manager, TextureManager &texman, VariableTable &info, ShellConfig &conf, LangCache &lang)
   : Dialog(manager, texman)
   , _info(&info)
 {
@@ -661,7 +661,7 @@ static const char* s_levels[16] = {
 	"bot_difficulty_4",
 };
 
-EditBotDlg::EditBotDlg(UI::LayoutManager &manager, TextureManager &texman, ConfVarTable &info, LangCache &lang)
+EditBotDlg::EditBotDlg(UI::LayoutManager &manager, TextureManager &texman, VariableTable &info, LangCache &lang)
   : Dialog(manager, texman)
   , _info(&info)
 {

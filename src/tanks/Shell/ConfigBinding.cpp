@@ -1,6 +1,6 @@
 #include "ConfigBinding.h"
 #include <DataSource.h>
-#include <ConfigBase.h>
+#include "VariableString.h"
 
 namespace UI
 {
@@ -12,7 +12,7 @@ namespace
 	class ConfTextSourceAdapter : public UI::DataSource<const std::string&>
 	{
 	public:
-		ConfTextSourceAdapter(ConfVarString &confString) : _confString(confString) {}
+		ConfTextSourceAdapter(VariableString& confString) : _confString(confString) {}
 
 		// UI::DataSource<const std::string&>
 		const std::string& GetValue(const UI::StateContext &sc) const override
@@ -21,11 +21,11 @@ namespace
 		}
 
 	private:
-		ConfVarString &_confString;
+		VariableString& _confString;
 	};
 }
 
-std::shared_ptr<UI::DataSource<const std::string&>> ConfBind(ConfVarString &confString)
+std::shared_ptr<UI::DataSource<const std::string&>> ConfBind(VariableString &confString)
 {
 	return std::make_shared<ConfTextSourceAdapter>(confString);
 }
