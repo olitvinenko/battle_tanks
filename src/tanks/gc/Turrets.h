@@ -1,7 +1,7 @@
 #pragma once
 #include "Rotator.h"
 #include "RigidBody.h"
-#include "ObjPtr.h"
+#include "ObjectPtr.h"
 
 template<class T> class JobManager;
 class GC_Vehicle;

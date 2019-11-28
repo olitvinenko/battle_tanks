@@ -1,10 +1,10 @@
 #pragma once
 #include "Field.h"
 #include "Grid.h"
-#include "ObjPtr.h"
+#include "ObjectPtr.h"
 #include "WorldEvents.h"
 #include "GlobalListHelper.h"
-#include "MemoryManager.h"
+#include "MemoryDefines.h"
 #include "PtrList.h"
 #include <map>
 #include <memory>

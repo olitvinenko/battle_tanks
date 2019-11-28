@@ -179,6 +179,19 @@ file(GLOB_RECURSE SRC_CONFIG
 source_group("config" FILES ${SRC_CONFIG})
 #########################################################################
 
+############################ MEMORY ################################
+include_directories(
+    memory
+)
+
+file(GLOB_RECURSE SRC_MEMORY
+    "memory/*.cpp"
+    "memory/*.h"
+)
+
+source_group("memory" FILES ${SRC_MEMORY})
+#########################################################################
+
 ############################ CTX ################################
 include_directories(
     ctx
@@ -412,6 +425,7 @@ set(tanks_SOURCES
     ${SRC_AS}
 	${SRC_MATH}
     ${SRC_CONFIG}
+    ${SRC_MEMORY}
     ${SRC_CTX}
     ${SRC_GC}
     ${SRC_GV}

@@ -3,7 +3,7 @@
 #include "ObjectProperty.h"
 #include "Serialization.h"
 #include "GlobalListHelper.h"
-#include "MemoryManager.h"
+#include "MemoryDefines.h"
 
 #include <memory>
 

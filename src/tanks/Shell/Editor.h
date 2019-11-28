@@ -2,7 +2,7 @@
 #include "QuickActions.h"
 #include "DefaultCamera.h"
 #include <Object.h>
-#include <ObjPtr.h>
+#include <ObjectPtr.h>
 #include <Window.h>
 #include <functional>
 

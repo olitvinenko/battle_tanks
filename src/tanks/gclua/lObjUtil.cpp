@@ -1,6 +1,6 @@
 #include "lObjUtil.h"
 #include <Object.h>
-#include <ObjPtr.h>
+#include <ObjectPtr.h>
 extern "C"
 {
 #include <lua.h>

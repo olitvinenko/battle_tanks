@@ -1,7 +1,7 @@
 #include "luaObject.h"
 #include "lObjUtil.h"
 //#include "SaveFile.h"
-#include <ObjPtr.h>
+#include <ObjectPtr.h>
 #include <Object.h>
 #include <Pickup.h>
 #include <RigidBody.h>

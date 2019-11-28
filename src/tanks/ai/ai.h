@@ -1,6 +1,6 @@
 #pragma once
 #include <Object.h>
-#include <ObjPtr.h>
+#include <ObjectPtr.h>
 #include <MyMath.h>
 #include <list>
 

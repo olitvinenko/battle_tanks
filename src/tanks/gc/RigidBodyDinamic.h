@@ -1,6 +1,6 @@
 #pragma once
 #include "RigidBody.h"
-#include "ObjPtr.h"
+#include "ObjectPtr.h"
 #include <stack>
 
 #define GC_FLAG_RBDYMAMIC_ACTIVE    (GC_FLAG_RBSTATIC_ << 0)

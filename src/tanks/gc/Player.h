@@ -1,6 +1,6 @@
 #pragma once
 #include "Service.h"
-#include "ObjPtr.h"
+#include "ObjectPtr.h"
 #include <deque>
 
 class GC_Vehicle;
