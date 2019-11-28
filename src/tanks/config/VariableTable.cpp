@@ -265,6 +265,9 @@ bool VariableTable::Rename(const std::string &oldName, std::string newName)
 
 bool VariableTable::Write(FILE *file, int indent) const
 {
+    if (indent)
+        fprintf(file, "{\n");
+    
 	for( auto it = m_val.asTable->begin(); m_val.asTable->end() != it; ++it )
 	{
 		for( int i = 0; i < indent; ++i )
