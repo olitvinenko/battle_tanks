@@ -52,41 +52,15 @@ static UI::ConsoleBuffer s_logger(100, 500);
 
 //static long xxx = _CrtSetBreakAlloc(12649);
 
-#include <stdio.h>  /* defines FILENAME_MAX */
-// #define WINDOWS  /* uncomment this line to use it for windows.*/
-#ifdef WINDOWS
-#include <direct.h>
-#define GetCurrentDir _getcwd
-#else
-#include <unistd.h>
-#define GetCurrentDir getcwd
-#endif
-#include<iostream>
- 
-std::string GetCurrentWorkingDir( void ) {
-  char buff[FILENAME_MAX];
-  GetCurrentDir( buff, FILENAME_MAX );
-  std::string current_working_dir(buff);
-  return current_working_dir;
-}
-
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <windef.h>
-int APIENTRY WinMain( HINSTANCE, // hInstance
-                      HINSTANCE, // hPrevInstance
-                      LPSTR, // lpCmdLine
-                      int) // nCmdShow
-#else
-int main(int, const char**)
 #endif
+int main(int, const char**)
 try
 {
-    auto a = GetCurrentWorkingDir();
-    
 	srand((unsigned int) time(nullptr));
-//	Variant::Init();
 
 #if defined(_DEBUG) && defined(_WIN32) // memory leaks detection
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
