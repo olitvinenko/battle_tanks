@@ -32,17 +32,19 @@ struct TzodAppImpl
 
 template <class T>
 static void LoadConfigNoThrow(T &confRoot, UI::ConsoleBuffer &logger, const char *filename)
-try
 {
-	logger.Printf(0, "Loading config '%s'", filename);
-	if (!confRoot->Load(filename))
-	{
-		logger.Format(1) << "Failed to load a config file; using defaults";
-	}
-}
-catch (const std::exception &e)
-{
-	logger.Printf(1, "Could not load config '%s': %s", filename, e.what());
+    try
+    {
+        logger.Printf(0, "Loading config '%s'", filename);
+        if (!confRoot->Load(filename))
+        {
+            logger.Format(1) << "Failed to load a config file; using defaults";
+        }
+    }
+    catch (const std::exception &e)
+    {
+        logger.Printf(1, "Could not load config '%s': %s", filename, e.what());
+    }
 }
 
 TzodApp::TzodApp(FileSystem::IFileSystem &fs, UI::ConsoleBuffer &logger, const char *language)
@@ -60,6 +62,7 @@ TzodApp::TzodApp(FileSystem::IFileSystem &fs, UI::ConsoleBuffer &logger, const c
             LoadConfigNoThrow(_impl->lang, logger, it->second.c_str());
         }
     }
+    
 	setlocale(LC_CTYPE, _impl->lang.c_locale.Get().c_str());
 }
 
