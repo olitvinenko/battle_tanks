@@ -1,8 +1,8 @@
 #include "DataSource.h"
 #include "Rating.h"
 #include "LayoutContext.h"
-#include <DrawingContext.h>
-#include <TextureManager.h>
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 using namespace UI;
 

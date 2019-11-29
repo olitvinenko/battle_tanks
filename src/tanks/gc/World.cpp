@@ -9,8 +9,8 @@
 
 #include "SaveFile.h"
 
-#include <FileSystem.h>
-#include <MapFile.h>
+#include "FileSystem/FileSystem.h"
+#include "mf/MapFile.h"
 #include <cfloat>
 
 

@@ -1,15 +1,15 @@
 #include "ScoreTable.h"
 
-#include <GameContext.h>
-#include <Deathmatch.h>
-#include <Player.h>
-#include <World.h>
-#include <Macros.h>
-#include <Language.h>
-#include <GuiManager.h>
-#include <LayoutContext.h>
-#include <TextureManager.h>
-#include <DrawingContext.h>
+#include "ctx/GameContext.h"
+#include "ctx/Deathmatch.h"
+#include "gc/Player.h"
+#include "gc/World.h"
+#include "gc/Macros.h"
+#include "loc/Language.h"
+#include "ui/GuiManager.h"
+#include "ui/LayoutContext.h"
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 #include <sstream>
 #include <iomanip>

@@ -1,7 +1,9 @@
 #include "rParticle.h"
-#include <Particles.h>
-#include <TextureManager.h>
-#include <DrawingContext.h>
+#include "gc/Particles.h"
+
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
+
 #include <algorithm>
 
 static std::pair<ParticleType, const char*> textures[] = {

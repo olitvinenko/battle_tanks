@@ -1,6 +1,7 @@
 #pragma once
-#include <UIInput.h>
-#include <Clipboard.h>
+
+#include "ui/UIInput.h"
+#include "ui/Clipboard.h"
 
 struct GLFWwindow;
 

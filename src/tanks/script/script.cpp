@@ -3,14 +3,14 @@
 #include "script.h"
 #include "ScriptMessageSink.h"
 
-#include <TypeSystem.h>
-#include <Vehicle.h>
+#include "gc/TypeSystem.h"
+#include "gc/Vehicle.h"
 
 //#include "gclua/lGame.h"
-#include "luaObject.h"
-#include "lWorld.h"
+#include "gclua/luaObject.h"
+#include "gclua/lWorld.h"
 
-#include <FileSystem.h>
+#include "FileSystem/FileSystem.h"
 
 extern "C"
 {

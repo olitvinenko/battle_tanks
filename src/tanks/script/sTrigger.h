@@ -1,5 +1,6 @@
 #pragma once
-#include <WorldEvents.h>
+
+#include "gc/WorldEvents.h"
 
 class World;
 struct lua_State;

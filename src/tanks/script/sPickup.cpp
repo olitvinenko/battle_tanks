@@ -1,9 +1,10 @@
 #include "script.h"
 #include "sPickup.h"
-#include <Pickup.h>
-#include <Vehicle.h>
-#include <World.h>
-#include "lObjUtil.h"
+#include "gc/Pickup.h"
+#include "gc/Vehicle.h"
+#include "gc/World.h"
+
+#include "gclua/lObjUtil.h"
 extern "C"
 {
 #include <lua.h>

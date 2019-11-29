@@ -12,8 +12,8 @@
 #include "World.h"
 #include "WorldCfg.h"
 #include "SaveFile.h"
+#include "mf/MapFile.h"
 
-#include <MapFile.h>
 
 #include <cfloat>
 

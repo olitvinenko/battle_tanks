@@ -4,7 +4,7 @@
 #include "Explosion.h"
 #include "World.h"
 #include "SaveFile.h"
-#include <MapFile.h>
+#include "mf/MapFile.h"
 
 IMPLEMENT_SELF_REGISTRATION(GC_UserObject)
 {

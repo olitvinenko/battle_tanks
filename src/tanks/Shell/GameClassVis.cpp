@@ -1,11 +1,11 @@
 #include "GameClassVis.h"
-#include <TypeSystem.h>
-#include <WorldView.h>
-#include <DataSource.h>
-#include <LayoutContext.h>
-#include <StateContext.h>
-#include <DrawingContext.h>
-#include <TextureManager.h>
+#include "gc/TypeSystem.h"
+#include "render/WorldView.h"
+#include "ui/DataSource.h"
+#include "ui/LayoutContext.h"
+#include "ui/StateContext.h"
+#include "video/DrawingContext.h"
+#include "video/TextureManager.h"
 
 GameClassVis::GameClassVis(UI::LayoutManager &manager, TextureManager &texman, WorldView &worldView)
 	: UI::Window(manager)

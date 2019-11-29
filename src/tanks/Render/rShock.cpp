@@ -1,7 +1,8 @@
 #include "rShock.h"
-#include <Pickup.h>
-#include <TextureManager.h>
-#include <DrawingContext.h>
+#include "gc/Pickup.h"
+
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 R_Shock::R_Shock(TextureManager &tm)
 	: _texId(tm.FindSprite("lightning"))

@@ -1,7 +1,7 @@
 #pragma once
 #include "Actor.h"
 #include "NeighborAware.h"
-#include "ObjectPtr.h"
+#include "memory/ObjectPtr.h"
 
 class GC_RigidBodyStatic;
 class GC_Player;

@@ -1,17 +1,16 @@
 #include "tzod.h"
 #include "CombinedConfig.h"
-#include <AppController.h>
-#include <AppState.h>
-#include <GameContextBase.h>
-#include <Language.h>
-#include <ConsoleBuffer.h>
-#include "FileSystem.h"
+#include "as/AppController.h"
+#include "as/AppState.h"
+#include "ctx/GameContextBase.h"
+#include "loc/Language.h"
+#include "ui/ConsoleBuffer.h"
+#include "FileSystem/FileSystem.h"
 
-#include "ConfigCache.h"
+#include "config/ConfigCache.h"
 
 #define FILE_CONFIG      "config.cfg"
 #define FILE_DMCAMPAIGN  "/dmcampaign.cfg"
-#define FILE_JSON_DMCAMPAIGN  "/campaignConfig.json"
 
 static std::map<std::string, std::string> s_localizations = {
     {"ru", "data/lang.cfg"}

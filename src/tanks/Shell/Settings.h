@@ -1,7 +1,7 @@
 #pragma once
 #include "Configuration.h"
-#include <Dialog.h>
-#include <ListBase.h>
+#include "ui/Dialog.h"
+#include "ui/ListBase.h"
 #include <string>
 #include <vector>
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "CampaignControlCommands.h"
-#include <Window.h>
+#include "ui/Window.h"
 
 namespace UI
 {

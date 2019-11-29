@@ -1,10 +1,10 @@
 #include "CampaignControls.h"
-#include <Deathmatch.h>
-#include <Button.h>
-#include <DataSource.h>
-#include <LayoutContext.h>
-#include <Rating.h>
-#include <StackLayout.h>
+#include "ctx/Deathmatch.h"
+#include "ui/Button.h"
+#include "ui/DataSource.h"
+#include "ui/LayoutContext.h"
+#include "ui/Rating.h"
+#include "ui/StackLayout.h"
 
 using namespace UI::DataSourceAliases;
 

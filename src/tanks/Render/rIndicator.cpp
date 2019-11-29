@@ -1,9 +1,11 @@
 #include "rIndicator.h"
-#include <Vehicle.h>
-#include <Weapons.h>
-#include <World.h>
-#include <TextureManager.h>
-#include <DrawingContext.h>
+
+#include "gc/Vehicle.h"
+#include "gc/Weapons.h"
+#include "gc/World.h"
+
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 R_HealthIndicator::R_HealthIndicator(TextureManager &tm, bool dynamic)
 	: _tm(tm)

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Terrain.h"
-#include <MyMath.h>
+#include "math/MyMath.h"
 
 class DrawingContext;
 class TextureManager;

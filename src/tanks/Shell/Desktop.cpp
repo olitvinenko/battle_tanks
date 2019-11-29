@@ -15,25 +15,25 @@
 #include "Desktop.h"
 #include "Profiler.h"
 
-#include <AppConstants.h>
-#include <AppController.h>
-#include <AppState.h>
-#include <EditorContext.h>
-#include <World.h>
-#include <FileSystem.h>
-#include <Language.h>
+#include "as/AppConstants.h"
+#include "as/AppController.h"
+#include "as/AppState.h"
+#include "ctx/EditorContext.h"
+#include "gc/World.h"
+#include "FileSystem/FileSystem.h"
+#include "loc/Language.h"
 //#include <script/script.h>
-#include <Button.h>
-#include <Console.h>
-#include <ConsoleBuffer.h>
-#include <DataSource.h>
-#include <InputContext.h>
-#include <GuiManager.h>
-#include <Keys.h>
-#include <LayoutContext.h>
-#include <Text.h>
-#include <UIInput.h>
-#include <DrawingContext.h>
+#include "ui/Button.h"
+#include "ui/Console.h"
+#include "ui/ConsoleBuffer.h"
+#include "ui/DataSource.h"
+#include "ui/InputContext.h"
+#include "ui/GuiManager.h"
+#include "ui/Keys.h"
+#include "ui/LayoutContext.h"
+#include "ui/Text.h"
+#include "ui/UIInput.h"
+#include "video/DrawingContext.h"
 
 extern "C"
 {

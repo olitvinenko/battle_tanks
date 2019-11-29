@@ -1,11 +1,11 @@
 #include "sRigidBodyStatic.h"
 #include "script.h"
 
-#include <Player.h>
-#include <RigidBody.h>
-#include <Trigger.h>
-#include <World.h>
-#include "lObjUtil.h"
+#include "gc/Player.h"
+#include "gc/RigidBody.h"
+#include "gc/Trigger.h"
+#include "gc/World.h"
+#include "gclua/lObjUtil.h"
 
 extern "C"
 {

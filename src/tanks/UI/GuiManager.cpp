@@ -4,8 +4,8 @@
 #include "LayoutContext.h"
 #include "StateContext.h"
 #include "Window.h"
-#include <TextureManager.h>
-#include <DrawingContext.h>
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 #include <iostream>
 

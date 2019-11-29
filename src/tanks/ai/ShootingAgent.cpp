@@ -1,8 +1,8 @@
 #include "ShootingAgent.h"
-#include <SaveFile.h>
-#include <Vehicle.h>
-#include <WeaponBase.h>
-#include <World.h>
+#include "gc/SaveFile.h"
+#include "gc/Vehicle.h"
+#include "gc/WeaponBase.h"
+#include "gc/World.h"
 
 void ShootingAgent::Serialize(SaveFile &f)
 {

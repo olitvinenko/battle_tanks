@@ -1,15 +1,15 @@
 #include "luaObject.h"
 #include "lObjUtil.h"
 //#include "SaveFile.h"
-#include <ObjectPtr.h>
-#include <Object.h>
-#include <Pickup.h>
-#include <RigidBody.h>
-#include <Vehicle.h>
-#include <Player.h>
-#include <TypeSystem.h>
-#include <Weapons.h>
-#include <World.h>
+#include "memory/ObjectPtr.h"
+#include "gc/Object.h"
+#include "gc/Pickup.h"
+#include "gc/RigidBody.h"
+#include "gc/Vehicle.h"
+#include "gc/Player.h"
+#include "gc/TypeSystem.h"
+#include "gc/Weapons.h"
+#include "gc/World.h"
 
 extern "C"
 {

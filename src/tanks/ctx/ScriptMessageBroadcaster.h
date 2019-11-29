@@ -1,6 +1,6 @@
 #pragma once
 #include "ScriptMessageSource.h"
-#include <ScriptMessageSink.h>
+#include "script/ScriptMessageSink.h"
 #include <vector>
 
 namespace app_detail

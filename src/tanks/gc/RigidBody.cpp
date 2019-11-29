@@ -7,7 +7,7 @@
 #include "WorldCfg.h"
 #include "WorldEvents.h"
 #include "SaveFile.h"
-#include <MapFile.h>
+#include "mf/MapFile.h"
 #include <cfloat>
 
 IMPLEMENT_GRID_MEMBER(GC_RigidBodyStatic, grid_rigid_s);

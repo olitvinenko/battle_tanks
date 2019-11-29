@@ -2,16 +2,16 @@
 #include "DrivingAgent.h"
 #include "ShootingAgent.h"
 
-#include <Pickup.h>
-#include <Player.h>
-#include <TypeSystem.h>
-#include <Turrets.h>
-#include <Vehicle.h>
-#include <Weapons.h>
-#include <World.h>
-#include <WorldCfg.h>
-#include <Macros.h>
-#include <SaveFile.h>
+#include "gc/Pickup.h"
+#include "gc/Player.h"
+#include "gc/TypeSystem.h"
+#include "gc/Turrets.h"
+#include "gc/Vehicle.h"
+#include "gc/Weapons.h"
+#include "gc/World.h"
+#include "gc/WorldCfg.h"
+#include "gc/Macros.h"
+#include "gc/SaveFile.h"
 
 AIController::AIController()
   : _drivingAgent(new DrivingAgent())

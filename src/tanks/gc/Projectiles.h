@@ -1,6 +1,6 @@
 #pragma once
 #include "Actor.h"
-#include "ObjectPtr.h"
+#include "memory/ObjectPtr.h"
 
 class GC_RigidBodyStatic;
 class GC_RigidBodyDynamic;

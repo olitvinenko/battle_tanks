@@ -1,7 +1,8 @@
 #include "rSprite.h"
-#include <Actor.h>
-#include <TextureManager.h>
-#include <DrawingContext.h>
+#include "gc/Actor.h"
+
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 R_Sprite::R_Sprite(TextureManager &tm, const char *tex)
 	: _texId(tm.FindSprite(tex))

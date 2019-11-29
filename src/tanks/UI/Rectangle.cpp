@@ -2,8 +2,8 @@
 #include "DataSource.h"
 #include "GuiManager.h"
 #include "LayoutContext.h"
-#include <TextureManager.h>
-#include <DrawingContext.h>
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 using namespace UI;
 

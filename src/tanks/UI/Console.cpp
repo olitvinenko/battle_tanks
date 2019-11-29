@@ -5,8 +5,8 @@
 #include "GuiManager.h"
 #include "Keys.h"
 #include "LayoutContext.h"
-#include <TextureManager.h>
-#include <DrawingContext.h>
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 #include <algorithm>
 
 using namespace UI;

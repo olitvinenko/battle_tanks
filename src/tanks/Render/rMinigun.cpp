@@ -1,10 +1,12 @@
 #include "rMinigun.h"
 #include "rWeaponBase.h"
-#include <Weapons.h>
-#include <WeapCfg.h>
-#include <World.h>
-#include <TextureManager.h>
-#include <DrawingContext.h>
+
+#include "gc/Weapons.h"
+#include "gc/WeapCfg.h"
+#include "gc/World.h"
+
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 R_WeaponMinigun::R_WeaponMinigun(TextureManager &tm)
 	: _texId1(tm.FindSprite("weap_mg1"))

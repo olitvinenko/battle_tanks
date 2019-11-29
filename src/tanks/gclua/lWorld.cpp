@@ -1,9 +1,10 @@
 #include "lObjUtil.h"
 #include "lWorld.h"
-#include <Actor.h>
-#include <Service.h>
-#include <TypeSystem.h>
-#include <World.h>
+#include "gc/Actor.h"
+#include "gc/Service.h"
+#include "gc/TypeSystem.h"
+#include "gc/World.h"
+
 extern "C"
 {
 #include <lua.h>

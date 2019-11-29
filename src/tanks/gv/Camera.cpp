@@ -1,10 +1,10 @@
 #include "Camera.h"
 
-#include <Player.h>
-#include <Vehicle.h>
-#include <Weapons.h>
-#include <WorldCfg.h>
-#include <World.h>
+#include "gc/Player.h"
+#include "gc/Vehicle.h"
+#include "gc/Weapons.h"
+#include "gc/WorldCfg.h"
+#include "gc/World.h"
 
 Camera::Camera(vec2d pos, GC_Player &player)
   : _player(player)

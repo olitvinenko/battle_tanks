@@ -3,7 +3,7 @@
 #include "sPlayer.h"
 #include "sRigidBodyStatic.h"
 #include "sTrigger.h"
-#include <WorldEvents.h>
+#include "gc/WorldEvents.h"
 #include <memory>
 
 class SaveFile;

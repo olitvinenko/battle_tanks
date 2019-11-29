@@ -1,10 +1,10 @@
 #include "MessageArea.h"
 #include "Configuration.h"
-#include <ConsoleBuffer.h>
-#include <GuiManager.h>
-#include <LayoutContext.h>
-#include <TextureManager.h>
-#include <DrawingContext.h>
+#include "ui/ConsoleBuffer.h"
+#include "ui/GuiManager.h"
+#include "ui/LayoutContext.h"
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 #include <algorithm>
 
 MessageArea::MessageArea(UI::LayoutManager &manager, TextureManager &texman, ShellConfig &conf, UI::ConsoleBuffer &logger)

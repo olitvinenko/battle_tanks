@@ -1,10 +1,10 @@
 #pragma once
 #include "CampaignControlCommands.h"
 #include "InputManager.h"
-#include <GameEvents.h>
-#include <GameViewHarness.h>
-#include <Window.h>
-#include <Text.h>
+#include "ctx/GameEvents.h"
+#include "gv/GameViewHarness.h"
+#include "ui/Window.h"
+#include "ui/Text.h"
 #include <unordered_map>
 
 class ShellConfig;

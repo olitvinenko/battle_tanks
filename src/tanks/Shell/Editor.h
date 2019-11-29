@@ -1,9 +1,9 @@
 #pragma once
 #include "QuickActions.h"
 #include "DefaultCamera.h"
-#include <Object.h>
-#include <ObjectPtr.h>
-#include <Window.h>
+#include "gc/Object.h"
+#include "memory/ObjectPtr.h"
+#include "ui/Window.h"
 #include <functional>
 
 class LangCache;

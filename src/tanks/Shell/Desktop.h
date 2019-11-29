@@ -1,10 +1,10 @@
 #pragma once
 #include "ConfigConsoleHistory.h"
-#include <AppStateListener.h>
-#include <LuaDeleter.h>
-#include <RenderScheme.h>
-#include <WorldView.h>
-#include <Window.h>
+#include "as/AppStateListener.h"
+#include "luaetc/LuaDeleter.h"
+#include "render/RenderScheme.h"
+#include "render/WorldView.h"
+#include "ui/Window.h"
 
 #include <functional>
 #include <string>

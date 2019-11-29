@@ -1,8 +1,9 @@
 #include "script.h"
 #include "sPlayer.h"
-#include <Player.h>
-#include <Vehicle.h>
-#include <World.h>
+
+#include "gc/Player.h"
+#include "gc/Vehicle.h"
+#include "gc/World.h"
 
 sPlayer::sPlayer(World &world, lua_State *L)
 	: _world(world)

@@ -2,13 +2,13 @@
 #include "ConfigBinding.h"
 #include "Configuration.h"
 
-#include <FileSystem.h>
-#include <Language.h>
-#include <List.h>
-#include <Button.h>
-#include <Text.h>
-#include <DataSourceAdapters.h>
-#include <GuiManager.h>
+#include "FileSystem/FileSystem.h"
+#include "loc/Language.h"
+#include "ui/List.h"
+#include "ui/Button.h"
+#include "ui/Text.h"
+#include "ui/DataSourceAdapters.h"
+#include "ui/GuiManager.h"
 
 
 NewCampaignDlg::NewCampaignDlg(UI::LayoutManager &manager, TextureManager &texman, FileSystem::IFileSystem &fs, LangCache &lang)

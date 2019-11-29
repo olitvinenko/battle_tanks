@@ -1,12 +1,12 @@
 #include "Controller.h"
 #include "KeyMapper.h"
 #include "Configuration.h"
-#include <VehicleState.h>
-#include <Vehicle.h>
-#include <Weapons.h>
-#include <World.h>
-#include <Keys.h>
-#include <UIInput.h>
+#include "gc/VehicleState.h"
+#include "gc/Vehicle.h"
+#include "gc/Weapons.h"
+#include "gc/World.h"
+#include "ui/Keys.h"
+#include "ui/UIInput.h"
 
 #include <float.h>
 

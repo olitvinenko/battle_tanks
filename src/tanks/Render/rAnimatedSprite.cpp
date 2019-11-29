@@ -1,8 +1,8 @@
 #include "rAnimatedSprite.h"
-#include <Actor.h>
-#include <World.h>
-#include <TextureManager.h>
-#include <DrawingContext.h>
+#include "gc/Actor.h"
+#include "gc/World.h"
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 R_AnimatedSprite::R_AnimatedSprite(TextureManager &tm, const char *tex, float frameRate)
 	: _tm(tm)

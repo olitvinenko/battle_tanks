@@ -4,19 +4,19 @@
 #include "PlayerView.h"
 #include "SinglePlayer.h"
 #include "Configuration.h"
-#include <MapFile.h>
-#include <FileSystem.h>
-#include <World.h>
-#include <Language.h>
-#include <WorldView.h>
-#include <DrawingContext.h>
-#include <Button.h>
-#include <DataSource.h>
-#include <LayoutContext.h>
-#include <List.h>
-#include <StackLayout.h>
-#include <StateContext.h>
-#include <Text.h>
+#include "mf/MapFile.h"
+#include "FileSystem/FileSystem.h"
+#include "gc/World.h"
+#include "loc/Language.h"
+#include "render/WorldView.h"
+#include "video/DrawingContext.h"
+#include "ui/Button.h"
+#include "ui/DataSource.h"
+#include "ui/LayoutContext.h"
+#include "ui/List.h"
+#include "ui/StackLayout.h"
+#include "ui/StateContext.h"
+#include "ui/Text.h"
 #include <sstream>
 
 static const float c_tileSize = 180;

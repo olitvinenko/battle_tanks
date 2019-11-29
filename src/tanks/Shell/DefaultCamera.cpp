@@ -1,7 +1,7 @@
 #include "DefaultCamera.h"
-#include <WorldCfg.h>
-#include <Keys.h>
-#include <UIInput.h>
+#include "gc/WorldCfg.h"
+#include "ui/Keys.h"
+#include "ui/UIInput.h"
 
 #include <chrono>
 #include <algorithm>

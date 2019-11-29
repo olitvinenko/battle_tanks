@@ -1,8 +1,10 @@
 #include "rVehicle.h"
-#include <Vehicle.h>
-#include <Player.h>
-#include <DrawingContext.h>
-#include <TextureManager.h>
+
+#include "gc/Vehicle.h"
+#include "gc/Player.h"
+
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 R_Vehicle::R_Vehicle(TextureManager &tm)
 	: _tm(tm)

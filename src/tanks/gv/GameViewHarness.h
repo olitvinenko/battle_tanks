@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Camera.h"
-#include <WorldEvents.h>
-#include <MyMath.h>
+#include "gc/WorldEvents.h"
+#include "math/MyMath.h"
 #include <stddef.h>
 #include <vector>
 

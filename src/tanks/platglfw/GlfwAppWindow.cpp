@@ -2,13 +2,13 @@
 #include "GlfwPlatform.h"
 #include "GlfwKeys.h"
 
-#include <InputContext.h>
-#include <GuiManager.h>
-#include <LayoutContext.h>
-#include <Pointers.h>
-#include <StateContext.h>
-#include <Window.h>
-#include <RenderOpenGL.h>
+#include "ui/InputContext.h"
+#include "ui/GuiManager.h"
+#include "ui/LayoutContext.h"
+#include "ui/Pointers.h"
+#include "ui/StateContext.h"
+#include "ui/Window.h"
+#include "video/RenderOpenGL.h"
 
 #include <GLFW/glfw3.h>
 #include <stdexcept>

@@ -1,12 +1,12 @@
 #include "NewMap.h"
 #include "ConfigBinding.h"
 #include "Configuration.h"
-#include <WorldCfg.h>
-#include <Language.h>
-#include <Button.h>
-#include <Edit.h>
-#include <GuiManager.h>
-#include <Text.h>
+#include "gc/WorldCfg.h"
+#include "loc/Language.h"
+#include "ui/Button.h"
+#include "ui/Edit.h"
+#include "ui/GuiManager.h"
+#include "ui/Text.h"
 #include <algorithm>
 
 NewMapDlg::NewMapDlg(UI::LayoutManager &manager, TextureManager &texman, ShellConfig &conf, LangCache &lang)

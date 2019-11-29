@@ -1,8 +1,8 @@
 #include "EditorContext.h"
-#include <World.h>
-#include <WorldCfg.h>
-#include <MapFile.h>
-#include "FileSystem.h"
+#include "gc/World.h"
+#include "gc/WorldCfg.h"
+#include "mf/MapFile.h"
+#include "FileSystem/FileSystem.h"
 
 EditorContext::EditorContext(int width, int height, FileSystem::Stream *stream)
 {

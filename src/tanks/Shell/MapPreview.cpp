@@ -1,14 +1,14 @@
 #include "MapCache.h"
 #include "MapPreview.h"
-#include <WorldView.h>
-#include <World.h>
-#include <DataSource.h>
-#include <InputContext.h>
-#include <LayoutContext.h>
-#include <Rating.h>
-#include <StateContext.h>
-#include <DrawingContext.h>
-#include <TextureManager.h>
+#include "render/WorldView.h"
+#include "gc/World.h"
+#include "ui/DataSource.h"
+#include "ui/InputContext.h"
+#include "ui/LayoutContext.h"
+#include "ui/Rating.h"
+#include "ui/StateContext.h"
+#include "video/DrawingContext.h"
+#include "video/TextureManager.h"
 
 MapPreview::MapPreview(UI::LayoutManager &manager, TextureManager &texman, FileSystem::IFileSystem &fs, WorldView &worldView, MapCache &mapCache)
 	: UI::Window(manager)

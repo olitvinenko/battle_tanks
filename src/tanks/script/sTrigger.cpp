@@ -1,11 +1,11 @@
 #include "script.h"
 
 #include "sTrigger.h"
-#include <Trigger.h>
-#include <Vehicle.h>
-#include <World.h>
+#include "gc/Trigger.h"
+#include "gc/Vehicle.h"
+#include "gc/World.h"
 
-#include "lObjUtil.h"
+#include "gclua/lObjUtil.h"
 
 extern "C"
 {

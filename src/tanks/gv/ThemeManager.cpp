@@ -1,10 +1,10 @@
 #include "ThemeManager.h"
-#include <AppConstants.h>
-#include <AppState.h>
-#include <GameContext.h>
-#include <FileSystem.h>
-#include <World.h>
-#include <TextureManager.h>
+#include "as/AppConstants.h"
+#include "as/AppState.h"
+#include "ctx/GameContext.h"
+#include "FileSystem/FileSystem.h"
+#include "gc/World.h"
+#include "video/TextureManager.h"
 
 ThemeManager::ThemeManager(AppState &appState, FileSystem::IFileSystem &fs, TextureManager &tm)
 	: AppStateListener(appState)

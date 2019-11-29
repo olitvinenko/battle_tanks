@@ -1,6 +1,7 @@
 #pragma once
 
-#include <MyMath.h>
+#include "math/MyMath.h"
+
 #include <algorithm>
 #include <cstdlib>
 

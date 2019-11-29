@@ -1,6 +1,6 @@
 #pragma once
 #include "Gameplay.h"
-#include <WorldEvents.h>
+#include "gc/WorldEvents.h"
 
 class World;
 class WorldController;

@@ -1,8 +1,10 @@
 #include "rLight.h"
-#include <Light.h>
-#include <RenderBase.h>
-#include <TextureManager.h>
-#include <DrawingContext.h>
+
+#include "gc/Light.h"
+
+#include "video/RenderBase.h"
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 enumZOrder Z_Light::GetZ(const World &world, const GC_Actor &actor) const
 {

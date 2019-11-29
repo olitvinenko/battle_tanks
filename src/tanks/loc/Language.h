@@ -9,7 +9,7 @@
 # define LOC_LANGUAGE_PASS1_INCLUDED
 #endif
 
-#include <ConfigCache.h>
+#include "config/ConfigCache.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////

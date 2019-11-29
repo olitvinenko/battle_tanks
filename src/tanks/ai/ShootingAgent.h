@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MyMath.h"
+#include "math/MyMath.h"
 
 class SaveFile;
 class GC_RigidBodyStatic;

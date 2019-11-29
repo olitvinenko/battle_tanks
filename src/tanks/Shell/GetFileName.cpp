@@ -1,16 +1,16 @@
 #include "GetFileName.h"
 #include "ConfigBinding.h"
-#include <FileSystem.h>
-#include <Language.h>
-#include <Button.h>
-#include <DataSource.h>
-#include <DataSourceAdapters.h>
-#include <Edit.h>
-#include <GuiManager.h>
-#include <Keys.h>
-#include <List.h>
-#include <ListBox.h>
-#include <Text.h>
+#include "FileSystem/FileSystem.h"
+#include "loc/Language.h"
+#include "ui/Button.h"
+#include "ui/DataSource.h"
+#include "ui/DataSourceAdapters.h"
+#include "ui/Edit.h"
+#include "ui/GuiManager.h"
+#include "ui/Keys.h"
+#include "ui/List.h"
+#include "ui/ListBox.h"
+#include "ui/Text.h"
 
 #include <algorithm>
 

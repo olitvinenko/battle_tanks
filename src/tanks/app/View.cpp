@@ -1,18 +1,18 @@
 #include "View.h"
 #include "tzod.h"
-#include <AppConstants.h>
-#include <FileSystem.h>
-#include <Desktop.h>
-#include <AppWindow.h>
-#include <ConsoleBuffer.h>
-#include <GuiManager.h>
-#include <InputContext.h>
-#include <LayoutContext.h>
-#include <StateContext.h>
-#include <Window.h>
-#include <DrawingContext.h>
-#include <RenderOpenGL.h>
-#include <TextureManager.h>
+#include "as/AppConstants.h"
+#include "FileSystem/FileSystem.h"
+#include "shell/Desktop.h"
+#include "ui/AppWindow.h"
+#include "ui/ConsoleBuffer.h"
+#include "ui/GuiManager.h"
+#include "ui/InputContext.h"
+#include "ui/LayoutContext.h"
+#include "ui/StateContext.h"
+#include "ui/Window.h"
+#include "video/DrawingContext.h"
+#include "video/RenderOpenGL.h"
+#include "video/TextureManager.h"
 
 
 static TextureManager InitTextureManager(FileSystem::IFileSystem &fs, UI::ConsoleBuffer &logger, IRender &render)

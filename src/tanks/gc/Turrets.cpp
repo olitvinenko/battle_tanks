@@ -16,7 +16,7 @@
 #include "SaveFile.h"
 
 #include "JobManager.h"
-#include <MapFile.h>
+#include "mf/MapFile.h"
 
 
 #define TURET_SIGHT_RADIUS   500

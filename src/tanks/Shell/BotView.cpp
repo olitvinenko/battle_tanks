@@ -1,8 +1,8 @@
 #include "BotView.h"
 #include "Configuration.h"
-#include <LayoutContext.h>
-#include <TextureManager.h>
-#include <DrawingContext.h>
+#include "ui/LayoutContext.h"
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 BotView::BotView(UI::LayoutManager &manager, TextureManager &texman)
 	: UI::Window(manager)

@@ -1,6 +1,6 @@
 #pragma once
 #include "Controller.h"
-#include <WorldEvents.h>
+#include "gc/WorldEvents.h"
 #include <vector>
 
 class ShellConfig;

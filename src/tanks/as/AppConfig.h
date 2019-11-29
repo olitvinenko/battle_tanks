@@ -9,7 +9,7 @@
 # define APP_CONFIG_PASS1_INCLUDED
 #endif
 
-#include <ConfigCache.h>
+#include "config/ConfigCache.h"
 
 REFLECTION_BEGIN(ConfPlayerBase)
 	VAR_STR(nick, "Player")

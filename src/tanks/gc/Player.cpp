@@ -13,7 +13,8 @@
 #include "WorldCfg.h"
 #include "WorldEvents.h"
 #include "SaveFile.h"
-#include <MapFile.h>
+#include "mf/MapFile.h"
+
 #include <climits>
 
 IMPLEMENT_SELF_REGISTRATION(GC_Player)

@@ -1,8 +1,10 @@
 #include "rFireSpark.h"
-#include <projectiles.h>
-#include <World.h>
-#include <TextureManager.h>
-#include <DrawingContext.h>
+
+#include "gc/projectiles.h"
+#include "gc/World.h"
+
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 R_FireSpark::R_FireSpark(TextureManager &tm)
 	: _tm(tm)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Dialog.h>
+#include "ui/Dialog.h"
 #include <memory>
 #include <vector>
 

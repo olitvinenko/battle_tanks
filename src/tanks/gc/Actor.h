@@ -1,6 +1,6 @@
 #pragma once
 #include "Object.h"
-#include <MyMath.h>
+#include "math/MyMath.h"
 
 #define GC_FLAG_ACTOR_INGRIDSET     (GC_FLAG_OBJECT_ << 0)
 #define GC_FLAG_ACTOR_              (GC_FLAG_OBJECT_ << 1)

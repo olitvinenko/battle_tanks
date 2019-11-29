@@ -1,7 +1,9 @@
 #pragma once
-#include <Object.h>
-#include <ObjectPtr.h>
-#include <MyMath.h>
+
+#include "gc/Object.h"
+#include "memory/ObjectPtr.h"
+#include "math/MyMath.h"
+
 #include <list>
 
 struct VehicleState;

@@ -1,6 +1,6 @@
 #pragma once
 #include "Actor.h"
-#include "ObjectPtr.h"
+#include "memory/ObjectPtr.h"
 #include "WorldCfg.h"
 #include <map>
 

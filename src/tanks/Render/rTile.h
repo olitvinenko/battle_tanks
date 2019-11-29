@@ -1,6 +1,6 @@
 #pragma once
 #include "ObjectView.h"
-#include <RenderBase.h>
+#include "video/RenderBase.h"
 #include <stddef.h>
 
 class TextureManager;

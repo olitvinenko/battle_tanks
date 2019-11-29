@@ -2,7 +2,7 @@
 #include "World.h"
 #include "WorldCfg.h"
 #include "SaveFile.h"
-#include <MapFile.h>
+#include "mf/MapFile.h"
 
 // Workaround for IMPLEMENT_GRID_MEMBER macro used in the base class
 namespace base

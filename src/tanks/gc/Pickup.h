@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Actor.h"
-#include "ObjectPtr.h"
+#include "memory/ObjectPtr.h"
 #include "Rotator.h"
 
 typedef float AIPRIORITY;

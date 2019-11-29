@@ -1,13 +1,13 @@
 #include "Widgets.h"
 
-#include <AppState.h>
-#include <GameContext.h>
-#include <World.h>
-#include <DataSource.h>
-#include <GuiManager.h>
-#include <LayoutContext.h>
-#include <TextureManager.h>
-#include <DrawingContext.h>
+#include "as/AppState.h"
+#include "ctx/GameContext.h"
+#include "gc/World.h"
+#include "ui/DataSource.h"
+#include "ui/GuiManager.h"
+#include "ui/LayoutContext.h"
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 #include <sstream>
 #include <iomanip>
 

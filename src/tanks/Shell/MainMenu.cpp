@@ -1,7 +1,7 @@
 #include "MainMenu.h"
 #include "ConfigBinding.h"
-#include <Language.h>
-#include <Button.h>
+#include "loc/Language.h"
+#include "ui/Button.h"
 
 static const float c_buttonWidth = 200;
 static const float c_buttonHeight = 128;

@@ -1,8 +1,8 @@
 #include "rBooster.h"
-#include <Actor.h>
-#include <World.h>
-#include <TextureManager.h>
-#include <DrawingContext.h>
+#include "gc/Actor.h"
+#include "gc/World.h"
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 R_Booster::R_Booster(TextureManager &tm)
 	: _texId(tm.FindSprite("booster"))

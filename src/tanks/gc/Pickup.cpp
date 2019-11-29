@@ -12,7 +12,7 @@
 #include "World.h"
 #include "WorldEvents.h"
 #include "SaveFile.h"
-#include <MapFile.h>
+#include "mf/MapFile.h"
 
 
 IMPLEMENT_2LIST_MEMBER(GC_Pickup, LIST_pickups, LIST_timestep);

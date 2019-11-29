@@ -1,12 +1,12 @@
 #include "WorldView.h"
 #include "RenderScheme.h"
 
-#include <Light.h>
-#include <Macros.h>
-#include <World.h>
-#include <WorldCfg.h>
+#include "gc/Light.h"
+#include "gc/Macros.h"
+#include "gc/World.h"
+#include "gc/WorldCfg.h"
 
-#include <DrawingContext.h>
+#include "video/DrawingContext.h"
 
 WorldView::WorldView(TextureManager &tm, RenderScheme &rs)
     : _renderScheme(rs)

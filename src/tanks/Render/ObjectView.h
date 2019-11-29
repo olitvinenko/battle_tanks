@@ -1,5 +1,6 @@
 #pragma once
-#include <Z.h>
+
+#include "gc/Z.h"
 
 class DrawingContext;
 class GC_Actor;

@@ -1,11 +1,13 @@
 #include "rWeapon.h"
 #include "rWeaponBase.h"
-#include <Player.h>
-#include <Vehicle.h>
-#include <Weapons.h>
-#include <World.h>
-#include <DrawingContext.h>
-#include <TextureManager.h>
+
+#include "gc/Player.h"
+#include "gc/Vehicle.h"
+#include "gc/Weapons.h"
+#include "gc/World.h"
+
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 R_Weapon::R_Weapon(TextureManager &tm, const char *tex)
 	: _texId(tm.FindSprite(tex))

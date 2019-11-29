@@ -1,8 +1,10 @@
 #include "rTile.h"
-#include <Actor.h>
-#include <NeighborAware.h>
-#include <TextureManager.h>
-#include <DrawingContext.h>
+
+#include "gc/Actor.h"
+#include "gc/NeighborAware.h"
+
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 static const float dx[8]   = { 32, 32,  0,-32,-32,-32,  0, 32 };
 static const float dy[8]   = {  0, 32, 32, 32,  0,-32,-32,-32 };

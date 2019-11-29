@@ -1,11 +1,11 @@
 #include "GameViewHarness.h"
 #include "Camera.h"
-#include <WorldController.h>
-#include <Explosion.h>
-#include <Player.h>
-#include <Vehicle.h>
-#include <World.h>
-#include <WorldView.h>
+#include "ctx/WorldController.h"
+#include "gc/Explosion.h"
+#include "gc/Player.h"
+#include "gc/Vehicle.h"
+#include "gc/World.h"
+#include "render/WorldView.h"
 #include <cassert>
 
 

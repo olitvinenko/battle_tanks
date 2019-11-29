@@ -1,6 +1,6 @@
 #pragma once
 #include "Configuration.h"
-#include <Dialog.h>
+#include "ui/Dialog.h"
 
 class LangCache;
 class TextureManager;

@@ -7,7 +7,7 @@
 #include "GuiManager.h"
 #include "Keys.h"
 #include "LayoutContext.h"
-#include <TextureManager.h>
+#include "video/TextureManager.h"
 
 using namespace UI;
 

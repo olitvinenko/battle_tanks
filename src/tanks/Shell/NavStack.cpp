@@ -1,7 +1,7 @@
 #include "NavStack.h"
-#include <DataSource.h>
-#include <GuiManager.h>
-#include <LayoutContext.h>
+#include "ui/DataSource.h"
+#include "ui/GuiManager.h"
+#include "ui/LayoutContext.h"
 
 NavStack::NavStack(UI::LayoutManager &manager)
 	: UI::Window(manager)

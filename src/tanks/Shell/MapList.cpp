@@ -1,10 +1,10 @@
 #include "MapList.h"
 #include "Configuration.h"
 
-#include <AppConstants.h>
-#include <FileSystem.h>
-#include <MapFile.h>
-#include <ConsoleBuffer.h>
+#include "as/AppConstants.h"
+#include "FileSystem/FileSystem.h"
+#include "mf/MapFile.h"
+#include "ui/ConsoleBuffer.h"
 
 #include <sstream>
 #include <iomanip>

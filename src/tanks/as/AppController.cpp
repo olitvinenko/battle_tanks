@@ -2,9 +2,9 @@
 #include "AppConfig.h"
 #include "AppConstants.h"
 #include "AppState.h"
-#include <Gameplay.h>
-#include <GameContext.h>
-#include <FileSystem.h>
+#include "ctx/Gameplay.h"
+#include "ctx/GameContext.h"
+#include "FileSystem/FileSystem.h"
 #include <algorithm>
 
 static PlayerDesc GetPlayerDescFromConf(const ConfPlayerBase &p)

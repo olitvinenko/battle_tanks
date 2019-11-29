@@ -2,7 +2,7 @@
 #include "World.h"
 #include "WorldEvents.h"
 #include "SaveFile.h"
-#include <MapFile.h>
+#include "mf/MapFile.h"
 
 PropertySet::PropertySet(GC_Object *object)
   : _object(*object)

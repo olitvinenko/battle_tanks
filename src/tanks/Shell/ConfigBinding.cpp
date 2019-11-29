@@ -1,6 +1,6 @@
 #include "ConfigBinding.h"
-#include <DataSource.h>
-#include "VariableString.h"
+#include "ui/DataSource.h"
+#include "config/VariableString.h"
 
 namespace UI
 {

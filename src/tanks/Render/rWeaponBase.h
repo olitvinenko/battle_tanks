@@ -1,6 +1,6 @@
 #pragma once
 #include "ObjectView.h"
-#include <MyMath.h>
+#include "math/MyMath.h"
 #include <stddef.h>
 
 class DrawingContext;

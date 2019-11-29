@@ -4,7 +4,7 @@
 #include "World.h"
 #include "WorldCfg.h"
 #include "SaveFile.h"
-#include <MapFile.h>
+#include "mf/MapFile.h"
 #include <cfloat>
 
 IMPLEMENT_SELF_REGISTRATION(GC_Light)

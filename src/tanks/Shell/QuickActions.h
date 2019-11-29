@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include <LuaDeleter.h>
+#include "luaetc/LuaDeleter.h"
 
 class GC_Object;
 class World;

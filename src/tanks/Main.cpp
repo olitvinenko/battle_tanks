@@ -1,10 +1,10 @@
-#include <tzod.h>
-#include <View.h>
-#include <AppConstants.h>
-#include <FileSystem.h>
-#include <GlfwAppWindow.h>
-#include <Timer.h>
-#include <ConsoleBuffer.h>
+#include "app/tzod.h"
+#include "app/View.h"
+#include "as/AppConstants.h"
+#include "FileSystem/FileSystem.h"
+#include "platglfw/GlfwAppWindow.h"
+#include "platglfw/Timer.h"
+#include "ui/ConsoleBuffer.h"
 
 #include <exception>
 

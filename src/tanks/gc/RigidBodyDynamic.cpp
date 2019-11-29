@@ -4,7 +4,7 @@
 #include "WorldCfg.h"
 #include "WorldEvents.h"
 #include "SaveFile.h"
-#include <MapFile.h>
+#include "mf/MapFile.h"
 
 GC_RigidBodyDynamic::MyPropertySet::MyPropertySet(GC_Object *object)
   : BASE(object)

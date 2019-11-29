@@ -1,15 +1,15 @@
 #include "ServiceEditor.h"
 #include "Configuration.h"
-#include <Player.h>
-#include <TypeSystem.h>
-#include <World.h>
-#include <Language.h>
-#include <Button.h>
-#include <DataSourceAdapters.h>
-#include <Combo.h>
-#include <List.h>
-#include <Text.h>
-#include <Keys.h>
+#include "gc/Player.h"
+#include "gc/TypeSystem.h"
+#include "gc/World.h"
+#include "loc/Language.h"
+#include "ui/Button.h"
+#include "ui/DataSourceAdapters.h"
+#include "ui/Combo.h"
+#include "ui/List.h"
+#include "ui/Text.h"
+#include "ui/Keys.h"
 
 #include "Editor.h" // WTF! cross-reference
 

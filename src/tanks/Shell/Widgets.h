@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Rectangle.h"
-#include "Text.h"
+#include "ui/Rectangle.h"
+#include "ui/Text.h"
 
 #include <list>
 #include <string>

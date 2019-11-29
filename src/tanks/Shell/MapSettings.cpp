@@ -1,14 +1,14 @@
 #include "MapSettings.h"
 #include "ConfigBinding.h"
-#include <ThemeManager.h>
-#include <World.h>
-#include <Language.h>
-#include <Button.h>
-#include <Combo.h>
-#include <Edit.h>
-#include <DataSourceAdapters.h>
-#include <Text.h>
-#include <List.h>
+#include "gv/ThemeManager.h"
+#include "gc/World.h"
+#include "loc/Language.h"
+#include "ui/Button.h"
+#include "ui/Combo.h"
+#include "ui/Edit.h"
+#include "ui/DataSourceAdapters.h"
+#include "ui/Text.h"
+#include "ui/List.h"
 
 static size_t FindTheme(const ThemeManager &themeManager, const std::string &name)
 {

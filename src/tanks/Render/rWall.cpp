@@ -1,9 +1,10 @@
 #include "rWall.h"
 
-#include <Wall.h>
-#include <WorldCfg.h>
-#include <TextureManager.h>
-#include <DrawingContext.h>
+#include "gc/Wall.h"
+#include "gc/WorldCfg.h"
+
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 R_Wall::R_Wall(TextureManager &tm, const char *tex)
 	: _tm(tm)

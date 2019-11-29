@@ -1,6 +1,8 @@
 #pragma once
-#include <ObjectPtr.h>
-#include <MyMath.h>
+
+#include "memory/ObjectPtr.h"
+#include "math/MyMath.h"
+
 #include <list>
 
 class FieldCell;

@@ -1,8 +1,8 @@
 #include "PlayerView.h"
 #include "Configuration.h"
-#include <LayoutContext.h>
-#include <TextureManager.h>
-#include <DrawingContext.h>
+#include "ui/LayoutContext.h"
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 PlayerView::PlayerView(UI::LayoutManager &manager, TextureManager &texman)
 	: UI::Window(manager)

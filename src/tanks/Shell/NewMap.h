@@ -1,5 +1,5 @@
 #pragma once
-#include <Dialog.h>
+#include "ui/Dialog.h"
 
 class ShellConfig;
 class LangCache;

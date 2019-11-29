@@ -1,7 +1,9 @@
 #include "rUserObject.h"
-#include <UserObjects.h>
-#include <DrawingContext.h>
-#include <TextureManager.h>
+
+#include "gc/UserObjects.h"
+
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 
 R_UserObject::R_UserObject(TextureManager &tm)
 	: _tm(tm)

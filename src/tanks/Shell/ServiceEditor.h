@@ -1,7 +1,7 @@
 #pragma once
-#include <WorldEvents.h>
-#include <Dialog.h>
-#include <ListBase.h>
+#include "gc/WorldEvents.h"
+#include "ui/Dialog.h"
+#include "ui/ListBase.h"
 #include <string>
 
 class LangCache;

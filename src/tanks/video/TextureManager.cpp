@@ -203,7 +203,7 @@ static LogicalTexture getlt(lua_State *L, int idx, float pxWidth, float pxHeight
 	return tex;
 }
 
-#include <LuaDeleter.h>
+#include "luaetc/LuaDeleter.h"
 
 std::vector<std::tuple<std::shared_ptr<Image>, std::string, LogicalTexture>>
 ParsePackage(const std::string &packageName, std::shared_ptr<FileSystem::Memory> file, FileSystem::IFileSystem &fs)

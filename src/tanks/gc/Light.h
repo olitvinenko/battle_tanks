@@ -1,6 +1,6 @@
 #pragma once
 #include "Actor.h"
-#include "ObjectPtr.h"
+#include "memory/ObjectPtr.h"
 
 #define GC_FLAG_LIGHT_ACTIVE        (GC_FLAG_ACTOR_ << 0)
 #define GC_FLAG_LIGHT_FADE          (GC_FLAG_ACTOR_ << 1)

@@ -2,13 +2,13 @@
 #include "GameContext.h"
 #include "WorldController.h"
 #include "AIManager.h"
-#include <FileSystem.h>
-#include <Player.h>
-#include <SaveFile.h>
-#include <World.h>
-#include <WorldCfg.h>
-#include <ScriptHarness.h>
-#include <MapFile.h>
+#include "FileSystem/FileSystem.h"
+#include "gc/Player.h"
+#include "gc/SaveFile.h"
+#include "gc/World.h"
+#include "gc/WorldCfg.h"
+#include "script/ScriptHarness.h"
+#include "mf/MapFile.h"
 
 #define AI_MAX_LEVEL   4U
 

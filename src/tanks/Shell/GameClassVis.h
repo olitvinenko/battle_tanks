@@ -1,6 +1,6 @@
 #pragma once
-#include <Window.h>
-#include <World.h>
+#include "ui/Window.h"
+#include "gc/World.h"
 #include <functional>
 
 class WorldView;

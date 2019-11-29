@@ -1,5 +1,5 @@
-#include "VariableTable.h"
-#include "VariableArray.h"
+#include "config/VariableTable.h"
+#include "config/VariableArray.h"
 
 // first pass to define the structure
 #include "Configuration.h"
@@ -38,7 +38,7 @@ static void InitLobbyList(VariableArray &lobby_servers)
 /////////////////////////////////////////////
 // Utility access functions
 
-#include <AppConfig.h>
+#include "as/AppConfig.h"
 #include <algorithm>
 
 int GetCurrentTier(const ShellConfig &conf, const DMCampaign &dmCampaign)

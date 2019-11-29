@@ -1,5 +1,6 @@
 #pragma once
-#include <MyMath.h>
+
+#include "math/MyMath.h"
 
 class GC_Player;
 class World;

@@ -1,7 +1,8 @@
 #include "rDecoration.h"
-#include <UserObjects.h>
-#include <DrawingContext.h>
-#include <TextureManager.h>
+
+#include "gc/UserObjects.h"
+#include "video/DrawingContext.h"
+#include "video/TextureManager.h"
 
 R_Decoration::R_Decoration(TextureManager &tm)
 	: _tm(tm)

@@ -7,8 +7,8 @@
 #include "Text.h"
 #include "UIInput.h"
 #include "GuiManager.h"
-#include <TextureManager.h>
-#include <DrawingContext.h>
+#include "video/TextureManager.h"
+#include "video/DrawingContext.h"
 #include <algorithm>
 
 using namespace UI;

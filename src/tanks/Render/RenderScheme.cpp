@@ -22,21 +22,21 @@
 #include "rWeaponBase.h"
 #include "RenderCfg.h"
 
-#include <Crate.h>
-#include <GameClasses.h>
-#include <indicators.h>
-#include <Light.h>
-#include <Particles.h>
-#include <projectiles.h>
-#include <RigidBody.h>
-#include <Trigger.h>
-#include <Turrets.h>
-#include <UserObjects.h>
-#include <Vehicle.h>
-#include <Wall.h>
-#include <Water.h>
-#include <Weapons.h>
-#include <World.h>
+#include "gc/Crate.h"
+#include "gc/GameClasses.h"
+#include "gc/indicators.h"
+#include "gc/Light.h"
+#include "gc/Particles.h"
+#include "gc/projectiles.h"
+#include "gc/RigidBody.h"
+#include "gc/Trigger.h"
+#include "gc/Turrets.h"
+#include "gc/UserObjects.h"
+#include "gc/Vehicle.h"
+#include "gc/Wall.h"
+#include "gc/Water.h"
+#include "gc/Weapons.h"
+#include "gc/World.h"
 
 static bool HasBooster(const World &world, const GC_Actor &actor)
 {

@@ -1,7 +1,7 @@
 #pragma once
 #include "MapCache.h"
-#include <Dialog.h>
-#include <ListBase.h>
+#include "ui/Dialog.h"
+#include "ui/ListBase.h"
 #include <array>
 #include <memory>
 #include <vector>

@@ -3,20 +3,20 @@
 #include "KeyMapper.h"
 #include "Configuration.h"
 
-#include <TextureManager.h>
-#include <Language.h>
-#include <Text.h>
-#include <List.h>
-#include <ListBox.h>
-#include <ListSelectionBinding.h>
-#include <MultiColumnListItem.h>
-#include <Button.h>
-#include <Scroll.h>
-#include <Edit.h>
-#include <Combo.h>
-#include <DataSourceAdapters.h>
-#include <GuiManager.h>
-#include <Keys.h>
+#include "video/TextureManager.h"
+#include "loc/Language.h"
+#include "ui/Text.h"
+#include "ui/List.h"
+#include "ui/ListBox.h"
+#include "ui/ListSelectionBinding.h"
+#include "ui/MultiColumnListItem.h"
+#include "ui/Button.h"
+#include "ui/Scroll.h"
+#include "ui/Edit.h"
+#include "ui/Combo.h"
+#include "ui/DataSourceAdapters.h"
+#include "ui/GuiManager.h"
+#include "ui/Keys.h"
 
 #include <algorithm>
 #include <sstream>

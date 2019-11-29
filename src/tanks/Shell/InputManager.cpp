@@ -1,7 +1,7 @@
 #include "Controller.h"
 #include "InputManager.h"
 #include "Configuration.h"
-#include <ConsoleBuffer.h>
+#include "ui/ConsoleBuffer.h"
 
 InputManager::InputManager(ShellConfig &conf, UI::ConsoleBuffer &logger)
 	: _conf(conf)

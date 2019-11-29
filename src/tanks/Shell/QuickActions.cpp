@@ -1,10 +1,10 @@
 #include "QuickActions.h"
-#include <Object.h>
-#include <TypeSystem.h>
-#include "luaObject.h"
-#include <lObjUtil.h>
-#include "lWorld.h"
-#include <ConsoleBuffer.h>
+#include "gc/Object.h"
+#include "gc/TypeSystem.h"
+#include "gclua/luaObject.h"
+#include "gclua/lObjUtil.h"
+#include "gclua/lWorld.h"
+#include "ui/ConsoleBuffer.h"
 #include <stdexcept>
 
 extern "C"
