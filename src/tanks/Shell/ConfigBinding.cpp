@@ -29,3 +29,8 @@ std::shared_ptr<UI::DataSource<const std::string&>> ConfBind(VariableString &con
 {
 	return std::make_shared<ConfTextSourceAdapter>(confString);
 }
+
+std::shared_ptr<UI::DataSource<const std::string&>> StaticBind(std::string&& str)
+{
+    return UI::DataSourceAliases::operator""_txt(str.c_str(), str.length());
+}

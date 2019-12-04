@@ -13,6 +13,7 @@
 #include "Widgets.h"
 #include "Configuration.h"
 #include "Desktop.h"
+#include "EditorDlg.h"
 #include "Profiler.h"
 
 #include "as/AppConstants.h"
@@ -451,27 +452,28 @@ void Desktop::OnMapSettings()
 	}
 }
 
+void Desktop::OnEditor()
+{
+    EditorDlg::Commands commands;
+    
+    commands.newMap = std::bind(&Desktop::OnNewMap, this);
+    commands.openMap = std::bind(&Desktop::OnOpenMap, this);
+    commands.saveMap = std::bind(&Desktop::OnExportMap, this);
+    
+    _navStack->PushNavStack(std::make_shared<EditorDlg>(GetManager(), _texman, _lang, std::move(commands)));
+    UpdateFocus();
+}
+
 void Desktop::ShowMainMenu()
 {
-	MainMenuCommands commands;
+	MainMenuDlg::Commands commands;
 	commands.newCampaign = [this]() { OnNewCampaign(); };
 	commands.newDM = std::bind(&Desktop::OnNewDM, this);
-	commands.newMap = std::bind(&Desktop::OnNewMap, this);
-	commands.openMap = std::bind(&Desktop::OnOpenMap, this);
-	commands.exportMap = std::bind(&Desktop::OnExportMap, this);
 	commands.gameSettings = std::bind(&Desktop::OnGameSettings, this);
 	commands.mapSettings = std::bind(&Desktop::OnMapSettings, this);
-	commands.close = [=]()
-	{
-		if (GetAppState().GetGameContext()) // do not return to nothing
-		{
-			while (auto wnd = _navStack->GetNavFront())
-			{
-				_navStack->PopNavStack(wnd.get());
-			}
-			UpdateFocus();
-		}
-	};
+    
+    commands.editor = std::bind(&Desktop::OnEditor, this);
+    
 	_navStack->PushNavStack(std::make_shared<MainMenuDlg>(GetManager(), _texman, _lang, std::move(commands)));
 	UpdateFocus();
 }

@@ -94,6 +94,7 @@ private:
 	void OnExportMap();
 	void OnGameSettings();
 	void OnMapSettings();
+    void OnEditor();
 	bool GetEditorMode() const;
 	void SetEditorMode(bool editorMode);
 	void ShowMainMenu();

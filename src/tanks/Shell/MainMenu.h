@@ -14,27 +14,25 @@ namespace UI
 
 class LangCache;
 
-struct MainMenuCommands
-{
-	std::function<void()> newCampaign;
-	std::function<void()> newDM;
-	std::function<void()> newMap;
-	std::function<void()> openMap;
-	std::function<void()> exportMap;
-	std::function<void()> mapSettings;
-	std::function<void()> gameSettings;
-	std::function<void()> close;
-};
-
 class MainMenuDlg : public UI::StackLayout
 {
 public:
+    struct Commands
+    {
+        std::function<void()> newDM;
+        std::function<void()> editor;
+        std::function<void()> gameSettings;
+        
+        std::function<void()> newCampaign;
+        std::function<void()> mapSettings;
+    };
+    
 	MainMenuDlg(UI::LayoutManager &manager,
 	            TextureManager &texman,
 	            LangCache &lang,
-	            MainMenuCommands commands);
+	            Commands&& commands);
 
 private:
 	LangCache &_lang;
-	MainMenuCommands _commands;
+	Commands _commands;
 };

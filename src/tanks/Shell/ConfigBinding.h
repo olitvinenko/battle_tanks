@@ -9,3 +9,4 @@ namespace UI
 }
 
 std::shared_ptr<UI::DataSource<const std::string&>> ConfBind(VariableString& confString);
+std::shared_ptr<UI::DataSource<const std::string&>> StaticBind(std::string&& string);
