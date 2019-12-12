@@ -1,10 +1,10 @@
 #include "Pathfinder.h"
 #include "HandyGraphFunctions.h"
-#include "WorldCfg.h"
-#include "Vector2.h"
-#include "Rendering/TextureManager.h"
-#include "Rendering/DrawingContext.h"
-#include "Rendering/Color.h"
+#include "gc/WorldCfg.h"
+#include "math/Vector2.h"
+#include "rendering/TextureManager.h"
+#include "rendering/DrawingContext.h"
+#include "rendering/Color.h"
 
 Pathfinder::Pathfinder(const TextureManager& tm)
 	:m_bStart(false),
@@ -429,7 +429,7 @@ void Pathfinder::Render(DrawingContext& dc)
 		int right = (int)(1 + pos.x + m_dCellWidth / 2.0);
 		int bottom = (int)(1 + pos.y + m_dCellHeight / 2.0);
 
-		math::RectFloat cellRect = { (float)left, (float)top, (float)right, (float)bottom };
+		RectFloat cellRect = { (float)left, (float)top, (float)right, (float)bottom };
 
 		switch (m_TerrainType[nd])
 		{
@@ -487,7 +487,7 @@ void Pathfinder::Render(DrawingContext& dc)
 			NavGraph::ConstNodeIterator NodeItr(*m_pGraph);
 			for (const NavGraph::NodeType* pN = NodeItr.begin(); !NodeItr.end(); pN = NodeItr.next())
 			{
-				math::RectFloat dst = { (float)pN->Pos().x - 2, (float)pN->Pos().y - 2, (float)pN->Pos().x + 2, (float)pN->Pos().y + 2 };
+				RectFloat dst = { (float)pN->Pos().x - 2, (float)pN->Pos().y - 2, (float)pN->Pos().x + 2, (float)pN->Pos().y + 2 };
 				dc.DrawSprite(dst, 0U, Color(255, 0, 0, 255), 0U); // tile's center
 			}
 		}

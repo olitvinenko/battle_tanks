@@ -52,6 +52,8 @@ static UI::ConsoleBuffer s_logger(100, 500);
 
 //static long xxx = _CrtSetBreakAlloc(12649);
 
+#include "audio/SoundEngine.hpp"
+
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -60,6 +62,10 @@ static UI::ConsoleBuffer s_logger(100, 500);
 int main(int, const char**)
 try
 {
+    std::unique_ptr<SoundEngine> sound(new SoundEngine);
+    sound->PlayOnce("file_example.wav");
+    
+    
 	srand((unsigned int) time(nullptr));
 
 #if defined(_DEBUG) && defined(_WIN32) // memory leaks detection

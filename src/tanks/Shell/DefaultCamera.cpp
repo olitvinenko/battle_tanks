@@ -13,7 +13,7 @@ static unsigned int GetMilliseconds()
 	return duration_cast<duration<unsigned int, std::milli>>(high_resolution_clock::now().time_since_epoch()).count();
 }
 
-DefaultCamera::DefaultCamera(vec2d pos)
+DefaultCamera::DefaultCamera(Vector2 pos)
 	: _zoom(1)
 	, _dt(50)
 	, _pos(pos)
@@ -21,12 +21,12 @@ DefaultCamera::DefaultCamera(vec2d pos)
 	_dwTimeX = _dwTimeY = GetMilliseconds();
 }
 
-void DefaultCamera::Move(vec2d offset, const FRECT &worldBounds)
+void DefaultCamera::Move(Vector2 offset, const RectFloat &worldBounds)
 {
     _pos = Vec2dConstrain(_pos - offset * 30, worldBounds);
 }
 
-void DefaultCamera::HandleMovement(UI::IInput &input, const FRECT &worldBounds)
+void DefaultCamera::HandleMovement(UI::IInput &input, const RectFloat &worldBounds)
 {
 	static char  lastIn   = 0, LastOut = 0;
 	static float levels[] = { 0.0625f, 0.125f, 0.25f, 0.5f, 1.0f, 1.5f, 2.0f };
@@ -101,6 +101,6 @@ void DefaultCamera::HandleMovement(UI::IInput &input, const FRECT &worldBounds)
 
 	if (input.IsKeyPressed(UI::Key::Home))
 	{
-		_pos = vec2d{};
+		_pos = Vector2{};
 	}
 }

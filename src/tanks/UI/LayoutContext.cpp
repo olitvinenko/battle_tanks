@@ -3,7 +3,7 @@
 
 using namespace UI;
 
-LayoutContext::LayoutContext(float opacity, float scale, vec2d offset, vec2d size, bool enabled)
+LayoutContext::LayoutContext(float opacity, float scale, Vector2 offset, Vector2 size, bool enabled)
 	: _offset(offset)
 	, _size(size)
 	, _scale(scale)

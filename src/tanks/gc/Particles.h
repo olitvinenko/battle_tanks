@@ -13,10 +13,10 @@ private:
 	float _time;
 	float _timeLife;
 
-	vec2d _velocity;
+	Vector2 _velocity;
 
 public:
-	GC_BrickFragment(vec2d pos, vec2d v0);
+	GC_BrickFragment(Vector2 pos, Vector2 v0);
 	GC_BrickFragment(FromFile);
 
     void Serialize(World &world, SaveFile &f) override;
@@ -54,7 +54,7 @@ enum ParticleType
 	PARTICLE_CATTRACK,
 };
 
-#define SPEED_SMOKE vec2d{0, -40.0f}
+#define SPEED_SMOKE Vector2{0, -40.0f}
 
 #define GC_FLAG_PARTICLE_FADE            (GC_FLAG_ACTOR_ << 0)
 #define GC_FLAG_PARTICLE_                (GC_FLAG_ACTOR_ << 1)
@@ -70,11 +70,11 @@ public:
 	float _time;
 	float _timeLife;
 	float _rotationSpeed;
-	vec2d _velocity;
+	Vector2 _velocity;
 	ParticleType _ptype = PARTICLE_TYPE1;
 
 public:
-	GC_Particle(vec2d pos, vec2d v, ParticleType ptype, float lifeTime, vec2d orient = { 1, 0 });
+	GC_Particle(Vector2 pos, Vector2 v, ParticleType ptype, float lifeTime, Vector2 orient = { 1, 0 });
 	GC_Particle(FromFile);
 
 	ParticleType GetParticleType() const { return _ptype; }
@@ -100,8 +100,8 @@ public:
     {                                                                       \
         DECLARE_SELF_REGISTRATION(clsname);                                 \
     public:                                                                 \
-        clsname(vec2d pos, vec2d v, ParticleType ptype,                     \
-                float lifeTime, vec2d orient = {1, 0})                      \
+        clsname(Vector2 pos, Vector2 v, ParticleType ptype,                     \
+                float lifeTime, Vector2 orient = {1, 0})                      \
             : GC_Particle(pos, v, ptype, lifeTime, orient)                  \
         {}                                                                  \
         clsname(FromFile) : GC_Particle(FromFile()) {}                      \

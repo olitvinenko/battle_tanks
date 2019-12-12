@@ -23,7 +23,7 @@ protected:
 	PropertySet* NewPropertySet() override;
 
 public:
-	explicit GC_UserObject(vec2d pos);
+	explicit GC_UserObject(Vector2 pos);
 	explicit GC_UserObject(FromFile);
 	virtual ~GC_UserObject();
 
@@ -70,7 +70,7 @@ protected:
 	PropertySet* NewPropertySet() override;
 
 public:
-	explicit GC_Decoration(vec2d pos);
+	explicit GC_Decoration(Vector2 pos);
 	explicit GC_Decoration(FromFile);
 	virtual ~GC_Decoration();
 

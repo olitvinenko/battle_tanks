@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math/MyMath.h"
+#include "math/Rect.h"
 
 namespace UI
 {
@@ -10,17 +10,17 @@ namespace UI
 class DefaultCamera
 {
 public:
-	explicit DefaultCamera(vec2d pos);
+	explicit DefaultCamera(Vector2 pos);
 
-    void Move(vec2d offset, const FRECT &worldBounds);
-	void HandleMovement(UI::IInput &input, const FRECT &worldBounds);
+    void Move(Vector2 offset, const RectFloat &worldBounds);
+	void HandleMovement(UI::IInput &input, const RectFloat &worldBounds);
 	float GetZoom() const { return _zoom; }
-	vec2d GetEye() const { return _pos; }
+	Vector2 GetEye() const { return _pos; }
 
 private:
 	float _zoom;
 	float _dt;
-	vec2d _pos;
+	Vector2 _pos;
 	unsigned int _dwTimeX;
 	unsigned int _dwTimeY;
 };

@@ -9,7 +9,7 @@ GC_Object* RTTypes::CreateFromFile(World &world, ObjectType type)
 	return &it->second(world);
 }
 
-GC_Actor& RTTypes::CreateActor(World &world, ObjectType type, vec2d pos)
+GC_Actor& RTTypes::CreateActor(World &world, ObjectType type, Vector2 pos)
 {
 	assert(IsRegistered(type));
     assert(!GetTypeInfo(type).service);

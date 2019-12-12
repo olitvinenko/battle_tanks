@@ -2,21 +2,21 @@
 #include "DataSource.h"
 #include "GuiManager.h"
 #include "LayoutContext.h"
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/TextureManager.h"
+#include "rendering/DrawingContext.h"
 
 using namespace UI;
 
 Rectangle::Rectangle(LayoutManager &manager)
 	: Window(manager)
-	, _backColor(std::make_shared<StaticValue<SpriteColor>>(0xffffffff))
-	, _borderColor(std::make_shared<StaticValue<SpriteColor>>(0xffffffff))
+	, _backColor(std::make_shared<StaticValue<Color>>(0xffffffff))
+	, _borderColor(std::make_shared<StaticValue<Color>>(0xffffffff))
 	, _drawBorder(true)
 	, _drawBackground(true)
 {
 }
 
-void Rectangle::SetBackColor(std::shared_ptr<DataSource<SpriteColor>> color)
+void Rectangle::SetBackColor(std::shared_ptr<DataSource<Color>> color)
 {
 	_backColor = std::move(color);
 }
@@ -56,19 +56,19 @@ void Rectangle::Draw(const StateContext &sc, const LayoutContext &lc, const Inpu
 {
 	if (-1 != _texture)
 	{
-		FRECT dst = MakeRectWH(lc.GetPixelSize());
+		RectFloat dst = MakeRectWH(lc.GetPixelSize());
 
 		if (_drawBackground)
 		{
 			float border = _drawBorder ? texman.GetBorderSize(_texture) : 0.f;
-			FRECT client = { dst.left + border, dst.top + border, dst.right - border, dst.bottom - border };
+			RectFloat client = { dst.left + border, dst.top + border, dst.right - border, dst.bottom - border };
 			if (_textureStretchMode == StretchMode::Stretch)
 			{
 				dc.DrawSprite(client, _texture, _backColor->GetValue(sc), _frame);
 			}
 			else
 			{
-				RectRB clip = FRectToRect(client);
+				RectInt clip = FRectToRect(client);
 				dc.PushClippingRect(clip);
 
 				float frameWidth = texman.GetFrameWidth(_texture, _frame);

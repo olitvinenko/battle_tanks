@@ -4,8 +4,8 @@
 #include "LayoutContext.h"
 #include "StateContext.h"
 #include "Window.h"
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/TextureManager.h"
+#include "rendering/DrawingContext.h"
 
 #include <iostream>
 
@@ -87,11 +87,11 @@ static void DrawWindowRecursive(
 	// topmost windows escape parents' clip
 	bool clipChildren = wnd.GetClipChildren() && (!renderSettings.topMostPass || insideTopMost);
 
-	vec2d pxSize = lc.GetPixelSize();
+	Vector2 pxSize = lc.GetPixelSize();
 
 	if (clipChildren)
 	{
-		RectRB clip;
+		RectInt clip;
 		clip.left = 0;
 		clip.top = 0;
 		clip.right = static_cast<int>(pxSize.x);
@@ -115,7 +115,7 @@ static void DrawWindowRecursive(
 					bool childOnHoverPath = childDepth < renderSettings.hoverPath.size() &&
 						renderSettings.hoverPath[renderSettings.hoverPath.size() - 1 - childDepth] == child;
 
-					vec2d childOffset = Offset(wnd.GetChildRect(renderSettings.texman, lc, sc, *child));
+					Vector2 childOffset = Offset(wnd.GetChildRect(renderSettings.texman, lc, sc, *child));
                     
 					renderSettings.dc.PushTransform(childOffset, childLC.GetOpacityCombined());
 					renderSettings.ic.PushTransform(childOffset, childFocused, childOnHoverPath);
@@ -160,9 +160,9 @@ void UI::RenderUIRoot(Window &desktop, RenderSettings &rs, const LayoutContext &
 		}
 	}
 
-	rs.dc.SetMode(RM_INTERFACE);
+	rs.dc.SetMode(RenderMode::INTERFACE);
 
-	rs.ic.PushTransform(vec2d{}, rs.ic.GetMainWindowActive(), !rs.hoverPath.empty());
+	rs.ic.PushTransform(Vector2{}, rs.ic.GetMainWindowActive(), !rs.hoverPath.empty());
 	for (bool topMostPass : {false, true})
 	{
 		rs.topMostPass = topMostPass;

@@ -18,9 +18,9 @@ class GC_RigidBodyDynamic : public GC_RigidBodyStatic
 		ObjPtr<GC_RigidBodyDynamic> obj1_d;
 		ObjPtr<GC_RigidBodyStatic>  obj2_s;
 		GC_RigidBodyDynamic *obj2_d;
-		vec2d origin;
-		vec2d normal;
-		vec2d tangent;
+		Vector2 origin;
+		Vector2 normal;
+		Vector2 tangent;
 		float total_np, total_tp;
 		float depth;
 //		bool  inactive;
@@ -31,17 +31,17 @@ class GC_RigidBodyDynamic : public GC_RigidBodyStatic
 	static std::stack<ContactList> _contactsStack;
 	static bool _glob_parity;
 
-	float geta_s(const vec2d &n, const vec2d &c, const GC_RigidBodyStatic *obj) const;
-	float geta_d(const vec2d &n, const vec2d &c, const GC_RigidBodyDynamic *obj) const;
+	float geta_s(const Vector2 &n, const Vector2 &c, const GC_RigidBodyStatic *obj) const;
+	float geta_d(const Vector2 &n, const Vector2 &c, const GC_RigidBodyDynamic *obj) const;
 
-	void impulse(const vec2d &origin, const vec2d &impulse);
+	void impulse(const Vector2 &origin, const Vector2 &impulse);
 
 	bool parity() { return CheckFlags(GC_FLAG_RBDYMAMIC_PARITY); }
 
 
-	vec2d _external_force;
+	Vector2 _external_force;
 	float _external_momentum;
-	vec2d _external_impulse;
+	Vector2 _external_impulse;
 	float _external_torque;
 
 
@@ -65,10 +65,10 @@ class GC_RigidBodyDynamic : public GC_RigidBodyStatic
 
 public:
 	float GetSpinup() const;
-	vec2d GetBrakingLength() const;
+	Vector2 GetBrakingLength() const;
 
 public:
-	explicit GC_RigidBodyDynamic(vec2d pos);
+	explicit GC_RigidBodyDynamic(Vector2 pos);
 	explicit GC_RigidBodyDynamic(FromFile);
 
 	PropertySet* NewPropertySet() override;
@@ -83,7 +83,7 @@ public:
 	float Energy() const;
 
 	float _av;      // angular velocity
-	vec2d _lv;      // linear velocity
+	Vector2 _lv;      // linear velocity
 
 	float _inv_m;   // 1/mass
 	float _inv_i;   // 1/moment_of_inertia
@@ -104,12 +104,12 @@ public:
 	//--------------------------------
 
 	void ApplyMomentum(float momentum);
-	void ApplyForce(const vec2d &force);
-	void ApplyForce(const vec2d &force, const vec2d &origin);
+	void ApplyForce(const Vector2 &force);
+	void ApplyForce(const Vector2 &force, const Vector2 &origin);
 
 	void ApplyTorque(float torque);
-	void ApplyImpulse(const vec2d &impulse);
-	void ApplyImpulse(const vec2d &impulse, const vec2d &origin);
+	void ApplyImpulse(const Vector2 &impulse);
+	void ApplyImpulse(const Vector2 &impulse, const Vector2 &origin);
 
 	//--------------------------------
 

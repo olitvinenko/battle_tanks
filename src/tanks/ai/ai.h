@@ -2,7 +2,8 @@
 
 #include "gc/Object.h"
 #include "memory/ObjectPtr.h"
-#include "math/MyMath.h"
+#include "math/Vector2.h"
+#include "math/Rect.h"
 
 #include <list>
 

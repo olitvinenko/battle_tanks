@@ -108,5 +108,7 @@ namespace UI
 		Insert,
 		Delete,
 		Menu,
+        
+        Last
 	};
 }

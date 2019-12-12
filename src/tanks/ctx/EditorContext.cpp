@@ -2,12 +2,12 @@
 #include "gc/World.h"
 #include "gc/WorldCfg.h"
 #include "mf/MapFile.h"
-#include "FileSystem/FileSystem.h"
+#include "filesystem/FileSystem.h"
 
 EditorContext::EditorContext(int width, int height, FileSystem::Stream *stream)
 {
 	assert(width >= 0 && height >= 0);
-	RectRB bounds{ -width / 2, -height / 2, width / 2, height / 2 };
+	RectInt bounds{ -width / 2, -height / 2, width / 2, height / 2 };
 
 	if (stream)
 	{
@@ -26,7 +26,7 @@ EditorContext::EditorContext(int width, int height, FileSystem::Stream *stream)
 		mf.getMapAttribute("west_bound", left);
 		mf.getMapAttribute("north_bound", top);
 
-		_originalBounds = MakeRectWH(vec2d{ (float)left, (float)top }, vec2d{ (float)width, (float)height }) * CELL_SIZE;
+		_originalBounds = MakeRectWH(Vector2{ (float)left, (float)top }, Vector2{ (float)width, (float)height }) * CELL_SIZE;
 
 		bounds.left = std::min(bounds.left, left);
 		bounds.top = std::min(bounds.top, top);

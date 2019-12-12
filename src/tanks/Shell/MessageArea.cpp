@@ -3,8 +3,9 @@
 #include "ui/ConsoleBuffer.h"
 #include "ui/GuiManager.h"
 #include "ui/LayoutContext.h"
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/Color.h"
+#include "rendering/TextureManager.h"
+#include "rendering/DrawingContext.h"
 #include <algorithm>
 
 MessageArea::MessageArea(UI::LayoutManager &manager, TextureManager &texman, ShellConfig &conf, UI::ConsoleBuffer &logger)
@@ -43,13 +44,13 @@ void MessageArea::Draw(const UI::StateContext &sc, const UI::LayoutContext &lc, 
 	for( LineList::const_iterator it = _lines.begin(); it != _lines.end(); ++it )
 	{
 		unsigned char cc = std::min(int(it->time * 255 * 2), 255);
-		SpriteColor c;
+		Color c;
 		c.r = cc;
 		c.g = cc;
 		c.b = cc;
 		c.a = cc;
 
-		dc.DrawBitmapText(vec2d{ 0, y }, lc.GetScale(), _fontTexture, c, it->str);
+		dc.DrawBitmapText(Vector2{ 0, y }, lc.GetScale(), _fontTexture, c, it->str);
 		y -= h;
 	}
 }

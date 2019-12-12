@@ -3,19 +3,20 @@
 #include "gc/Weapons.h"
 #include "gc/World.h"
 
-#include "video/DrawingContext.h"
+#include "rendering/Color.h"
+#include "rendering/DrawingContext.h"
 
-vec2d GetWeapSpriteDirection(const World &world, const GC_Weapon &weapon)
+Vector2 GetWeapSpriteDirection(const World &world, const GC_Weapon &weapon)
 {
 	bool animate = !weapon.GetAttached() && !weapon.GetRespawn();
-	vec2d dir = animate ? Vec2dDirection(world.GetTime()) : weapon.GetDirection();
+	Vector2 dir = animate ? Vec2dDirection(world.GetTime()) : weapon.GetDirection();
 	return dir;
 }
 
 void DrawWeaponShadow(const World &world, const GC_Weapon &weapon, DrawingContext &dc, size_t texId)
 {
-	vec2d pos = weapon.GetPos();
-	vec2d dir = GetWeapSpriteDirection(world, weapon);
+	Vector2 pos = weapon.GetPos();
+	Vector2 dir = GetWeapSpriteDirection(world, weapon);
 	float shadow = weapon.GetAttached() ? 2.0f : 4.0f;
 	dc.DrawSprite(texId, 0, 0x40000000, pos.x + shadow, pos.y + shadow, dir);
 }

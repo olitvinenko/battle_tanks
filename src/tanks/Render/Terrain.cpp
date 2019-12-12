@@ -1,7 +1,7 @@
 #include "Terrain.h"
-#include "video/RenderBase.h"
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/base/IRender.h"
+#include "rendering/TextureManager.h"
+#include "rendering/DrawingContext.h"
 
 Terrain::Terrain(TextureManager &tm)
 	: _texBack(tm.FindSprite("background"))
@@ -9,7 +9,7 @@ Terrain::Terrain(TextureManager &tm)
 {
 }
 
-void Terrain::Draw(DrawingContext &dc, const FRECT &bounds, bool drawGrid) const
+void Terrain::Draw(DrawingContext &dc, const RectFloat &bounds, bool drawGrid) const
 {
 	dc.DrawBackground(_texBack, bounds);
 	if( drawGrid )

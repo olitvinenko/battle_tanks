@@ -1,7 +1,7 @@
 #include "View.h"
 #include "tzod.h"
 #include "as/AppConstants.h"
-#include "FileSystem/FileSystem.h"
+#include "filesystem/FileSystem.h"
 #include "shell/Desktop.h"
 #include "ui/AppWindow.h"
 #include "ui/ConsoleBuffer.h"
@@ -10,9 +10,9 @@
 #include "ui/LayoutContext.h"
 #include "ui/StateContext.h"
 #include "ui/Window.h"
-#include "video/DrawingContext.h"
-#include "video/RenderOpenGL.h"
-#include "video/TextureManager.h"
+#include "rendering/DrawingContext.h"
+#include "rendering/RenderOpenGL.h"
+#include "rendering/TextureManager.h"
 
 
 static TextureManager InitTextureManager(FileSystem::IFileSystem &fs, UI::ConsoleBuffer &logger, IRender &render)
@@ -92,7 +92,7 @@ void TzodView::Render(float pxWidth, float pxHeight, float scale)
 	_appWindow.MakeCurrent();
 
 #ifndef NOSOUND
-//        vec2d pos(0, 0);
+//        Vector2 pos(0, 0);
 //        if (!_world.GetList(LIST_cameras).empty())
 //        {
 //            _world.GetList(LIST_cameras).for_each([&pos](ObjectList::id_type, GC_Object *o)
@@ -104,11 +104,11 @@ void TzodView::Render(float pxWidth, float pxHeight, float scale)
 	//_impl->soundView.Step();
 #endif
 
-	DrawingContext dc(_impl->textureManager, _appWindow.GetRender(), static_cast<unsigned int>(pxWidth), static_cast<unsigned int>(pxHeight));
+	DrawingContext dc(_impl->textureManager, &_appWindow.GetRender(), static_cast<unsigned int>(pxWidth), static_cast<unsigned int>(pxHeight));
 	_appWindow.GetRender().Begin();
 
 	UI::StateContext stateContext;
-	UI::LayoutContext layoutContext(1.f, scale, vec2d{}, vec2d{ pxWidth, pxHeight }, _impl->gui.GetDesktop()->GetEnabled(stateContext));
+	UI::LayoutContext layoutContext(1.f, scale, Vector2{}, Vector2{ pxWidth, pxHeight }, _impl->gui.GetDesktop()->GetEnabled(stateContext));
 	UI::RenderSettings rs{ _impl->gui.GetInputContext(), dc, _impl->textureManager };
 
 	UI::RenderUIRoot(*_impl->gui.GetDesktop(), rs, layoutContext, stateContext);
@@ -116,7 +116,7 @@ void TzodView::Render(float pxWidth, float pxHeight, float scale)
 #ifndef NDEBUG
 	for (auto &id2pos : rs.ic.GetLastPointerLocation())
 	{
-		FRECT dst = { id2pos.second.x - 4, id2pos.second.y - 4, id2pos.second.x + 4, id2pos.second.y + 4 };
+		RectFloat dst = { id2pos.second.x - 4, id2pos.second.y - 4, id2pos.second.x + 4, id2pos.second.y + 4 };
 		rs.dc.DrawSprite(dst, 0U, 0xffffffff, 0U);
 	}
 #endif

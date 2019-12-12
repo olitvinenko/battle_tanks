@@ -36,7 +36,7 @@ int world_actor(lua_State *L)
 	}
 
     World &world = luaT_getworld(L);
-    GC_Actor &obj = RTTypes::Inst().CreateActor(world, type, vec2d{x, y});
+    GC_Actor &obj = RTTypes::Inst().CreateActor(world, type, Vector2{x, y});
 
 	if( 4 == n )
 	{

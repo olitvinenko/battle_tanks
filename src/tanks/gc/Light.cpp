@@ -14,7 +14,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_Light)
 
 IMPLEMENT_1LIST_MEMBER(GC_Light, LIST_lights);
 
-GC_Light::GC_Light(vec2d pos, enumLightType type)
+GC_Light::GC_Light(Vector2 pos, enumLightType type)
 	: GC_Actor(pos)
 	, _startTime(-FLT_MAX)
 	, _timeout(0)
@@ -79,7 +79,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_Spotlight)
 	return true;
 }
 
-GC_Spotlight::GC_Spotlight(vec2d pos)
+GC_Spotlight::GC_Spotlight(Vector2 pos)
   : GC_Actor(pos)
 {
 	SetFlags(GC_FLAG_SPOTLIGHT_ACTIVE, true);
@@ -118,7 +118,7 @@ void GC_Spotlight::Serialize(World &world, SaveFile &f)
 	f.Serialize(_light);
 }
 
-void GC_Spotlight::MoveTo(World &world, const vec2d &pos)
+void GC_Spotlight::MoveTo(World &world, const Vector2 &pos)
 {
 	_light->MoveTo(world, pos + GetDirection() * 7);
 	GC_Actor::MoveTo(world, pos);

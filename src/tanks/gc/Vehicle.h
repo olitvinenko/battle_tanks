@@ -19,7 +19,7 @@ class GC_Vehicle : public GC_RigidBodyDynamic
 	typedef GC_RigidBodyDynamic base;
 
 public:
-	explicit GC_Vehicle(vec2d pos);
+	explicit GC_Vehicle(Vector2 pos);
 	explicit GC_Vehicle(FromFile);
 	virtual ~GC_Vehicle();
 
@@ -65,7 +65,7 @@ public:
 	GC_Player* GetOwner() const override { return _player; }
 
 	// GC_Actor
-	void MoveTo(World &world, const vec2d &pos) override;
+	void MoveTo(World &world, const Vector2 &pos) override;
 
 	// GC_Object
 	void Init(World &world) override;
@@ -90,8 +90,8 @@ private:
 	ObjPtr<GC_pu_Shield> _shield;
 	ObjPtr<GC_Player> _player;
 
-	vec2d GetLightPos1() const;
-	vec2d GetLightPos2() const;
+	Vector2 GetLightPos1() const;
+	Vector2 GetLightPos2() const;
 };
 
 /////////////////////////////////////////////////////////////
@@ -101,7 +101,7 @@ class GC_Tank_Light : public GC_Vehicle
 	DECLARE_SELF_REGISTRATION(GC_Tank_Light);
 
 public:
-	explicit GC_Tank_Light(vec2d pos);
+	explicit GC_Tank_Light(Vector2 pos);
 	explicit GC_Tank_Light(FromFile);
 
 	float GetDefaultHealth() const override { return 100; }

@@ -22,7 +22,7 @@ class GC_Wall : public GC_RigidBodyStatic
     typedef GC_RigidBodyStatic base;
 
 public:
-	explicit GC_Wall(vec2d pos);
+	explicit GC_Wall(Vector2 pos);
 	GC_Wall(FromFile);
 	virtual ~GC_Wall();
 
@@ -33,8 +33,8 @@ public:
 	int GetStyle() const;
 
 	// GC_RigidBodyStatic
-	bool IntersectWithLine(const vec2d &lineCenter, const vec2d &lineDirection, vec2d &outEnterNormal, float &outEnter, float &outExit) const override;
-	bool IntersectWithRect(const vec2d &rectHalfSize, const vec2d &rectCenter, const vec2d &rectDirection, vec2d &outWhere, vec2d &outNormal, float &outDepth) const override;
+	bool IntersectWithLine(const Vector2 &lineCenter, const Vector2 &lineDirection, Vector2 &outEnterNormal, float &outEnter, float &outExit) const override;
+	bool IntersectWithRect(const Vector2 &rectHalfSize, const Vector2 &rectCenter, const Vector2 &rectDirection, Vector2 &outWhere, Vector2 &outNormal, float &outDepth) const override;
 	float GetDefaultHealth() const override { return 50; }
 	unsigned char GetPassability() const override { return 1; }
 
@@ -69,7 +69,7 @@ class GC_Wall_Concrete : public GC_Wall
 	DECLARE_SELF_REGISTRATION(GC_Wall_Concrete);
 
 public:
-	GC_Wall_Concrete(vec2d pos);
+	GC_Wall_Concrete(Vector2 pos);
 	GC_Wall_Concrete(FromFile) : GC_Wall(FromFile()) {}
 
 	unsigned char GetPassability() const override { return 0xFF; } // impassable

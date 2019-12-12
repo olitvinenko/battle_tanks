@@ -119,9 +119,9 @@ public:
 	bool    _gameStarted;
 	bool    _frozen;
 	bool    _nightMode;
-	FRECT   _bounds;
-	RectRB  _blockBounds;
-	RectRB  _locationBounds;
+	RectFloat   _bounds;
+	RectInt  _blockBounds;
+	RectInt  _locationBounds;
 
 	std::string _infoAuthor;
 	std::string _infoEmail;
@@ -137,7 +137,7 @@ public:
 
 public:
 
-	explicit World(RectRB blockBounds);
+	explicit World(RectInt blockBounds);
 	~World();
 
 	void Step(float dt);
@@ -157,7 +157,7 @@ public:
 	void Deserialize(SaveFile &f);
 	void Serialize(SaveFile &f);
 
-	FRECT GetOccupiedBounds() const;
+	RectFloat GetOccupiedBounds() const;
 	void Export(FileSystem::Stream &stream);
 	void Import(MapFile &file);
 
@@ -169,15 +169,15 @@ public:
 
 	int   net_rand();
 	float net_frand(float max);
-	vec2d net_vrand(float len);
+	Vector2 net_vrand(float len);
 
-	bool CalcOutstrip( vec2d origin,
+	bool CalcOutstrip( Vector2 origin,
 	                   float projectileSpeed,
-	                   vec2d targetPos,
-	                   vec2d targetVelocity,
-	                   vec2d &out_fake );  // out: fake target position
+	                   Vector2 targetPos,
+	                   Vector2 targetVelocity,
+	                   Vector2 &out_fake );  // out: fake target position
 
-	int GetTileIndex(vec2d pos) const;
+	int GetTileIndex(Vector2 pos) const;
 	int GetTileIndex(int blockX, int blockY) const;
 
 	//
@@ -188,21 +188,21 @@ public:
 	struct CollisionPoint
 	{
 		GC_RigidBodyStatic *obj;
-		vec2d normal;
+		Vector2 normal;
 		float enter;
 		float exit;
 	};
 
 	GC_RigidBodyStatic* TraceNearest( const Grid<PtrList<GC_Object>> &list,
 	                             const GC_RigidBodyStatic* ignore,
-	                             const vec2d &x0,      // origin
-	                             const vec2d &a,       // direction and length
-	                             vec2d *ht   = nullptr,
-	                             vec2d *norm = nullptr) const;
+	                             const Vector2 &x0,      // origin
+	                             const Vector2 &a,       // direction and length
+	                             Vector2 *ht   = nullptr,
+	                             Vector2 *norm = nullptr) const;
 
 	void TraceAll( const Grid<PtrList<GC_Object>> &list,
-	               const vec2d &x0,      // origin
-	               const vec2d &a,       // direction and length
+	               const Vector2 &x0,      // origin
+	               const Vector2 &a,       // direction and length
 	               std::vector<CollisionPoint> &result) const;
 
 	template<class SelectorType>

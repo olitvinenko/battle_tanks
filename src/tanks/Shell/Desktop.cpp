@@ -21,7 +21,7 @@
 #include "as/AppState.h"
 #include "ctx/EditorContext.h"
 #include "gc/World.h"
-#include "FileSystem/FileSystem.h"
+#include "filesystem/FileSystem.h"
 #include "loc/Language.h"
 //#include <script/script.h>
 #include "ui/Button.h"
@@ -34,7 +34,7 @@
 #include "ui/LayoutContext.h"
 #include "ui/Text.h"
 #include "ui/UIInput.h"
-#include "video/DrawingContext.h"
+#include "rendering/DrawingContext.h"
 
 extern "C"
 {
@@ -89,7 +89,7 @@ Desktop::Desktop(UI::LayoutManager &manager,
 	_con->eventOnRequestCompleteCommand = std::bind(&Desktop::OnCompleteCommand, this, _1, _2, _3);
 	_con->SetVisible(false);
 	_con->SetTopMost(true);
-	SpriteColor colors[] = {0xffffffff, 0xffff7fff};
+	Color colors[] = {0xffffffff, 0xffff7fff};
 	_con->SetColors(colors, sizeof(colors) / sizeof(colors[0]));
 	_con->SetHistory(&_history);
 
@@ -551,7 +551,7 @@ bool Desktop::OnKeyPressed(UI::InputContext &ic, UI::Key key)
 	return true;
 }
 
-FRECT Desktop::GetChildRect(TextureManager &texman, const UI::LayoutContext &lc, const UI::StateContext &sc, const UI::Window &child) const
+RectFloat Desktop::GetChildRect(TextureManager &texman, const UI::LayoutContext &lc, const UI::StateContext &sc, const UI::Window &child) const
 {
 	if (_background.get() == &child)
 	{
@@ -560,7 +560,7 @@ FRECT Desktop::GetChildRect(TextureManager &texman, const UI::LayoutContext &lc,
 		{
 			transition = 1 - transition;
 		}
-		return MakeRectWH(vec2d{0, -lc.GetPixelSize().y * transition}, lc.GetPixelSize());
+		return MakeRectWH(Vector2{0, -lc.GetPixelSize().y * transition}, lc.GetPixelSize());
 	}
 	if (_editor.get() == &child || _game.get() == &child || _navStack.get() == &child)
 	{
@@ -568,15 +568,15 @@ FRECT Desktop::GetChildRect(TextureManager &texman, const UI::LayoutContext &lc,
 	}
 	if (_con.get() == &child)
 	{
-		return MakeRectRB(Vec2dFloor(vec2d{ 10, 0 } *lc.GetScale()), Vec2dFloor(lc.GetPixelSize().x - 10 * lc.GetScale(), lc.GetPixelSize().y / 2));
+		return MakeRectRB(Vec2dFloor(Vector2{ 10, 0 } *lc.GetScale()), Vec2dFloor(lc.GetPixelSize().x - 10 * lc.GetScale(), lc.GetPixelSize().y / 2));
 	}
 	if (_fps.get() == &child)
 	{
-		return UI::CanvasLayout(vec2d{ 1, lc.GetPixelSize().y / lc.GetScale() - 1 }, _fps->GetContentSize(texman, sc, lc.GetScale()) / lc.GetScale(), lc.GetScale());
+		return UI::CanvasLayout(Vector2{ 1, lc.GetPixelSize().y / lc.GetScale() - 1 }, _fps->GetContentSize(texman, sc, lc.GetScale()) / lc.GetScale(), lc.GetScale());
 	}
 	if (_tierTitle.get() == &child)
 	{
-		return MakeRectWH(Vec2dFloor(lc.GetPixelSize() / 2), vec2d{});
+		return MakeRectWH(Vec2dFloor(lc.GetPixelSize() / 2), Vector2{});
 	}
 	return UI::Window::GetChildRect(texman, lc, sc, child);
 }

@@ -18,7 +18,7 @@
 IMPLEMENT_2LIST_MEMBER(GC_Pickup, LIST_pickups, LIST_timestep);
 IMPLEMENT_GRID_MEMBER(GC_Pickup, grid_pickup);
 
-GC_Pickup::GC_Pickup(vec2d pos)
+GC_Pickup::GC_Pickup(Vector2 pos)
   : GC_Actor(pos)
   , _timeAttached(0)
   , _timeRespawn(0)
@@ -131,7 +131,7 @@ void GC_Pickup::TimeStep(World &world, float dt)
 
 			for( int n = 0; n < 50; ++n )
 			{
-				vec2d a = Vec2dDirection(PI2 * (float) n / 50);
+				Vector2 a = Vec2dDirection(PI2 * (float) n / 50);
 				world.New<GC_Particle>(GetPos() + a * 25, a * 25, PARTICLE_TYPE1, frand(0.5f) + 0.1f);
 			}
 		}
@@ -205,7 +205,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_pu_Health)
 	return true;
 }
 
-GC_pu_Health::GC_pu_Health(vec2d pos)
+GC_pu_Health::GC_pu_Health(Vector2 pos)
   : GC_Pickup(pos)
 {
 	SetRespawnTime( GetDefaultRespawnTime() );
@@ -238,7 +238,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_pu_Mine)
 	return true;
 }
 
-GC_pu_Mine::GC_pu_Mine(vec2d pos)
+GC_pu_Mine::GC_pu_Mine(Vector2 pos)
   : GC_Pickup(pos)
 {
 	SetRespawnTime(GetDefaultRespawnTime());
@@ -268,7 +268,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_pu_Shield)
 	return true;
 }
 
-GC_pu_Shield::GC_pu_Shield(vec2d pos)
+GC_pu_Shield::GC_pu_Shield(Vector2 pos)
   : GC_Pickup(pos)
   , _timeHit(0)
 {
@@ -335,10 +335,10 @@ void GC_pu_Shield::OnOwnerDamage(World &world, DamageDesc &dd)
 		for( auto ls: world.eGC_pu_Shield._listeners )
 			ls->OnOwnerDamage(*this, dd);
 
-		const vec2d &pos = _vehicle->GetPos();
-		vec2d dir = (dd.hit - pos).Normalize();
-		vec2d p = vec2d{ dir.y, -dir.x };
-		vec2d v = _vehicle->_lv;
+		const Vector2 &pos = _vehicle->GetPos();
+		Vector2 dir = (dd.hit - pos).Normalize();
+		Vector2 p = Vector2{ dir.y, -dir.x };
+		Vector2 v = _vehicle->_lv;
 		for( int i = 0; i < 7; i++ )
 		{
 			world.New<GC_Particle>(pos + dir * 26.0f + p * (float) (i<<1), v, PARTICLE_TYPE3, frand(0.4f)+0.1f);
@@ -366,7 +366,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_pu_Shock)
 
 IMPLEMENT_1LIST_MEMBER(GC_pu_Shock, LIST_gsprites);
 
-GC_pu_Shock::GC_pu_Shock(vec2d pos)
+GC_pu_Shock::GC_pu_Shock(Vector2 pos)
   : GC_Pickup(pos)
   , _targetPos()
 {
@@ -482,7 +482,7 @@ void GC_pu_Shock::TimeStep(World &world, float dt)
 						_light = &world.New<GC_Light>(GetPos(), GC_Light::LIGHT_DIRECT);
 						_light->SetRadius(100);
 
-						vec2d tmp = _targetPos - GetPos();
+						Vector2 tmp = _targetPos - GetPos();
 						_light->SetLength(tmp.len());
 						_light->SetLightDirection(tmp.Normalize());
 
@@ -519,7 +519,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_pu_Booster)
 	return true;
 }
 
-GC_pu_Booster::GC_pu_Booster(vec2d pos)
+GC_pu_Booster::GC_pu_Booster(Vector2 pos)
   : GC_Pickup(pos)
 {
 	SetRespawnTime(GetDefaultRespawnTime());

@@ -102,7 +102,7 @@ void Field::Clear()
 	}
 }
 
-void Field::Resize(RectRB bounds)
+void Field::Resize(RectInt bounds)
 {
 	assert(WIDTH(bounds) > 0 && HEIGHT(bounds) > 0);
 	Clear();
@@ -125,7 +125,7 @@ void Field::Resize(RectRB bounds)
 void Field::ProcessObject(GC_RigidBodyStatic *object, bool add)
 {
 	float r = object->GetRadius() / CELL_SIZE;
-	vec2d p = object->GetPos() / CELL_SIZE;
+	Vector2 p = object->GetPos() / CELL_SIZE;
 
 	assert(r >= 0);
 

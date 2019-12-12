@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math/MyMath.h"
+#include "math/Vector2.h"
 
 namespace UI
 {
@@ -10,6 +10,6 @@ namespace UI
 	{
 		virtual bool IsKeyPressed(Key key) const = 0;
 		virtual bool IsMousePressed(int button) const = 0;
-		virtual vec2d GetMousePos() const = 0;
+		virtual Vector2 GetMousePos() const = 0;
 	};
 }

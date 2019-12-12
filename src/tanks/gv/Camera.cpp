@@ -6,7 +6,7 @@
 #include "gc/WorldCfg.h"
 #include "gc/World.h"
 
-Camera::Camera(vec2d pos, GC_Player &player)
+Camera::Camera(Vector2 pos, GC_Player &player)
   : _player(player)
   , _pos(pos)
   , _target(pos)
@@ -18,7 +18,7 @@ Camera::Camera(vec2d pos, GC_Player &player)
 void Camera::CameraTimeStep(World &world, float dt, float scale)
 {
 	const GC_Vehicle *vehicle = _player.GetVehicle();
-	vec2d viewSize = vec2d{ (float)WIDTH(_viewport), (float)HEIGHT(_viewport) } / scale;
+	Vector2 viewSize = Vector2{ (float)WIDTH(_viewport), (float)HEIGHT(_viewport) } / scale;
 
 	float mu = 3;
 
@@ -29,7 +29,7 @@ void Camera::CameraTimeStep(World &world, float dt, float scale)
 		float dx = std::max(0.f, (viewSize.x - WIDTH(world._bounds)) / 2);
 		float dy = std::max(0.f, (viewSize.y - HEIGHT(world._bounds)) / 2);
 
-		vec2d r = vehicle->GetPos() + vehicle->_lv / mu;
+		Vector2 r = vehicle->GetPos() + vehicle->_lv / mu;
 		float directionMultipler = std::min(130.0f, std::min(viewSize.x, viewSize.y) / 3);
 
 		if( GC_Weapon *weapon = vehicle->GetWeapon() )
@@ -53,9 +53,9 @@ void Camera::CameraTimeStep(World &world, float dt, float scale)
 	_pos = _target + (_pos - _target) * expf(-dt * mu);
 }
 
-vec2d Camera::GetCameraPos() const
+Vector2 Camera::GetCameraPos() const
 {
-	vec2d shake{0, 0};
+	Vector2 shake{0, 0};
 	if( _time_shake > 0 )
 	{
 		shake.x = std::cos((_time_shake + _time_seed)*70.71068f);

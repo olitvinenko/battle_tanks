@@ -1,5 +1,6 @@
 #pragma once
 #include "Window.h"
+#include "rendering/Color.h"
 
 namespace UI
 {
@@ -10,11 +11,11 @@ namespace UI
 	public:
 		explicit Rectangle(LayoutManager &manager);
 
-		void SetBackColor(std::shared_ptr<DataSource<SpriteColor>> color);
-		const DataSource<SpriteColor>& GetBackColor() const { return *_backColor; }
+		void SetBackColor(std::shared_ptr<DataSource<Color>> color);
+		const DataSource<Color>& GetBackColor() const { return *_backColor; }
 
-		void SetBorderColor(std::shared_ptr<DataSource<SpriteColor>> color) { _borderColor = color; }
-		const DataSource<SpriteColor>& GetBorderColor() const { return *_borderColor; }
+		void SetBorderColor(std::shared_ptr<DataSource<Color>> color) { _borderColor = color; }
+		const DataSource<Color>& GetBorderColor() const { return *_borderColor; }
 
 		void SetDrawBorder(bool enable) { _drawBorder = enable; }
 		bool GetDrawBorder() const { return _drawBorder; }
@@ -34,8 +35,8 @@ namespace UI
 		void Draw(const StateContext &sc, const LayoutContext &lc, const InputContext &ic, DrawingContext &dc, TextureManager &texman) const override;
 
 	private:
-		std::shared_ptr<DataSource<SpriteColor>> _backColor;
-		std::shared_ptr<DataSource<SpriteColor>> _borderColor;
+		std::shared_ptr<DataSource<Color>> _backColor;
+		std::shared_ptr<DataSource<Color>> _borderColor;
 		size_t _texture = -1;
 		StretchMode _textureStretchMode = StretchMode::Stretch;
 		unsigned int _frame = 0;

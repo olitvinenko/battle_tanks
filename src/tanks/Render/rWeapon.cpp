@@ -6,8 +6,9 @@
 #include "gc/Weapons.h"
 #include "gc/World.h"
 
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/Color.h"
+#include "rendering/DrawingContext.h"
+#include "rendering/TextureManager.h"
 
 R_Weapon::R_Weapon(TextureManager &tm, const char *tex)
 	: _texId(tm.FindSprite(tex))
@@ -20,8 +21,8 @@ void R_Weapon::Draw(const World &world, const GC_Actor &actor, DrawingContext &d
 	auto &weapon = static_cast<const GC_Weapon&>(actor);
 
 	DrawWeaponShadow(world, weapon, dc, _texId);
-	vec2d pos = weapon.GetPos();
-	vec2d dir = GetWeapSpriteDirection(world, weapon);
+	Vector2 pos = weapon.GetPos();
+	Vector2 dir = GetWeapSpriteDirection(world, weapon);
 	dc.DrawSprite(_texId, 0, 0xffffffff, pos.x, pos.y, dir);
 }
 
@@ -46,10 +47,10 @@ void R_WeapFireEffect::Draw(const World &world, const GC_Actor &actor, DrawingCo
 	{
 		int frame = int(advance * (float) _tm.GetFrameCount(_texId));
 		unsigned char op = (unsigned char) int(255.0f * (1.0f - advance * advance));
-		SpriteColor color = { op, op, op, op };
-		vec2d pos = weapon.GetPos() + weapon.GetDirection() * _offsetX;
-		pos += Vec2dAddDirection(weapon.GetDirection(), vec2d{ 0, -1 }) * weapon.GetLastShotPos().y;
-		vec2d dir;
+		Color color = { op, op, op, op };
+		Vector2 pos = weapon.GetPos() + weapon.GetDirection() * _offsetX;
+		pos += Vec2dAddDirection(weapon.GetDirection(), Vector2{ 0, -1 }) * weapon.GetLastShotPos().y;
+		Vector2 dir;
 		if( _oriented )
 		{
 			dir = weapon.GetDirection();
@@ -83,8 +84,8 @@ void R_RipperDisk::Draw(const World &world, const GC_Actor &actor, DrawingContex
 	auto &ripper = static_cast<const GC_Weap_Ripper&>(actor);
 	if (ripper.GetAttached() && ripper.GetNumShots() == 0)
 	{
-		vec2d pos = ripper.GetPos() - ripper.GetDirection() * 8;
-		vec2d dir = Vec2dDirection(world.GetTime() * 10);
+		Vector2 pos = ripper.GetPos() - ripper.GetDirection() * 8;
+		Vector2 dir = Vec2dDirection(world.GetTime() * 10);
 		dc.DrawSprite(_texId, 0, 0xffffffff, pos.x, pos.y, dir);
 	}
 }
@@ -101,8 +102,8 @@ void R_Crosshair::Draw(const World &world, const GC_Actor &actor, DrawingContext
 	auto &weapon = static_cast<const GC_Weapon&>(actor);
 	if (weapon.GetVehicle() && weapon.GetVehicle()->GetOwner() && weapon.GetVehicle()->GetOwner()->GetIsHuman())
 	{
-		vec2d pos = weapon.GetPos() + weapon.GetDirection() * 200.0f;
-		vec2d dir = Vec2dDirection(world.GetTime() * 5);
+		Vector2 pos = weapon.GetPos() + weapon.GetDirection() * 200.0f;
+		Vector2 dir = Vec2dDirection(world.GetTime() * 5);
 		dc.DrawSprite(_texId, 0, 0xffffffff, pos.x, pos.y, dir);
 	}
 }

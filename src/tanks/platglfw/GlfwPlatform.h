@@ -13,7 +13,7 @@ public:
 	// UI::IInput
 	bool IsKeyPressed(UI::Key key) const override;
 	bool IsMousePressed(int button) const override;
-	vec2d GetMousePos() const override;
+	Vector2 GetMousePos() const override;
 
 private:
 	GLFWwindow &_window;
@@ -32,5 +32,5 @@ private:
 	GLFWwindow &_window;
 };
 
-vec2d GetCursorPosInPixels(GLFWwindow *window);
-vec2d GetCursorPosInPixels(GLFWwindow *window, double dipX, double dipY);
+Vector2 GetCursorPosInPixels(GLFWwindow *window);
+Vector2 GetCursorPosInPixels(GLFWwindow *window, double dipX, double dipY);

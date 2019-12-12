@@ -38,7 +38,7 @@ static int DivCeil(int number, unsigned int denominator)
 	}
 }
 
-World::World(RectRB blockBounds)
+World::World(RectInt blockBounds)
 	: _gameStarted(false)
 	, _frozen(false)
 	, _nightMode(false)
@@ -65,12 +65,12 @@ World::World(RectRB blockBounds)
 	grid_pickup.resize(_locationBounds);
 	grid_actors.resize(_locationBounds);
 
-	_field.Resize(RectRB{ _blockBounds.left, _blockBounds.top, _blockBounds.right + 1, _blockBounds.bottom + 1 });
+	_field.Resize(RectInt{ _blockBounds.left, _blockBounds.top, _blockBounds.right + 1, _blockBounds.bottom + 1 });
 	_waterTiles.resize(WIDTH(_blockBounds) * HEIGHT(_blockBounds));
 	_woodTiles.resize(WIDTH(_blockBounds) * HEIGHT(_blockBounds));
 }
 
-int World::GetTileIndex(vec2d pos) const
+int World::GetTileIndex(Vector2 pos) const
 {
 	int blockX = (int)std::floor(pos.x / CELL_SIZE);
 	int blockY = (int)std::floor(pos.y / CELL_SIZE);
@@ -231,9 +231,9 @@ void World::Import(MapFile &file)
 	}
 }
 
-FRECT World::GetOccupiedBounds() const
+RectFloat World::GetOccupiedBounds() const
 {
-	FRECT bounds = { FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX };
+	RectFloat bounds = { FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX };
 
 	FOREACH(GetList(LIST_objects), GC_Object, object)
 	{
@@ -243,8 +243,8 @@ FRECT World::GetOccupiedBounds() const
 			auto &typeInfo = RTTypes::Inst().GetTypeInfo(object->GetType());
 			if (!typeInfo.service)
 			{
-				vec2d pos = static_cast<GC_Actor*>(object)->GetPos();
-				vec2d halfSize = typeInfo.size / 2;
+				Vector2 pos = static_cast<GC_Actor*>(object)->GetPos();
+				Vector2 halfSize = typeInfo.size / 2;
 				bounds.left = std::min(bounds.left, pos.x - halfSize.x);
 				bounds.top = std::min(bounds.top, pos.y - halfSize.y);
 				bounds.right = std::max(bounds.right, pos.x + halfSize.x);
@@ -272,8 +272,8 @@ void World::Export(FileSystem::Stream &s)
 	str << VERSION;
 	file.setMapAttribute("version", str.str());
 
-	RectRB blockBounds;
-	FRECT occupiedBounds = GetOccupiedBounds();
+	RectInt blockBounds;
+	RectFloat occupiedBounds = GetOccupiedBounds();
 	blockBounds.left = (int)std::floor(occupiedBounds.left / CELL_SIZE);
 	blockBounds.top = (int)std::floor(occupiedBounds.top / CELL_SIZE);
 	blockBounds.right = (int)std::ceil(occupiedBounds.right / CELL_SIZE);
@@ -317,16 +317,16 @@ float World::net_frand(float max)
 	return (float) net_rand() / (float) NET_RAND_MAX * max;
 }
 
-vec2d World::net_vrand(float len)
+Vector2 World::net_vrand(float len)
 {
 	return Vec2dDirection(net_frand(PI2)) * len;
 }
 
-bool World::CalcOutstrip( vec2d origin,
+bool World::CalcOutstrip( Vector2 origin,
                           float projectileSpeed,
-                          vec2d targetPos,
-                          vec2d targetVelocity,
-                          vec2d &out_fake) // out: fake target position
+                          Vector2 targetPos,
+                          Vector2 targetVelocity,
+                          Vector2 &out_fake) // out: fake target position
 {
 	float vt = targetVelocity.len();
 
@@ -345,36 +345,36 @@ bool World::CalcOutstrip( vec2d origin,
 
 	float fx = x + vt * (x*vt + sqrt(x*x * projectileSpeed*projectileSpeed + y*y * tmp)) / tmp;
 
-	out_fake = Vec2dConstrain(origin + vec2d{ fx*cg - y*sg, fx*sg + y*cg }, _bounds);
+	out_fake = Vec2dConstrain(origin + Vector2{ fx*cg - y*sg, fx*sg + y*cg }, _bounds);
 	return true;
 }
 
 GC_RigidBodyStatic* World::TraceNearest( const Grid<ObjectList> &list,
                                          const GC_RigidBodyStatic* ignore,
-                                         const vec2d &x0,      // origin
-                                         const vec2d &a,       // direction with length
-                                         vec2d *ht,
-                                         vec2d *norm) const
+                                         const Vector2 &x0,      // origin
+                                         const Vector2 &a,       // direction with length
+                                         Vector2 *ht,
+                                         Vector2 *norm) const
 {
 //	DbgLine(x0, x0 + a);
 
 	struct SelectNearest
 	{
 		const GC_RigidBodyStatic *ignore;
-		vec2d x0;
-		vec2d lineCenter;
-		vec2d lineDirection;
+		Vector2 x0;
+		Vector2 lineCenter;
+		Vector2 lineDirection;
 
 		GC_RigidBodyStatic *result;
-		vec2d resultPos;
-		vec2d resultNorm;
+		Vector2 resultPos;
+		Vector2 resultNorm;
 
 		SelectNearest()
 			: result(nullptr)
 		{
 		}
 
-		bool Select(GC_RigidBodyStatic *obj, vec2d norm, float enter, float exit)
+		bool Select(GC_RigidBodyStatic *obj, Vector2 norm, float enter, float exit)
 		{
 			if( ignore != obj )
 			{
@@ -387,8 +387,8 @@ GC_RigidBodyStatic* World::TraceNearest( const Grid<ObjectList> &list,
 			}
 			return false;
 		}
-		inline const vec2d& GetCenter() const { return lineCenter; }
-		inline const vec2d& GetDirection() const { return lineDirection; }
+		inline const Vector2& GetCenter() const { return lineCenter; }
+		inline const Vector2& GetDirection() const { return lineDirection; }
 	};
 	SelectNearest selector;
 	selector.ignore = ignore;
@@ -405,14 +405,14 @@ GC_RigidBodyStatic* World::TraceNearest( const Grid<ObjectList> &list,
 }
 
 void World::TraceAll( const Grid<ObjectList> &list,
-                      const vec2d &x0,      // origin
-                      const vec2d &a,       // direction with length
+                      const Vector2 &x0,      // origin
+                      const Vector2 &a,       // direction with length
                       std::vector<CollisionPoint> &result) const
 {
 	struct SelectAll
 	{
-		vec2d lineCenter;
-		vec2d lineDirection;
+		Vector2 lineCenter;
+		Vector2 lineDirection;
 
 		std::vector<CollisionPoint> &result;
 
@@ -421,7 +421,7 @@ void World::TraceAll( const Grid<ObjectList> &list,
 		{
 		}
 
-		bool Select(GC_RigidBodyStatic *obj, vec2d norm, float enter, float exit)
+		bool Select(GC_RigidBodyStatic *obj, Vector2 norm, float enter, float exit)
 		{
 			CollisionPoint cp;
 			cp.obj = obj;
@@ -431,8 +431,8 @@ void World::TraceAll( const Grid<ObjectList> &list,
 			result.push_back(cp);
 			return false;
 		}
-		inline const vec2d& GetCenter() const { return lineCenter; }
-		inline const vec2d& GetDirection() const { return lineDirection; }
+		inline const Vector2& GetCenter() const { return lineCenter; }
+		inline const Vector2& GetDirection() const { return lineDirection; }
 	};
 	SelectAll selector(result);
 	selector.lineCenter = x0 + a/2;

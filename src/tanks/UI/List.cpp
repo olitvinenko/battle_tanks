@@ -4,8 +4,8 @@
 #include "Keys.h"
 #include "LayoutContext.h"
 #include "StateContext.h"
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/TextureManager.h"
+#include "rendering/DrawingContext.h"
 
 #include <algorithm>
 
@@ -72,7 +72,7 @@ void List::SetItemTemplate(std::shared_ptr<Window> itemTemplate)
 	_itemTemplate = itemTemplate;
 }
 
-vec2d List::GetItemSize(TextureManager &texman, float scale) const
+Vector2 List::GetItemSize(TextureManager &texman, float scale) const
 {
 	if (_itemTemplate && _data->GetItemCount() > 0)
 	{
@@ -83,7 +83,7 @@ vec2d List::GetItemSize(TextureManager &texman, float scale) const
 	}
 	else
 	{
-		return vec2d{};
+		return Vector2{};
 	}
 }
 
@@ -116,9 +116,9 @@ void List::SetCurSel(int sel, bool scroll)
 	}
 }
 
-int List::HitTest(vec2d pxPos, TextureManager &texman, float scale) const
+int List::HitTest(Vector2 pxPos, TextureManager &texman, float scale) const
 {
-	vec2d which = pxPos / GetItemSize(texman, scale);
+	Vector2 which = pxPos / GetItemSize(texman, scale);
 	int index = _flowDirection == FlowDirection::Vertical ? int(which.y) : int(which.x);
 	if( index < 0 || index >= _data->GetItemCount() )
 	{
@@ -127,7 +127,7 @@ int List::HitTest(vec2d pxPos, TextureManager &texman, float scale) const
 	return index;
 }
 
-bool List::OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, PointerType pointerType, unsigned int pointerID)
+bool List::OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, int button, PointerType pointerType, unsigned int pointerID)
 {
     if( 1 == button && pointerType == PointerType::Mouse )
 	{
@@ -136,7 +136,7 @@ bool List::OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &te
 	return false;
 }
 
-void List::OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition)
+void List::OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition)
 {
 	int index = HitTest(pointerPosition, texman, lc.GetScale());
 	SetCurSel(index, false);
@@ -182,12 +182,12 @@ bool List::OnKeyPressed(InputContext &ic, Key key)
 	return true;
 }
 
-vec2d List::GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const
+Vector2 List::GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const
 {
-	vec2d pxItemSize = GetItemSize(texman, scale);
+	Vector2 pxItemSize = GetItemSize(texman, scale);
 	return _flowDirection == FlowDirection::Vertical ?
-		vec2d{ pxItemSize.x, pxItemSize.y * _data->GetItemCount() } :
-		vec2d{ pxItemSize.x * _data->GetItemCount(), pxItemSize.y };
+		Vector2{ pxItemSize.x, pxItemSize.y * _data->GetItemCount() } :
+		Vector2{ pxItemSize.x * _data->GetItemCount(), pxItemSize.y };
 }
 
 void List::Draw(const StateContext &sc, const LayoutContext &lc, const InputContext &ic, DrawingContext &dc, TextureManager &texman) const
@@ -195,14 +195,14 @@ void List::Draw(const StateContext &sc, const LayoutContext &lc, const InputCont
 	if (!_itemTemplate)
 		return;
 
-	RectRB visibleRegion = dc.GetVisibleRegion();
+	RectInt visibleRegion = dc.GetVisibleRegion();
 
 	bool isVertical = _flowDirection == FlowDirection::Vertical;
 
-	vec2d pxItemMinSize = GetItemSize(texman, lc.GetScale());
+	Vector2 pxItemMinSize = GetItemSize(texman, lc.GetScale());
 
-	vec2d pxItemSize = isVertical ?
-		vec2d{ lc.GetPixelSize().x, pxItemMinSize.y } : vec2d{ pxItemMinSize.x, lc.GetPixelSize().y };
+	Vector2 pxItemSize = isVertical ?
+		Vector2{ lc.GetPixelSize().x, pxItemMinSize.y } : Vector2{ pxItemMinSize.x, lc.GetPixelSize().y };
 
 	int advance = isVertical ? (int)pxItemSize.y : (int)pxItemSize.x;
 
@@ -219,8 +219,8 @@ void List::Draw(const StateContext &sc, const LayoutContext &lc, const InputCont
 
 	for( int i = std::min(_data->GetItemCount(), i_max)-1; i >= i_min; --i )
 	{
-		vec2d pxItemOffset = isVertical ?
-			vec2d{ 0, (float)i * pxItemSize.y } : vec2d{ (float)i * pxItemSize.x, 0 };
+		Vector2 pxItemOffset = isVertical ?
+			Vector2{ 0, (float)i * pxItemSize.y } : Vector2{ (float)i * pxItemSize.x, 0 };
 
 		enum ItemState { NORMAL, UNFOCUSED, FOCUSED, HOVER, DISABLED } itemState;
 		if (lc.GetEnabledCombined())

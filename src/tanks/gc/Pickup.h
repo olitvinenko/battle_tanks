@@ -58,7 +58,7 @@ class GC_Pickup : public GC_Actor
     typedef GC_Actor base;
 
 public:
-	explicit GC_Pickup(vec2d pos);
+	explicit GC_Pickup(Vector2 pos);
 	explicit GC_Pickup(FromFile);
 	virtual ~GC_Pickup();
 
@@ -141,7 +141,7 @@ class GC_pu_Health : public GC_Pickup
 	DECLARE_SELF_REGISTRATION(GC_pu_Health);
 
 public:
-	GC_pu_Health(vec2d pos);
+	GC_pu_Health(Vector2 pos);
 	GC_pu_Health(FromFile);
 
 	// GC_Pickup
@@ -159,7 +159,7 @@ class GC_pu_Mine : public GC_Pickup
 	DECLARE_SELF_REGISTRATION(GC_pu_Mine);
 
 public:
-	GC_pu_Mine(vec2d pos);
+	GC_pu_Mine(Vector2 pos);
 	GC_pu_Mine(FromFile);
 
 	float GetDefaultRespawnTime() const override { return 15.0f; }
@@ -180,7 +180,7 @@ class GC_pu_Shield : public GC_Pickup
 	DECLARE_SELF_REGISTRATION(GC_pu_Shield);
 
 public:
-	GC_pu_Shield(vec2d pos);
+	GC_pu_Shield(Vector2 pos);
 	GC_pu_Shield(FromFile);
 	virtual ~GC_pu_Shield();
 
@@ -215,11 +215,11 @@ class GC_pu_Shock : public GC_Pickup
     typedef GC_Pickup base;
 
 public:
-	GC_pu_Shock(vec2d pos);
+	GC_pu_Shock(Vector2 pos);
 	GC_pu_Shock(FromFile);
 	virtual ~GC_pu_Shock();
 
-	vec2d GetTargetPos() const { return _targetPos; }
+	Vector2 GetTargetPos() const { return _targetPos; }
 
 	// GC_Pickup
     void Detach(World &world) override;
@@ -237,7 +237,7 @@ protected:
 private:
 	ObjPtr<GC_Light> _light;
 	ObjPtr<GC_Vehicle> _vehicle;
-	vec2d _targetPos;
+	Vector2 _targetPos;
 
 	GC_Vehicle *FindNearVehicle(World &world, const GC_RigidBodyStatic *ignore) const;
 };
@@ -251,7 +251,7 @@ class GC_pu_Booster : public GC_Pickup
 	DECLARE_SELF_REGISTRATION(GC_pu_Booster);
 
 public:
-	GC_pu_Booster(vec2d pos);
+	GC_pu_Booster(Vector2 pos);
 	GC_pu_Booster(FromFile);
 	virtual ~GC_pu_Booster();
 

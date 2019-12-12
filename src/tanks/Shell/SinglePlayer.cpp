@@ -5,11 +5,12 @@
 #include "SinglePlayer.h"
 #include "Configuration.h"
 #include "mf/MapFile.h"
-#include "FileSystem/FileSystem.h"
+#include "filesystem/FileSystem.h"
 #include "gc/World.h"
 #include "loc/Language.h"
 #include "render/WorldView.h"
-#include "video/DrawingContext.h"
+#include "rendering/Color.h"
+#include "rendering/DrawingContext.h"
 #include "ui/Button.h"
 #include "ui/DataSource.h"
 #include "ui/LayoutContext.h"
@@ -200,19 +201,19 @@ void SinglePlayer::OnSelectMap(UI::LayoutManager &manager, TextureManager &texma
 	}
 }
 
-FRECT SinglePlayer::GetChildRect(TextureManager &texman, const UI::LayoutContext &lc, const UI::StateContext &sc, const UI::Window &child) const
+RectFloat SinglePlayer::GetChildRect(TextureManager &texman, const UI::LayoutContext &lc, const UI::StateContext &sc, const UI::Window &child) const
 {
 	if (_content.get() == &child)
 	{
-		vec2d pxMargins = UI::ToPx(vec2d{ c_tileSpacing, c_tileSpacing }, lc);
+		Vector2 pxMargins = UI::ToPx(Vector2{ c_tileSpacing, c_tileSpacing }, lc);
 		return MakeRectRB(pxMargins, lc.GetPixelSize() - pxMargins);
 	}
 
 	return UI::Dialog::GetChildRect(texman, lc, sc, child);
 }
 
-vec2d SinglePlayer::GetContentSize(TextureManager &texman, const UI::StateContext &sc, float scale) const
+Vector2 SinglePlayer::GetContentSize(TextureManager &texman, const UI::StateContext &sc, float scale) const
 {
-	vec2d pxMargins = UI::ToPx(vec2d{ c_tileSpacing, c_tileSpacing }, scale);
+	Vector2 pxMargins = UI::ToPx(Vector2{ c_tileSpacing, c_tileSpacing }, scale);
 	return _content->GetContentSize(texman, sc, scale) + pxMargins * 2;
 }

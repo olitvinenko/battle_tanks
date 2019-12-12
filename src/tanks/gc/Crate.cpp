@@ -10,7 +10,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_Crate)
 	return true;
 }
 
-GC_Crate::GC_Crate(vec2d pos)
+GC_Crate::GC_Crate(Vector2 pos)
   : GC_RigidBodyDynamic(pos)
 {
 	SetSize(CELL_SIZE, CELL_SIZE);
@@ -38,7 +38,7 @@ void GC_Crate::OnDestroy(World &world, const DamageDesc &dd)
 {
 	for( int n = 0; n < 5; ++n )
 	{
-		world.New<GC_BrickFragment>(GetPos() + vrand(GetRadius()), vec2d{ frand(100.0f) - 50.f, -frand(100.0f) });
+		world.New<GC_BrickFragment>(GetPos() + vrand(GetRadius()), Vector2{ frand(100.0f) - 50.f, -frand(100.0f) });
 	}
 
 	GC_RigidBodyDynamic::OnDestroy(world, dd);

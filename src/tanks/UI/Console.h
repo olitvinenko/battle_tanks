@@ -46,7 +46,7 @@ public:
 	Console(LayoutManager &manager, TextureManager &texman);
 	static std::shared_ptr<Console> Create(Window *parent, TextureManager &texman, float x, float y, float w, float h, ConsoleBuffer *buf);
 
-	void SetColors(const SpriteColor *colors, size_t count);
+	void SetColors(const Color *colors, size_t count);
 	void SetHistory(IConsoleHistory *history);
 	void SetBuffer(ConsoleBuffer *buf);
 	void SetEcho(bool echo);
@@ -58,7 +58,7 @@ public:
 	KeyboardSink *GetKeyboardSink() override { return this; }
 	void OnTimeStep(LayoutManager &manager, float dt) override;
 	void Draw(const StateContext &sc, const LayoutContext &lc, const InputContext &ic, DrawingContext &dc, TextureManager &texman) const override;
-	FRECT GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const override;
+	RectFloat GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const override;
 
 private:
 	std::shared_ptr<ScrollBarVertical> _scroll;
@@ -68,7 +68,7 @@ private:
 
 	ConsoleBuffer *_buf;
 	IConsoleHistory *_history;
-	std::vector<SpriteColor> _colors;
+	std::vector<Color> _colors;
 
 	bool _echo;
 	bool _autoScroll;
@@ -79,7 +79,7 @@ private:
 	bool OnKeyPressed(InputContext &ic, Key key) override;
 
 	// ScrollSink
-	void OnScroll(TextureManager &texman, const InputContext &ic, const LayoutContext &lc, const StateContext &sc, vec2d pointerPosition, vec2d scrollOffset) override;
+	void OnScroll(TextureManager &texman, const InputContext &ic, const LayoutContext &lc, const StateContext &sc, Vector2 pointerPosition, Vector2 scrollOffset) override;
 };
 
 } // namespace UI

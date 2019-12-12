@@ -13,7 +13,7 @@ class GC_HealthDaemon : public GC_Actor
     typedef GC_Actor base;
 
 public:
-	GC_HealthDaemon(vec2d pos, GC_Player *owner, float damagePerSecond, float time);
+	GC_HealthDaemon(Vector2 pos, GC_Player *owner, float damagePerSecond, float time);
 	GC_HealthDaemon(FromFile);
 	virtual ~GC_HealthDaemon();
 
@@ -41,12 +41,12 @@ class GC_Wood : public GC_Actor
 	typedef GC_Actor base;
 
 public:
-	explicit GC_Wood(vec2d pos);
+	explicit GC_Wood(Vector2 pos);
 	explicit GC_Wood(FromFile);
 	virtual ~GC_Wood();
 
 	// GC_Actor
-	void MoveTo(World &world, const vec2d &pos) override;
+	void MoveTo(World &world, const Vector2 &pos) override;
 
 	// GI_NeighborAware
 	int GetNeighbors(const World &world) const override;
@@ -68,7 +68,7 @@ public:
 		SCORE_MINUS,
 	};
 
-	GC_Text(vec2d pos, std::string text);
+	GC_Text(Vector2 pos, std::string text);
 	explicit GC_Text(FromFile) : GC_Actor(FromFile()) {}
 	virtual ~GC_Text() = 0;
 
@@ -93,7 +93,7 @@ class GC_Text_ToolTip : public GC_Text
     typedef GC_Text base;
 
 public:
-	GC_Text_ToolTip(vec2d pos, std::string text, Style style);
+	GC_Text_ToolTip(Vector2 pos, std::string text, Style style);
 	GC_Text_ToolTip(FromFile) : GC_Text(FromFile()) {}
 
     void Serialize(World &world, SaveFile &f) override;

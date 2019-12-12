@@ -2,9 +2,9 @@
 #include "as/AppConstants.h"
 #include "as/AppState.h"
 #include "ctx/GameContext.h"
-#include "FileSystem/FileSystem.h"
+#include "filesystem/FileSystem.h"
 #include "gc/World.h"
-#include "video/TextureManager.h"
+#include "rendering/TextureManager.h"
 
 ThemeManager::ThemeManager(AppState &appState, FileSystem::IFileSystem &fs, TextureManager &tm)
 	: AppStateListener(appState)

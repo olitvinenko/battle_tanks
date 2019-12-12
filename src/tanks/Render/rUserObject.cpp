@@ -2,8 +2,9 @@
 
 #include "gc/UserObjects.h"
 
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/Color.h"
+#include "rendering/DrawingContext.h"
+#include "rendering/TextureManager.h"
 
 R_UserObject::R_UserObject(TextureManager &tm)
 	: _tm(tm)
@@ -15,8 +16,8 @@ void R_UserObject::Draw(const World &world, const GC_Actor &actor, DrawingContex
 	assert(dynamic_cast<const GC_UserObject*>(&actor));
 	auto &userObject = static_cast<const GC_UserObject&>(actor);
 
-	vec2d pos = userObject.GetPos();
-	vec2d dir = userObject.GetDirection();
+	Vector2 pos = userObject.GetPos();
+	Vector2 dir = userObject.GetDirection();
 	size_t texId = _tm.FindSprite(userObject.GetTextureName());
 	dc.DrawSprite(texId, 0, 0xffffffff, pos.x, pos.y, dir);
 }

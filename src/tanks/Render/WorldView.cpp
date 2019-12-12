@@ -6,7 +6,8 @@
 #include "gc/World.h"
 #include "gc/WorldCfg.h"
 
-#include "video/DrawingContext.h"
+#include "rendering/base/IRender.h"
+#include "rendering/DrawingContext.h"
 
 WorldView::WorldView(TextureManager &tm, RenderScheme &rs)
     : _renderScheme(rs)
@@ -20,8 +21,8 @@ WorldView::~WorldView()
 
 void WorldView::Render(DrawingContext &dc,
                        const World &world,
-                       const RectRB &viewport,
-                       vec2d eye,
+                       const RectInt &viewport,
+                       Vector2 eye,
                        float zoom,
                        bool editorMode,
                        bool drawGrid,
@@ -42,7 +43,7 @@ void WorldView::Render(DrawingContext &dc,
 	//
 
 	dc.SetAmbient(nightMode ? (editorMode ? 0.5f : 0) : 1);
-	dc.SetMode(RM_LIGHT); // this will clear the render target with the ambient set above
+	dc.SetMode(RenderMode::LIGHT); // this will clear the render target with the ambient set above
 	if( nightMode )
 	{
 		float xmin = std::max(world._bounds.left, left);
@@ -126,7 +127,7 @@ void WorldView::Render(DrawingContext &dc,
 	// draw world to rgb
 	//
 
-	dc.SetMode(RM_WORLD);
+	dc.SetMode(RenderMode::WORLD);
 
 	_terrain.Draw(dc, world._bounds, drawGrid);
 
@@ -137,5 +138,5 @@ void WorldView::Render(DrawingContext &dc,
 		zLayers[z].clear();
 	}
 
-	dc.SetMode(RM_INTERFACE);
+	dc.SetMode(RenderMode::INTERFACE);
 }

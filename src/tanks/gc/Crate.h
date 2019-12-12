@@ -6,7 +6,7 @@ class GC_Crate : public GC_RigidBodyDynamic
 	DECLARE_SELF_REGISTRATION(GC_Crate);
 
 public:
-	explicit GC_Crate(vec2d pos);
+	explicit GC_Crate(Vector2 pos);
 	explicit GC_Crate(FromFile);
 	~GC_Crate();
 

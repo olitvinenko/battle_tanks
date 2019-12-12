@@ -1,6 +1,6 @@
 #include "MapCache.h"
 #include "mf/MapFile.h"
-#include "FileSystem/FileSystem.h"
+#include "filesystem/FileSystem.h"
 #include "gc/World.h"
 
 static std::unique_ptr<World> LoadMap(FileSystem::IFileSystem &fs, const std::string &mapName)
@@ -21,7 +21,7 @@ static std::unique_ptr<World> LoadMap(FileSystem::IFileSystem &fs, const std::st
 	file.getMapAttribute("west_bound", left);
 	file.getMapAttribute("north_bound", top);
 
-	std::unique_ptr<World> world(new World(RectRB{ left, top, left + width, top + height }));
+	std::unique_ptr<World> world(new World(RectInt{ left, top, left + width, top + height }));
 	world->Import(file);
 	return world;
 }

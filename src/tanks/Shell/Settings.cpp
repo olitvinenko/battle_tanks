@@ -3,7 +3,7 @@
 #include "KeyMapper.h"
 #include "Configuration.h"
 
-#include "video/TextureManager.h"
+#include "rendering/TextureManager.h"
 #include "loc/Language.h"
 #include "ui/Text.h"
 #include "ui/List.h"

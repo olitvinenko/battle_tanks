@@ -1,5 +1,5 @@
 #pragma once
-#include "video/RenderBase.h"
+#include "rendering/Color.h"
 #include <map>
 #include <memory>
 #include <string>
@@ -51,20 +51,20 @@ namespace UI
 		};
 	}
 
-	class ColorMap : public DataSource<SpriteColor>
+	class ColorMap : public DataSource<Color>
 	{
 	public:
-		typedef std::map<std::string, SpriteColor> ColorMapType;
-		ColorMap(SpriteColor defaultColor, ColorMapType &&colorMap)
+		typedef std::map<std::string, Color> ColorMapType;
+		ColorMap(Color defaultColor, ColorMapType &&colorMap)
 			: _defaultColor(defaultColor)
 			, _colorMap(std::move(colorMap))
 		{}
 
 		// DataSource<SpriteColor>
-		SpriteColor GetValue(const StateContext &sc) const override;
+		Color GetValue(const StateContext &sc) const override;
 
 	private:
-		SpriteColor _defaultColor;
+		Color _defaultColor;
 		ColorMapType _colorMap;
 	};
 
@@ -101,10 +101,10 @@ namespace UI
 			return std::make_shared<StaticText>(std::string(str, str + len));
 		}
 
-		inline std::shared_ptr<DataSource<SpriteColor>> operator"" _rgba(unsigned long long n)
+		inline std::shared_ptr<DataSource<Color>> operator"" _rgba(unsigned long long n)
 		{
 			assert(n <= 0xffffffff); // The number should fit into 32 bits
-			return std::make_shared<StaticValue<SpriteColor>>(static_cast<SpriteColor>(n & 0xffffffff));
+			return std::make_shared<StaticValue<Color>>(static_cast<Color>(n & 0xffffffff));
 		}
 	}
 }

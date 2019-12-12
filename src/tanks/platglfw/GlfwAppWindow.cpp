@@ -8,7 +8,7 @@
 #include "ui/Pointers.h"
 #include "ui/StateContext.h"
 #include "ui/Window.h"
-#include "video/RenderOpenGL.h"
+#include "rendering/RenderOpenGL.h"
 
 #include <GLFW/glfw3.h>
 #include <stdexcept>
@@ -43,12 +43,12 @@ static float GetLayoutScale(GLFWwindow *window)
 	return logicalWidth > 0 ? (float)framebuferWidth / (float)logicalWidth : 1.f;
 }
 
-static vec2d GetPixelSize(GLFWwindow *window)
+static Vector2 GetPixelSize(GLFWwindow *window)
 {
 	int width;
 	int height;
 	glfwGetFramebufferSize(window, &width, &height);
-	return vec2d{static_cast<float>(width), static_cast<float>(height)};
+	return Vector2{static_cast<float>(width), static_cast<float>(height)};
 }
 
 static void OnMouseButton(GLFWwindow *window, int button, int action, int mods)
@@ -72,16 +72,16 @@ try
 			default:
 				return;
 		}
-		vec2d pxMousePos = GetCursorPosInPixels(window);
+		Vector2 pxMousePos = GetCursorPosInPixels(window);
 
 		UI::StateContext sc;
 		gui->GetInputContext().ProcessPointer(
 			gui->GetTextureManager(),
 			gui->GetDesktop(),
-			UI::LayoutContext(1.f, GetLayoutScale(window), vec2d{}, GetPixelSize(window), gui->GetDesktop()->GetEnabled(sc)),
+			UI::LayoutContext(1.f, GetLayoutScale(window), Vector2{}, GetPixelSize(window), gui->GetDesktop()->GetEnabled(sc)),
 			sc,
 			pxMousePos,
-			vec2d{},
+			Vector2{},
 			msg,
 			buttons,
 			UI::PointerType::Mouse,
@@ -97,15 +97,15 @@ static void OnCursorPos(GLFWwindow *window, double xpos, double ypos)
 {
 	if( auto gui = (UI::LayoutManager *) glfwGetWindowUserPointer(window) )
 	{
-		vec2d pxMousePos = GetCursorPosInPixels(window, xpos, ypos);
+		Vector2 pxMousePos = GetCursorPosInPixels(window, xpos, ypos);
 		UI::StateContext sc;
 		gui->GetInputContext().ProcessPointer(
 			gui->GetTextureManager(),
 			gui->GetDesktop(),
-			UI::LayoutContext(1.f, GetLayoutScale(window), vec2d{}, GetPixelSize(window), gui->GetDesktop()->GetEnabled(sc)),
+			UI::LayoutContext(1.f, GetLayoutScale(window), Vector2{}, GetPixelSize(window), gui->GetDesktop()->GetEnabled(sc)),
 			sc,
 			pxMousePos,
-			vec2d{},
+			Vector2{},
 			UI::Msg::PointerMove,
 			0,
 			UI::PointerType::Mouse,
@@ -117,14 +117,14 @@ static void OnScroll(GLFWwindow *window, double xoffset, double yoffset)
 {
 	if( auto gui = (UI::LayoutManager *) glfwGetWindowUserPointer(window) )
 	{
-		vec2d pxMousePos = GetCursorPosInPixels(window);
-		vec2d pxMouseOffset = GetCursorPosInPixels(window, xoffset, yoffset);
+		Vector2 pxMousePos = GetCursorPosInPixels(window);
+		Vector2 pxMouseOffset = GetCursorPosInPixels(window, xoffset, yoffset);
         
 		UI::StateContext sc;
 		gui->GetInputContext().ProcessPointer(
 			gui->GetTextureManager(),
 			gui->GetDesktop(),
-			UI::LayoutContext(1.f, GetLayoutScale(window), vec2d{}, GetPixelSize(window), gui->GetDesktop()->GetEnabled(sc)),
+			UI::LayoutContext(1.f, GetLayoutScale(window), Vector2{}, GetPixelSize(window), gui->GetDesktop()->GetEnabled(sc)),
 			sc,
 			pxMousePos,
 			pxMouseOffset,
@@ -144,7 +144,7 @@ static void OnKey(GLFWwindow *window, int platformKey, int scancode, int action,
 		gui->GetInputContext().ProcessKeys(
 			gui->GetTextureManager(),
 			gui->GetDesktop(),
-			UI::LayoutContext(1.f, GetLayoutScale(window), vec2d{}, GetPixelSize(window), gui->GetDesktop()->GetEnabled(sc)),
+			UI::LayoutContext(1.f, GetLayoutScale(window), Vector2{}, GetPixelSize(window), gui->GetDesktop()->GetEnabled(sc)),
 			sc,
 			GLFW_RELEASE == action ? UI::Msg::KEYUP : UI::Msg::KEYDOWN,
 			key);
@@ -161,7 +161,7 @@ static void OnChar(GLFWwindow *window, unsigned int codepoint)
 			gui->GetInputContext().ProcessText(
 				gui->GetTextureManager(), 
 				gui->GetDesktop(),
-				UI::LayoutContext(1.f, GetLayoutScale(window), vec2d{}, GetPixelSize(window), gui->GetDesktop()->GetEnabled(sc)),
+				UI::LayoutContext(1.f, GetLayoutScale(window), Vector2{}, GetPixelSize(window), gui->GetDesktop()->GetEnabled(sc)),
 				sc,
 				codepoint);
 		}
@@ -196,7 +196,7 @@ GlfwAppWindow::GlfwAppWindow(const char *title, bool fullscreen, int width, int 
 	: _window(NewWindow(title, fullscreen, width, height))
 	, _clipboard(new GlfwClipboard(*_window))
 	, _input(new GlfwInput(*_window))
-	, _render(RenderCreateOpenGL())
+	, _render(std::unique_ptr<IRender>(new RenderOpenGL))
 {
 	glfwSetMouseButtonCallback(_window.get(), OnMouseButton);
 	glfwSetCursorPosCallback(_window.get(), OnCursorPos);

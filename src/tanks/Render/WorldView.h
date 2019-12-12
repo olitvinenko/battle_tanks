@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Terrain.h"
-#include "math/MyMath.h"
+#include "math/Vector2.h"
 
 class DrawingContext;
 class TextureManager;
@@ -15,8 +15,8 @@ public:
 	~WorldView();
 	void Render(DrawingContext &dc,
 				const World &world,
-				const RectRB &viewport,
-				vec2d eye,
+				const RectInt &viewport,
+				Vector2 eye,
 				float zoom,
 				bool editorMode,
 				bool drawGrid,

@@ -38,10 +38,10 @@ private:
 	virtual void OnClick();
 
 	// PointerSink
-	void OnPointerMove(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, PointerType pointerType, unsigned int pointerID, bool captured) override;
-	bool OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, PointerType pointerType, unsigned int pointerID) override;
-	void OnPointerUp(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, PointerType pointerType, unsigned int pointerID) override;
-	void OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition) override;
+	void OnPointerMove(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, PointerType pointerType, unsigned int pointerID, bool captured) override;
+	bool OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, int button, PointerType pointerType, unsigned int pointerID) override;
+	void OnPointerUp(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, int button, PointerType pointerType, unsigned int pointerID) override;
+	void OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition) override;
 
 	// StateGen
 	void PushState(StateContext &sc, const LayoutContext &lc, const InputContext &ic) const override;
@@ -64,7 +64,7 @@ public:
 	void SetFont(TextureManager &texman, const char *fontName);
 
 	// Window
-	FRECT GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const override;
+	RectFloat GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const override;
 	void Draw(const StateContext &sc, const LayoutContext &lc, const InputContext &ic, DrawingContext &dc, TextureManager &texman) const override;
 
 private:
@@ -84,8 +84,8 @@ public:
 	void SetText(std::shared_ptr<DataSource<const std::string&>> text);
 
 	// Window
-	FRECT GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const override;
-	vec2d GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const override;
+	RectFloat GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const override;
+	Vector2 GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const override;
 
 private:
 	std::shared_ptr<Text> _text;

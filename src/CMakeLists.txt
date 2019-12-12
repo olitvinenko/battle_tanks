@@ -7,6 +7,7 @@ if(APPLE OR UNIX)
 endif()
 
 add_subdirectory(external)
+add_subdirectory(engine)
 add_subdirectory(tanks)
 
 #copy to the main project folder

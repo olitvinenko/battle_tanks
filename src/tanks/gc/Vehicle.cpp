@@ -16,7 +16,7 @@
 
 IMPLEMENT_1LIST_MEMBER(GC_Vehicle, LIST_vehicles);
 
-GC_Vehicle::GC_Vehicle(vec2d pos)
+GC_Vehicle::GC_Vehicle(Vector2 pos)
   : GC_RigidBodyDynamic(pos)
   , _enginePower(0)
   , _rotatePower(0)
@@ -247,7 +247,7 @@ void GC_Vehicle::SetWeapon(World &world, GC_Weapon *weapon)
 	}
 }
 
-void GC_Vehicle::MoveTo(World &world, const vec2d &pos)
+void GC_Vehicle::MoveTo(World &world, const Vector2 &pos)
 {
 	if (_weapon)
 		_weapon->MoveTo(world, pos);
@@ -323,9 +323,9 @@ void GC_Vehicle::TimeStep(World &world, float dt)
 	// remember position
 	//
 
-	vec2d trackTmp{ GetDirection().y, -GetDirection().x };
-	vec2d trackL = GetPos() + trackTmp*15;
-	vec2d trackR = GetPos() - trackTmp*15;
+	Vector2 trackTmp{ GetDirection().y, -GetDirection().x };
+	Vector2 trackL = GetPos() + trackTmp*15;
+	Vector2 trackR = GetPos() - trackTmp*15;
 
 
 	// move
@@ -337,18 +337,18 @@ void GC_Vehicle::TimeStep(World &world, float dt)
 	// caterpillar tracks
 	//
 
-	vec2d tmp{ GetDirection().y, -GetDirection().x };
-    vec2d trackL_new = GetPos() + tmp*15;
-    vec2d trackR_new = GetPos() - tmp*15;
+	Vector2 tmp{ GetDirection().y, -GetDirection().x };
+    Vector2 trackL_new = GetPos() + tmp*15;
+    Vector2 trackR_new = GetPos() - tmp*15;
 
 	const float trackDensity = 8;
 
-    vec2d e = trackL_new - trackL;
+    Vector2 e = trackL_new - trackL;
     float len = e.len();
     e /= len;
     while( _trackPathL < len )
     {
-        auto &p = world.New<GC_ParticleDecal>(trackL + e * _trackPathL, vec2d{}, PARTICLE_CATTRACK, 12.0f, e);
+        auto &p = world.New<GC_ParticleDecal>(trackL + e * _trackPathL, Vector2{}, PARTICLE_CATTRACK, 12.0f, e);
         p.SetFade(true);
         _trackPathL += trackDensity;
     }
@@ -359,7 +359,7 @@ void GC_Vehicle::TimeStep(World &world, float dt)
     e  /= len;
     while( _trackPathR < len )
     {
-        auto &p = world.New<GC_ParticleDecal>(trackR + e * _trackPathR, vec2d{}, PARTICLE_CATTRACK, 12.0f, e);
+        auto &p = world.New<GC_ParticleDecal>(trackR + e * _trackPathR, Vector2{}, PARTICLE_CATTRACK, 12.0f, e);
         p.SetFade(true);
         _trackPathR += trackDensity;
     }
@@ -395,15 +395,15 @@ void GC_Vehicle::TimeStep(World &world, float dt)
 	}
 }
 
-vec2d GC_Vehicle::GetLightPos1() const
+Vector2 GC_Vehicle::GetLightPos1() const
 {
-	static const vec2d delta1 = Vec2dDirection(0.6f);
+	static const Vector2 delta1 = Vec2dDirection(0.6f);
 	return GetPos() + Vec2dAddDirection(GetDirection(), delta1) * 20;
 }
 
-vec2d GC_Vehicle::GetLightPos2() const
+Vector2 GC_Vehicle::GetLightPos2() const
 {
-	static const vec2d delta2 = Vec2dDirection(-0.6f);
+	static const Vector2 delta2 = Vec2dDirection(-0.6f);
 	return GetPos() + Vec2dAddDirection(GetDirection(), delta2) * 20;
 }
 
@@ -415,7 +415,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_Tank_Light)
 	return true;
 }
 
-GC_Tank_Light::GC_Tank_Light(vec2d pos)
+GC_Tank_Light::GC_Tank_Light(Vector2 pos)
   : GC_Vehicle(pos)
 {
 	SetSkin("skin/red");

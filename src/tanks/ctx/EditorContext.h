@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GameContext.h"
-#include "math/MyMath.h"
+#include "math/Rect.h"
 #include <memory>
 
 namespace FileSystem
@@ -17,7 +17,7 @@ public:
 	EditorContext(int width, int height, FileSystem::Stream *stream = nullptr);
 	virtual ~EditorContext();
 
-	FRECT GetOriginalBounds() const { return _originalBounds; }
+	RectFloat GetOriginalBounds() const { return _originalBounds; }
 
 	// GameContextBase
 	World& GetWorld() override { return *_world; }
@@ -26,5 +26,5 @@ public:
 
 private:
 	std::unique_ptr<World> _world;
-	FRECT _originalBounds = {};
+	RectFloat _originalBounds = {};
 };

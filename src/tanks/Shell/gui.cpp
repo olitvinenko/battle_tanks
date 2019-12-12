@@ -18,7 +18,8 @@
 #include "ui/GuiManager.h"
 #include "ui/Keys.h"
 #include "ui/ScrollView.h"
-#include "video/TextureManager.h"
+#include "rendering/Color.h"
+#include "rendering/TextureManager.h"
 
 #include <algorithm>
 #include <sstream>

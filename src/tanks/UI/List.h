@@ -19,8 +19,8 @@ public:
 
 	ListDataSource* GetData() const;
 
-	vec2d GetItemSize(TextureManager &texman, float scale) const;
-	int HitTest(vec2d pxPos, TextureManager &texman, float scale) const; // returns item index or -1
+	Vector2 GetItemSize(TextureManager &texman, float scale) const;
+	int HitTest(Vector2 pxPos, TextureManager &texman, float scale) const; // returns item index or -1
 
 	int  GetCurSel() const;
 	void SetCurSel(int sel, bool scroll = false);
@@ -34,7 +34,7 @@ public:
 	std::function<void(int)> eventClickItem;
 
 	// Window
-    vec2d GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const override;
+    Vector2 GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const override;
 
 protected:
 	// callback interface
@@ -73,8 +73,8 @@ private:
 	size_t _selection;
 
 	// PointerSink
-	bool OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, PointerType pointerType, unsigned int pointerID) override;
-	void OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition) override;
+	bool OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, int button, PointerType pointerType, unsigned int pointerID) override;
+	void OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition) override;
 
 	// KeyboardSink
 	bool OnKeyPressed(InputContext &ic, Key key) override;

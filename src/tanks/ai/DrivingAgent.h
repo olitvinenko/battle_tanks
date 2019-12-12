@@ -1,7 +1,7 @@
 #pragma once
 
 #include "memory/ObjectPtr.h"
-#include "math/MyMath.h"
+#include "math/Rect.h"
 
 #include <list>
 
@@ -20,10 +20,10 @@ public:
 
 	struct PathNode
 	{
-		vec2d coord;
+		Vector2 coord;
 	};
 
-	vec2d _arrivalPoint = {};
+	Vector2 _arrivalPoint = {};
 	std::list<PathNode> _path;
 	AttackListType _attackList;
 
@@ -37,7 +37,7 @@ public:
 	//  bTest        - if true then path cost is evaluated only; current path remains unchanged
 	// Return: path cost or -1 if path was not found
 	//-------------------------------------------------------------------------
-	float CreatePath(World &world, vec2d from, vec2d to, int team, float max_depth, bool bTest, const AIWEAPSETTINGS *ws);
+	float CreatePath(World &world, Vector2 from, Vector2 to, int team, float max_depth, bool bTest, const AIWEAPSETTINGS *ws);
 
 	// clears the current path and the attack list
 	void ClearPath();
@@ -46,9 +46,9 @@ public:
 	void SmoothPath();
 
 	// find the nearest node to the vehicle
-	std::list<PathNode>::const_iterator FindNearPathNode(const vec2d &pos, vec2d *proj, float *offset) const;
+	std::list<PathNode>::const_iterator FindNearPathNode(const Vector2 &pos, Vector2 *proj, float *offset) const;
 
-	void StayAway(const GC_Vehicle &vehicle, vec2d fromCenter, float radius);
+	void StayAway(const GC_Vehicle &vehicle, Vector2 fromCenter, float radius);
 
 	void ComputeState(World &world, const GC_Vehicle &vehicle, float dt, VehicleState &vs);
 	void Serialize(SaveFile &f);

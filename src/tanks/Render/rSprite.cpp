@@ -1,8 +1,9 @@
 #include "rSprite.h"
 #include "gc/Actor.h"
 
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/Color.h"
+#include "rendering/DrawingContext.h"
+#include "rendering/TextureManager.h"
 
 R_Sprite::R_Sprite(TextureManager &tm, const char *tex)
 	: _texId(tm.FindSprite(tex))
@@ -11,7 +12,7 @@ R_Sprite::R_Sprite(TextureManager &tm, const char *tex)
 
 void R_Sprite::Draw(const World &world, const GC_Actor &actor, DrawingContext &dc) const
 {
-	vec2d pos = actor.GetPos();
-	vec2d dir = actor.GetDirection();
+	Vector2 pos = actor.GetPos();
+	Vector2 dir = actor.GetDirection();
 	dc.DrawSprite(_texId, 0, 0xffffffff, pos.x, pos.y, dir);
 }

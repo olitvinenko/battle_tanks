@@ -10,7 +10,7 @@
 
 #include <functional>
 
-static void CatmullRom(const vec2d &p1, const vec2d &p2, const vec2d &p3, const vec2d &p4, vec2d &out, float s)
+static void CatmullRom(const Vector2 &p1, const Vector2 &p2, const Vector2 &p3, const Vector2 &p4, Vector2 &out, float s)
 {
 	float s2 = s * s;
 	float s3 = s2 * s;
@@ -57,7 +57,7 @@ static bool CheckCell(const FieldCell &cell, bool hasWeapon)
 	return (0xFF != cell.Properties() && hasWeapon) || (0 == cell.Properties() && !hasWeapon);
 }
 
-float DrivingAgent::CreatePath(World &world, vec2d from, vec2d to, int team, float max_depth, bool bTest, const AIWEAPSETTINGS *ws)
+float DrivingAgent::CreatePath(World &world, Vector2 from, Vector2 to, int team, float max_depth, bool bTest, const AIWEAPSETTINGS *ws)
 {
 	if (!PtInFRect(world._bounds, to))
 	{
@@ -219,7 +219,7 @@ void DrivingAgent::SmoothPath()
 	if( _path.size() < 4 )
 		return;
 
-	vec2d vn[4];
+	Vector2 vn[4];
 	std::list<PathNode>::iterator it[4], tmp;
 
 	//
@@ -275,7 +275,7 @@ void DrivingAgent::SmoothPath()
 	}
 }
 
-std::list<DrivingAgent::PathNode>::const_iterator DrivingAgent::FindNearPathNode(const vec2d &pos, vec2d *projection, float *offset) const
+std::list<DrivingAgent::PathNode>::const_iterator DrivingAgent::FindNearPathNode(const Vector2 &pos, Vector2 *projection, float *offset) const
 {
 	assert(!_path.empty());
 	std::list<PathNode>::const_iterator it = _path.begin(), result = it;
@@ -294,16 +294,16 @@ std::list<DrivingAgent::PathNode>::const_iterator DrivingAgent::FindNearPathNode
 
 	if( projection )
 	{
-		vec2d dev = pos - result->coord;
+		Vector2 dev = pos - result->coord;
 
 		float prevL = -1;
 		float nextL = -1;
 
-		vec2d prevPos;
-		vec2d nextPos;
+		Vector2 prevPos;
+		Vector2 nextPos;
 
-		vec2d nextDir;
-		vec2d prevDir;
+		Vector2 nextDir;
+		Vector2 prevDir;
 
 		float nextDir2;
 		float nextDot;
@@ -332,7 +332,7 @@ std::list<DrivingAgent::PathNode>::const_iterator DrivingAgent::FindNearPathNode
 
 		if( prevL > 0 && prevL > nextL )
 		{
-			vec2d d = prevDir * (prevDot / prevDir2);
+			Vector2 d = prevDir * (prevDot / prevDir2);
 			prevPos  = result->coord + d;
 			*projection = prevPos;
 //			result = prevIt;
@@ -344,7 +344,7 @@ std::list<DrivingAgent::PathNode>::const_iterator DrivingAgent::FindNearPathNode
 		else
 		if( nextL > 0 && nextL > prevL )
 		{
-			vec2d d = nextDir * (nextDot / nextDir2);
+			Vector2 d = nextDir * (nextDot / nextDir2);
 			nextPos  = result->coord + d;
 			*projection = nextPos;
 			if( offset )
@@ -371,12 +371,12 @@ void DrivingAgent::ClearPath()
 	_attackList.clear();
 }
 
-static void RotateTo(const GC_Vehicle &vehicle, VehicleState *pState, const vec2d &x, bool bForv, bool bBack)
+static void RotateTo(const GC_Vehicle &vehicle, VehicleState *pState, const Vector2 &x, bool bForv, bool bBack)
 {
 	assert(!std::isnan(x.x) && !std::isnan(x.y));
 	assert(std::isfinite(x.x) && std::isfinite(x.y));
 
-	vec2d tmp = x - vehicle.GetPos();
+	Vector2 tmp = x - vehicle.GetPos();
 	tmp.Normalize();
 
 	float cosDiff = Vec2dDot(tmp, vehicle.GetDirection());
@@ -391,30 +391,30 @@ static void RotateTo(const GC_Vehicle &vehicle, VehicleState *pState, const vec2
 
 void DrivingAgent::ComputeState(World &world, const GC_Vehicle &vehicle, float dt, VehicleState &vs)
 {
-	vec2d brake = vehicle.GetBrakingLength();
+	Vector2 brake = vehicle.GetBrakingLength();
 	//	float brake_len = brake.len();
 	float brakeSqr = brake.sqr();
 
-	vec2d currentDir = vehicle.GetDirection();
-	vec2d currentPos = vehicle.GetPos();
-	//	vec2d predictedPos = GetVehicle()->GetPos() + brake;
+	Vector2 currentDir = vehicle.GetDirection();
+	Vector2 currentPos = vehicle.GetPos();
+	//	Vector2 predictedPos = GetVehicle()->GetPos() + brake;
 
 	if (!_path.empty())
 	{
-		//		vec2d predictedProj;
+		//		Vector2 predictedProj;
 		//		std::list<PathNode>::const_iterator predictedNodeIt = FindNearPathNode(predictedPos, &predictedProj, nullptr);
 
-		vec2d currentProj;
+		Vector2 currentProj;
 		float offset;
 		std::list<PathNode>::const_iterator currentNodeIt = FindNearPathNode(currentPos, &currentProj, &offset);
 
 		float desiredProjOffsetLen = vehicle.GetMaxBrakingLength() * 2;//(1 + vehicle._lv.len() / vehicle.GetMaxSpeed());
-		vec2d desiredProjOffset;
+		Vector2 desiredProjOffset;
 
 		std::list<PathNode>::const_iterator it = currentNodeIt;
 		if (offset > 0)
 		{
-			vec2d d = it->coord;
+			Vector2 d = it->coord;
 			--it;
 			d -= it->coord;
 			offset -= d.len();
@@ -422,7 +422,7 @@ void DrivingAgent::ComputeState(World &world, const GC_Vehicle &vehicle, float d
 		offset += std::min((currentPos - currentProj).len(), desiredProjOffsetLen);
 		for (;;)
 		{
-			vec2d d = it->coord;
+			Vector2 d = it->coord;
 			if (++it == _path.end())
 			{
 				desiredProjOffset = d;
@@ -489,19 +489,19 @@ void DrivingAgent::ComputeState(World &world, const GC_Vehicle &vehicle, float d
 
 	if (brake.sqr() > 0)
 	{
-		vec2d angle[] = { Vec2dDirection(PI / 4), Vec2dDirection(0), Vec2dDirection(-PI / 4) };
+		Vector2 angle[] = { Vec2dDirection(PI / 4), Vec2dDirection(0), Vec2dDirection(-PI / 4) };
 		float len[] = { 1,2,1 };
 
 		float min_d = -1;
-		vec2d min_hit, min_norm;
+		Vector2 min_hit, min_norm;
 		for (int i = 0; i < 3; ++i)
 		{
-			vec2d tmp = Vec2dAddDirection(vehicle.GetDirection(), vec2d(angle[i]));
+			Vector2 tmp = Vec2dAddDirection(vehicle.GetDirection(), Vector2(angle[i]));
 
-			vec2d x0 = vehicle.GetPos() + tmp * vehicle.GetRadius();
-			vec2d a = brake * len[i];
+			Vector2 x0 = vehicle.GetPos() + tmp * vehicle.GetRadius();
+			Vector2 a = brake * len[i];
 
-			vec2d hit, norm;
+			Vector2 hit, norm;
 			GC_Object *o = world.TraceNearest(
 				world.grid_rigid_s,
 				&vehicle,
@@ -530,7 +530,7 @@ void DrivingAgent::ComputeState(World &world, const GC_Vehicle &vehicle, float d
 
 		if (min_d > 0)
 		{
-			vec2d hit_dir = currentDir; // (min_hit - currentPos).Normalize();
+			Vector2 hit_dir = currentDir; // (min_hit - currentPos).Normalize();
 			min_norm = (min_norm - hit_dir * Vec2dDot(min_norm, hit_dir)).Normalize() + min_norm;
 			min_norm.Normalize();
 			min_norm *= 1.4142f;// sqrt(2)
@@ -574,9 +574,9 @@ void DrivingAgent::ComputeState(World &world, const GC_Vehicle &vehicle, float d
 	}
 }
 
-void DrivingAgent::StayAway(const GC_Vehicle &vehicle, vec2d fromCenter, float radius)
+void DrivingAgent::StayAway(const GC_Vehicle &vehicle, Vector2 fromCenter, float radius)
 {
-	vec2d d = fromCenter - vehicle.GetPos();
+	Vector2 d = fromCenter - vehicle.GetPos();
 	float d_len = d.len();
 	if (d_len < radius)
 	{

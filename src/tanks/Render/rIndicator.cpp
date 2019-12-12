@@ -4,8 +4,9 @@
 #include "gc/Weapons.h"
 #include "gc/World.h"
 
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/Color.h"
+#include "rendering/DrawingContext.h"
+#include "rendering/TextureManager.h"
 
 R_HealthIndicator::R_HealthIndicator(TextureManager &tm, bool dynamic)
 	: _tm(tm)
@@ -19,7 +20,7 @@ void R_HealthIndicator::Draw(const World &world, const GC_Actor &actor, DrawingC
 	assert(dynamic_cast<const GC_RigidBodyStatic*>(&actor));
 	auto &rigidBody = static_cast<const GC_RigidBodyStatic&>(actor);
 
-	vec2d pos = rigidBody.GetPos();
+	Vector2 pos = rigidBody.GetPos();
 	float radius = _dynamic ? rigidBody.GetRadius() : rigidBody.GetHalfWidth();
 	float val = rigidBody.GetHealth() / rigidBody.GetHealthMax();
 	dc.DrawIndicator(_texId, pos.x, pos.y - radius - _tm.GetFrameHeight(_texId, 0), val);
@@ -35,7 +36,7 @@ static void DrawWeaponIndicator(const World &world,
 {
 	if( GC_Vehicle *vehicle = weapon.GetVehicle() )
 	{
-		vec2d pos = vehicle->GetPos();
+		Vector2 pos = vehicle->GetPos();
 		float radius = vehicle->GetRadius();
 		dc.DrawIndicator(texId, pos.x, pos.y + radius, value);
 	}

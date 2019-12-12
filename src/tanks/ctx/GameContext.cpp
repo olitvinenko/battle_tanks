@@ -31,7 +31,7 @@ GameContext::GameContext(FileSystem::Stream &map, const DMSettings &settings, in
 	file.getMapAttribute("west_bound", left);
 	file.getMapAttribute("north_bound", top);
 
-	_world.reset(new World(RectRB{ left, top, left + width, top + height }));
+	_world.reset(new World(RectInt{ left, top, left + width, top + height }));
 	_aiManager.reset(new AIManager(*_world));
 
 	_world->Seed(rand());
@@ -135,7 +135,7 @@ void GameContext::Deserialize(FileSystem::Stream &stream)
 	if( VERSION != version )
 		throw std::runtime_error("invalid version");
 
-	_world.reset(new World(RectRB{ width, height }));
+	_world.reset(new World(RectInt{ width, height }));
 	_world->Deserialize(f);
 
 	// TODO: deserialize world controller

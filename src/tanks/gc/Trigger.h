@@ -49,7 +49,7 @@ class GC_Trigger : public GC_Actor
 	bool Test(World &world, const GC_Vehicle *v) const;
 
 public:
-	explicit GC_Trigger(vec2d pos);
+	explicit GC_Trigger(Vector2 pos);
 	explicit GC_Trigger(FromFile);
 	~GC_Trigger();
 

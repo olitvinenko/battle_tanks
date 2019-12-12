@@ -20,7 +20,7 @@ class FpsCounter : public UI::Text
 	AppState &_appState;
 
 public:
-	FpsCounter(UI::LayoutManager &manager, TextureManager &texman, float x, float y, enumAlignText align, AppState &appState);
+	FpsCounter(UI::LayoutManager &manager, TextureManager &texman, float x, float y, AlignTextKind align, AppState &appState);
 
 protected:
 	void OnTimeStep(UI::LayoutManager &manager, float dt);

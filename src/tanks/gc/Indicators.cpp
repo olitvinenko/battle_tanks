@@ -18,7 +18,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_SpawnPoint)
 
 IMPLEMENT_1LIST_MEMBER(GC_SpawnPoint, LIST_respawns);
 
-GC_SpawnPoint::GC_SpawnPoint(vec2d pos)
+GC_SpawnPoint::GC_SpawnPoint(Vector2 pos)
   : GC_Actor(pos)
   , _team(0)
 {
@@ -112,7 +112,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_HideLabel)
 	return true;
 }
 
-GC_HideLabel::GC_HideLabel(vec2d pos)
+GC_HideLabel::GC_HideLabel(Vector2 pos)
   : GC_Actor(pos)
 {
 }

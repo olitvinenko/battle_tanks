@@ -3,8 +3,9 @@
 #include "gc/projectiles.h"
 #include "gc/World.h"
 
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/Color.h"
+#include "rendering/DrawingContext.h"
+#include "rendering/TextureManager.h"
 
 R_FireSpark::R_FireSpark(TextureManager &tm)
 	: _tm(tm)
@@ -21,8 +22,8 @@ void R_FireSpark::Draw(const World &world, const GC_Actor &actor, DrawingContext
 	uint32_t seed = reinterpret_cast<const uint32_t&>(idAsSeed);
 	uint32_t rand = ((uint64_t)seed * 279470273UL) % 4294967291UL;
 
-	vec2d pos = fire.GetPos();
-	vec2d dir = fire.GetDirection();
+	Vector2 pos = fire.GetPos();
+	Vector2 dir = fire.GetDirection();
 	float size = fire.GetRadius();
 	unsigned int frame = rand % _tm.GetFrameCount(_texId);
 	dc.DrawSprite(_texId, frame, 0xffffffff, pos.x, pos.y, size, size, dir);

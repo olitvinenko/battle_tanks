@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math/MyMath.h"
+#include "math/Vector2.h"
 
 template <class T> struct ObjectListener;
 
@@ -41,7 +41,7 @@ class GC_Projectile;
 class GC_RigidBodyStatic;
 template<> struct ObjectListener<GC_Projectile>
 {
-	virtual void OnHit(GC_Projectile &obj, GC_RigidBodyStatic &target, vec2d hit) = 0;
+	virtual void OnHit(GC_Projectile &obj, GC_RigidBodyStatic &target, Vector2 hit) = 0;
 };
 
 class GC_ProjectileBasedWeapon;
@@ -69,7 +69,7 @@ template<> struct ObjectListener<GC_RigidBodyStatic>
 class GC_RigidBodyDynamic;
 template<> struct ObjectListener<GC_RigidBodyDynamic>
 {
-	virtual void OnContact(vec2d pos, float np, float tp) = 0;
+	virtual void OnContact(Vector2 pos, float np, float tp) = 0;
 };
 
 class GC_Vehicle;

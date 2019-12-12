@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils.h"
+#include "math/Utils.h"
 
 //-----------------------------------------------------------------------------
 //the euclidian heuristic (straight-line distance)

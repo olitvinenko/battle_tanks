@@ -9,7 +9,7 @@ void World::RayTrace(const Grid<ObjectList> &list, SelectorType &s) const
 	// overlap line
 	//
 
-	vec2d begin(s.GetCenter() - s.GetDirection()/2), end(s.GetCenter() + s.GetDirection()/2), delta(s.GetDirection());
+	Vector2 begin(s.GetCenter() - s.GetDirection()/2), end(s.GetCenter() + s.GetDirection()/2), delta(s.GetDirection());
 	begin /= LOCATION_SIZE;
 	end   /= LOCATION_SIZE;
 	delta /= LOCATION_SIZE;
@@ -53,7 +53,7 @@ void World::RayTrace(const Grid<ObjectList> &list, SelectorType &s) const
 					}
 
 					float hitEnter, hitExit;
-					vec2d hitNorm;
+					Vector2 hitNorm;
 					if( object->IntersectWithLine(s.GetCenter(), s.GetDirection(), hitNorm, hitEnter, hitExit) )
 					{
 						assert(!std::isnan(hitEnter) && std::isfinite(hitEnter));

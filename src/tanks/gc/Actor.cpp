@@ -13,7 +13,7 @@ namespace base
 
 IMPLEMENT_GRID_MEMBER(GC_Actor, grid_actors)
 
-GC_Actor::GC_Actor(vec2d pos)
+GC_Actor::GC_Actor(Vector2 pos)
 	: _pos(pos)
 	, _direction{ 1, 0 }
 {
@@ -46,7 +46,7 @@ void GC_Actor::Serialize(World &world, SaveFile &f)
 		EnterContexts(world, _locationX, _locationY);
 }
 
-void GC_Actor::MoveTo(World &world, const vec2d &pos)
+void GC_Actor::MoveTo(World &world, const Vector2 &pos)
 {
 	_pos = pos;
 

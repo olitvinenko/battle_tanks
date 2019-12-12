@@ -1,6 +1,6 @@
 #pragma once
 
-#include "video/RenderBase.h"
+#include "rendering/base/IRender.h"
 
 #include <cassert>
 #include <functional>
@@ -37,15 +37,15 @@ enum class FlowDirection
 
 struct ScrollSink
 {
-	virtual void OnScroll(TextureManager &texman, const InputContext &ic, const LayoutContext &lc, const StateContext &sc, vec2d pointerPosition, vec2d scrollOffset) = 0;
+	virtual void OnScroll(TextureManager &texman, const InputContext &ic, const LayoutContext &lc, const StateContext &sc, Vector2 pointerPosition, Vector2 scrollOffset) = 0;
 };
 
 struct PointerSink
 {
-	virtual bool OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, PointerType pointerType, unsigned int pointerID) { return false; }
-	virtual void OnPointerUp(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, PointerType pointerType, unsigned int pointerID) {}
-	virtual void OnPointerMove(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, PointerType pointerType, unsigned int pointerID, bool captured) {}
-	virtual void OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition) {}
+	virtual bool OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, int button, PointerType pointerType, unsigned int pointerID) { return false; }
+	virtual void OnPointerUp(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, int button, PointerType pointerType, unsigned int pointerID) {}
+	virtual void OnPointerMove(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, PointerType pointerType, unsigned int pointerID, bool captured) {}
+	virtual void OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition) {}
 };
 
 struct KeyboardSink
@@ -114,7 +114,7 @@ public:
 	const std::deque<std::shared_ptr<Window>>& GetChildren() const { return _children; }
 	LayoutManager& GetManager() const { return _manager;  } // to remove
 
-	virtual FRECT GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const;
+	virtual RectFloat GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const;
 	virtual float GetChildOpacity(const Window &child) const { return 1; }
 
 	//
@@ -146,17 +146,17 @@ public:
 	// size & position
 	//
 
-	virtual vec2d GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const { return Vec2dFloor(GetSize() *scale); }
+	virtual Vector2 GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const { return Vec2dFloor(GetSize() *scale); }
 
 	void Move(float x, float y);
-	vec2d GetOffset() const { return vec2d{_x, _y}; }
+	Vector2 GetOffset() const { return Vector2{_x, _y}; }
 
 	void Resize(float width, float height);
 	void SetHeight(float height) { Resize(GetWidth(), height); }
 	void SetWidth(float width) { Resize(width, GetHeight()); }
 	float GetWidth() const { return _width; }
 	float GetHeight() const { return _height; }
-	vec2d GetSize() const { return vec2d{GetWidth(), GetHeight()}; }
+	Vector2 GetSize() const { return Vector2{GetWidth(), GetHeight()}; }
 
 
 	//
@@ -198,6 +198,6 @@ inline bool NeedsFocus(Window *wnd)
 	return wnd ? wnd->GetKeyboardSink() || wnd->GetTextSink() || NeedsFocus(wnd->GetFocus().get()) : false;
 }
 
-FRECT CanvasLayout(vec2d offset, vec2d size, float scale);
+RectFloat CanvasLayout(Vector2 offset, Vector2 size, float scale);
 
 } // namespace UI

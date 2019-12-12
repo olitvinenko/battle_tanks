@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "math/MyMath.h"
+#include "math/Rect.h"
 
 #include <algorithm>
 #include <cassert>
@@ -13,7 +13,7 @@ template <class T>
 class Grid
 {
 	T *_data;
-	RectRB _bounds;
+	RectInt _bounds;
 
 public:
 	Grid()
@@ -27,7 +27,7 @@ public:
 		delete [] _data;
 	}
 
-	void resize(RectRB bounds)
+	void resize(RectInt bounds)
 	{
 		assert(WIDTH(bounds) > 0 && HEIGHT(bounds) > 0);
 		delete [] _data;
@@ -49,7 +49,7 @@ public:
 
 	///////////////////////////////////////////////////////////////////////////
 
-	void OverlapRect(std::vector<T*> &receive, const FRECT &rect)
+	void OverlapRect(std::vector<T*> &receive, const RectFloat &rect)
 	{
 		int xmin = std::max(_bounds.left, (int)std::floor(rect.left - 0.5f));
 		int ymin = std::max(_bounds.top, (int)std::floor(rect.top - 0.5f));
@@ -65,7 +65,7 @@ public:
 		}
 	}
 
-	void OverlapPoint(std::vector<T*> &receive, const vec2d &pt)
+	void OverlapPoint(std::vector<T*> &receive, const Vector2 &pt)
 	{
 		int xmin = std::min(std::max((int)std::floor(pt.x - 0.5f), _bounds.left), _bounds.right - 1);
 		int ymin = std::min(std::max((int)std::floor(pt.y - 0.5f), _bounds.top), _bounds.bottom - 1);

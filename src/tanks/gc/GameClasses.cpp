@@ -15,7 +15,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_Wood)
 	return true;
 }
 
-GC_Wood::GC_Wood(vec2d pos)
+GC_Wood::GC_Wood(Vector2 pos)
   : GC_Actor(pos)
 {
 }
@@ -74,7 +74,7 @@ int GC_Wood::GetNeighbors(const World &world) const
 	return neighbors;
 }
 
-void GC_Wood::MoveTo(World &world, const vec2d &pos)
+void GC_Wood::MoveTo(World &world, const Vector2 &pos)
 {
 	int oldTile = world.GetTileIndex(GetPos());
 	int newTile = world.GetTileIndex(pos);
@@ -97,7 +97,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_HealthDaemon)
 
 IMPLEMENT_1LIST_MEMBER(GC_HealthDaemon, LIST_timestep);
 
-GC_HealthDaemon::GC_HealthDaemon(vec2d pos, GC_Player *owner, float damage, float time)
+GC_HealthDaemon::GC_HealthDaemon(Vector2 pos, GC_Player *owner, float damage, float time)
   : GC_Actor(pos)
   , _time(time)
   , _damage(damage)
@@ -163,7 +163,7 @@ void GC_HealthDaemon::TimeStep(World &world, float dt)
 
 /////////////////////////////////////////////////////////////
 
-GC_Text::GC_Text(vec2d pos, std::string text)
+GC_Text::GC_Text(Vector2 pos, std::string text)
   : GC_Actor(pos)
   , _style(DEFAULT)
   , _text(std::move(text))
@@ -190,7 +190,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_Text_ToolTip)
 
 IMPLEMENT_1LIST_MEMBER(GC_Text_ToolTip, LIST_timestep);
 
-GC_Text_ToolTip::GC_Text_ToolTip(vec2d pos, std::string text, Style style)
+GC_Text_ToolTip::GC_Text_ToolTip(Vector2 pos, std::string text, Style style)
   : GC_Text(pos, std::move(text))
   , _time(0)
 {
@@ -205,7 +205,7 @@ void GC_Text_ToolTip::Serialize(World &world, SaveFile &f)
 
 void GC_Text_ToolTip::TimeStep(World &world, float dt)
 {
-	MoveTo(world, GetPos() + vec2d{ 0, -20.0f } *dt);
+	MoveTo(world, GetPos() + Vector2{ 0, -20.0f } *dt);
 	_time += dt;
 	if( _time > 1.2f )
 	{

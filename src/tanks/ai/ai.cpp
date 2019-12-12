@@ -222,7 +222,7 @@ bool AIController::FindItem(World &world, const GC_Vehicle &vehicle, /*out*/ AII
 	std::vector<GC_Pickup *> applicants;
 
     std::vector<ObjectList*> receive;
-	FRECT rt = {
+	RectFloat rt = {
 		(vehicle.GetPos().x - AI_MAX_SIGHT * CELL_SIZE) / LOCATION_SIZE,
 		(vehicle.GetPos().y - AI_MAX_SIGHT * CELL_SIZE) / LOCATION_SIZE,
 		(vehicle.GetPos().x + AI_MAX_SIGHT * CELL_SIZE) / LOCATION_SIZE,
@@ -500,7 +500,7 @@ void AIController::SelectState(World &world, const GC_Vehicle &vehicle, const AI
 		assert(nullptr == _target);
 		if( L1_STICK == _aiState_l1 || _drivingAgent->_path.empty() )
 		{
-			vec2d t = vehicle.GetPos() + world.net_vrand(sqrtf(world.net_frand(1.0f))) * (AI_MAX_SIGHT * CELL_SIZE);
+			Vector2 t = vehicle.GetPos() + world.net_vrand(sqrtf(world.net_frand(1.0f))) * (AI_MAX_SIGHT * CELL_SIZE);
 			t = Vec2dConstrain(t, world._bounds);
 
 			if (_drivingAgent->CreatePath(world, vehicle.GetPos(), t, vehicle.GetOwner()->GetTeam(), AI_MAX_DEPTH, false, ws) > 0)
@@ -576,7 +576,7 @@ void AIController::debug_draw(World &world)
 		auto it = _drivingAgent->_path.begin();
 		for(;;)
 		{
-//			vec2d v = it->coord;
+//			Vector2 v = it->coord;
 			if( ++it == _drivingAgent->_path.end() ) break;
 //			DbgLine(v, it->coord, 0xffffffff);
 		}

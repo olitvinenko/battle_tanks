@@ -47,7 +47,7 @@ void Window::AddBack(std::shared_ptr<Window> child)
 	_children.push_front(std::move(child));
 }
 
-FRECT Window::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
+RectFloat Window::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
 {
 	return CanvasLayout(child.GetOffset(), child.GetSize(), lc.GetScale());
 }
@@ -120,7 +120,7 @@ void Window::OnTimeStep(LayoutManager &manager, float dt)
 }
 
 
-FRECT UI::CanvasLayout(vec2d offset, vec2d size, float scale)
+RectFloat UI::CanvasLayout(Vector2 offset, Vector2 size, float scale)
 {
 	return MakeRectWH(Vec2dFloor(offset * scale), Vec2dFloor(size * scale));
 }

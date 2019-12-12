@@ -168,10 +168,10 @@ void ScrollBarBase::Draw(const StateContext &sc, const LayoutContext &lc, const 
 	Rectangle::Draw(sc, lc, ic, dc, texman);
 }
 
-FRECT ScrollBarBase::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
+RectFloat ScrollBarBase::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
 {
 	float scale = lc.GetScale();
-	vec2d size = lc.GetPixelSize();
+	Vector2 size = lc.GetPixelSize();
 
 	if (_btnDownRight.get() == &child)
 	{
@@ -192,14 +192,14 @@ ScrollBarVertical::ScrollBarVertical(LayoutManager &manager, TextureManager &tex
 	SetTexture(texman, "ui/scroll_back_vert", true);
 }
 
-FRECT ScrollBarVertical::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
+RectFloat ScrollBarVertical::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
 {
 	if (_btnBox.get() == &child)
 	{
 		float height = lc.GetPixelSize().y / lc.GetScale();
 		float mult = GetShowButtons() ? 1.0f : 0.0f;
-		vec2d thumbSize = { _btnBox->GetWidth(), std::max(GetScrollPaneLength(lc) * GetPageSize() / GetDocumentSize(), MIN_THUMB_SIZE) };
-		vec2d thumbOffset = { 0, _btnUpLeft->GetHeight() * mult + (height - thumbSize.y
+		Vector2 thumbSize = { _btnBox->GetWidth(), std::max(GetScrollPaneLength(lc) * GetPageSize() / GetDocumentSize(), MIN_THUMB_SIZE) };
+		Vector2 thumbOffset = { 0, _btnUpLeft->GetHeight() * mult + (height - thumbSize.y
 			- (_btnDownRight->GetHeight() + _btnUpLeft->GetHeight()) * mult) * GetPos() / (GetDocumentSize() - GetPageSize()) };
 
 		return CanvasLayout(thumbOffset, thumbSize, lc.GetScale());
@@ -219,14 +219,14 @@ ScrollBarHorizontal::ScrollBarHorizontal(LayoutManager &manager, TextureManager 
 	SetTexture(texman, "ui/scroll_back_hor", true);
 }
 
-FRECT ScrollBarHorizontal::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
+RectFloat ScrollBarHorizontal::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
 {
 	if (_btnBox.get() == &child)
 	{
 		float width = lc.GetPixelSize().x / lc.GetScale();
 		float mult = GetShowButtons() ? 1.0f : 0.0f;
-		vec2d thumbSize = { std::max(GetScrollPaneLength(lc) * GetPageSize() / GetDocumentSize(), MIN_THUMB_SIZE), _btnBox->GetHeight() };
-		vec2d thumbOffset = { _btnUpLeft->GetWidth() * mult + (width - thumbSize.x
+		Vector2 thumbSize = { std::max(GetScrollPaneLength(lc) * GetPageSize() / GetDocumentSize(), MIN_THUMB_SIZE), _btnBox->GetHeight() };
+		Vector2 thumbOffset = { _btnUpLeft->GetWidth() * mult + (width - thumbSize.x
 			- (_btnUpLeft->GetWidth() + _btnDownRight->GetWidth()) * mult) * GetPos() / (GetDocumentSize() - GetPageSize()), 0 };
 
 		return CanvasLayout(thumbOffset, thumbSize, lc.GetScale());

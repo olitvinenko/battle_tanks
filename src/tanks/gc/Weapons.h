@@ -8,7 +8,7 @@ class GC_Weap_RocketLauncher : public GC_ProjectileBasedWeapon
 	DECLARE_SELF_REGISTRATION(GC_Weap_RocketLauncher);
 
 public:
-	explicit GC_Weap_RocketLauncher(vec2d pos);
+	explicit GC_Weap_RocketLauncher(Vector2 pos);
 	explicit GC_Weap_RocketLauncher(FromFile);
 
 	enum
@@ -38,7 +38,7 @@ class GC_Weap_AutoCannon : public GC_ProjectileBasedWeapon
 	DECLARE_SELF_REGISTRATION(GC_Weap_AutoCannon);
 
 public:
-	explicit GC_Weap_AutoCannon(vec2d pos);
+	explicit GC_Weap_AutoCannon(Vector2 pos);
 	explicit GC_Weap_AutoCannon(FromFile);
 
 	// GC_ProjectileBasedWeapon
@@ -63,7 +63,7 @@ class GC_Weap_Cannon : public GC_ProjectileBasedWeapon
 	DECLARE_SELF_REGISTRATION(GC_Weap_Cannon);
 
 public:
-	explicit GC_Weap_Cannon(vec2d pos);
+	explicit GC_Weap_Cannon(Vector2 pos);
 	explicit GC_Weap_Cannon(FromFile);
 
 	// GC_ProjectileBasedWeapon
@@ -94,7 +94,7 @@ class GC_Weap_Plazma : public GC_ProjectileBasedWeapon
 	DECLARE_SELF_REGISTRATION(GC_Weap_Plazma);
 
 public:
-	explicit GC_Weap_Plazma(vec2d pos);
+	explicit GC_Weap_Plazma(Vector2 pos);
 	explicit GC_Weap_Plazma(FromFile);
 
 	// GC_ProjectileBasedWeapon
@@ -116,7 +116,7 @@ class GC_Weap_Gauss : public GC_ProjectileBasedWeapon
 	DECLARE_SELF_REGISTRATION(GC_Weap_Gauss);
 
 public:
-	explicit GC_Weap_Gauss(vec2d pos);
+	explicit GC_Weap_Gauss(Vector2 pos);
 	explicit GC_Weap_Gauss(FromFile);
 
 	// GC_ProjectileBasedWeapon
@@ -138,7 +138,7 @@ class GC_Weap_Ram : public GC_Weapon
 	DECLARE_SELF_REGISTRATION(GC_Weap_Ram);
 
 public:
-	explicit GC_Weap_Ram(vec2d pos);
+	explicit GC_Weap_Ram(Vector2 pos);
 	explicit GC_Weap_Ram(FromFile);
 	virtual ~GC_Weap_Ram();
 
@@ -163,7 +163,7 @@ protected:
     void OnAttached(World &world, GC_Vehicle &vehicle) override;
 
 private:
-	vec2d GetEngineLightPos() const;
+	Vector2 GetEngineLightPos() const;
     void OnUpdateView(World &world) override;
 	ObjPtr<GC_Light> _engineLight;
 
@@ -181,7 +181,7 @@ class GC_Weap_BFG : public GC_ProjectileBasedWeapon
 	DECLARE_SELF_REGISTRATION(GC_Weap_BFG);
 
 public:
-	explicit GC_Weap_BFG(vec2d pos);
+	explicit GC_Weap_BFG(Vector2 pos);
 	explicit GC_Weap_BFG(FromFile);
 
 	// GC_ProjectileBasedWeapon
@@ -206,7 +206,7 @@ class GC_Weap_Ripper : public GC_ProjectileBasedWeapon
 	DECLARE_SELF_REGISTRATION(GC_Weap_Ripper);
 
 public:
-	explicit GC_Weap_Ripper(vec2d pos);
+	explicit GC_Weap_Ripper(Vector2 pos);
 	explicit GC_Weap_Ripper(FromFile);
 
 	// GC_ProjectileBasedWeapon
@@ -228,7 +228,7 @@ class GC_Weap_Minigun : public GC_ProjectileBasedWeapon
 	DECLARE_SELF_REGISTRATION(GC_Weap_Minigun);
 
 public:
-	explicit GC_Weap_Minigun(vec2d pos);
+	explicit GC_Weap_Minigun(Vector2 pos);
 	explicit GC_Weap_Minigun(FromFile);
 	virtual ~GC_Weap_Minigun();
 
@@ -262,7 +262,7 @@ class GC_Weap_Zippo : public GC_ProjectileBasedWeapon
 	DECLARE_SELF_REGISTRATION(GC_Weap_Zippo);
 
 public:
-	explicit GC_Weap_Zippo(vec2d pos);
+	explicit GC_Weap_Zippo(Vector2 pos);
 	explicit GC_Weap_Zippo(FromFile);
 	virtual ~GC_Weap_Zippo();
 

@@ -10,11 +10,11 @@ void ShootingAgent::Serialize(SaveFile &f)
 	f.Serialize(_desiredOffset);
 }
 
-static void TowerTo(const GC_Vehicle &vehicle, VehicleState *pState, const vec2d &at, bool bFire, const AIWEAPSETTINGS &weapSettings, float offsetAngle)
+static void TowerTo(const GC_Vehicle &vehicle, VehicleState *pState, const Vector2 &at, bool bFire, const AIWEAPSETTINGS &weapSettings, float offsetAngle)
 {
 	assert(vehicle.GetWeapon());
 
-	vec2d direction = at - vehicle.GetPos();
+	Vector2 direction = at - vehicle.GetPos();
 	direction.Normalize();
 	if (!direction.IsZero())
 	{
@@ -75,7 +75,7 @@ void ShootingAgent::AttackTarget(World &world, const GC_Vehicle &myVehicle, cons
 	assert(myVehicle.GetWeapon());
 	myVehicle.GetWeapon()->SetupAI(&weapSettings);
 
-	vec2d fake = target.GetPos();
+	Vector2 fake = target.GetPos();
 	if (weapSettings.bNeedOutstrip && _accuracy > 1 && targetAsVehicle)
 	{
 		world.CalcOutstrip(myVehicle.GetPos(), weapSettings.fProjectileSpeed, targetAsVehicle->GetPos(), targetAsVehicle->_lv, fake);

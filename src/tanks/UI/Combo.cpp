@@ -7,7 +7,7 @@
 #include "GuiManager.h"
 #include "Keys.h"
 #include "LayoutContext.h"
-#include "video/TextureManager.h"
+#include "rendering/TextureManager.h"
 
 using namespace UI;
 
@@ -142,23 +142,23 @@ bool ComboBox::OnKeyPressed(InputContext &ic, Key key)
 	return false;
 }
 
-FRECT ComboBox::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
+RectFloat ComboBox::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
 {
 	float scale = lc.GetScale();
-	vec2d size = lc.GetPixelSize();
+	Vector2 size = lc.GetPixelSize();
 
 	if (_list.get() == &child)
 	{
-		return FRECT{ 0, size.y, size.x, size.y + std::floor(_list->GetList()->GetHeight() * scale) };
+		return RectFloat{ 0, size.y, size.x, size.y + std::floor(_list->GetList()->GetHeight() * scale) };
 	}
 	else if (_btn.get() == &child)
 	{
 		float top = std::floor((size.y - child.GetHeight() * scale) / 2);
-		return FRECT{ size.x - std::floor(child.GetWidth() * scale), top, size.x, top + std::floor(child.GetHeight() * scale) };
+		return RectFloat{ size.x - std::floor(child.GetWidth() * scale), top, size.x, top + std::floor(child.GetHeight() * scale) };
 	}
 	else if (_text.get() == &child)
 	{
-		return FRECT{ 0, 0, size.x - std::floor(_btn->GetWidth() * scale), size.y };
+		return RectFloat{ 0, 0, size.x - std::floor(_btn->GetWidth() * scale), size.y };
 	}
 
 	return Window::GetChildRect(texman, lc, sc, child);

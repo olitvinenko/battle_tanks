@@ -13,8 +13,8 @@
 #include <iostream>
 
 
-#include "Vector2.h"
-#include "utils.h" 
+#include "math/Vector2.h"
+#include "math/Utils.h" 
 #include "NodeTypeEnumerations.h"
 
 

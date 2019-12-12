@@ -46,12 +46,12 @@ public:
 	// Window
 	void OnTimeStep(UI::LayoutManager &manager, float dt) override;
 	void Draw(const UI::StateContext &sc, const UI::LayoutContext &lc, const UI::InputContext &ic, DrawingContext &dc, TextureManager &texman) const override;
-	FRECT GetChildRect(TextureManager &texman, const UI::LayoutContext &lc, const UI::StateContext &sc, const UI::Window &child) const override;
+	RectFloat GetChildRect(TextureManager &texman, const UI::LayoutContext &lc, const UI::StateContext &sc, const UI::Window &child) const override;
 	PointerSink* GetPointerSink() override { return this; }
 
 private:
 	void OnChangeShowTime();
-	vec2d GetDragDirection() const;
+	Vector2 GetDragDirection() const;
 	unsigned int GetEffectiveDragCount() const;
 
 	std::shared_ptr<MessageArea> _msg;
@@ -70,13 +70,13 @@ private:
 	size_t _texDrag;
 	size_t _texTarget;
 
-	std::unordered_map<unsigned int, std::pair<vec2d, vec2d>> _activeDrags;
+	std::unordered_map<unsigned int, std::pair<Vector2, Vector2>> _activeDrags;
 
 	// UI::PointerSink
-	bool OnPointerDown(UI::InputContext &ic, UI::LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, UI::PointerType pointerType, unsigned int pointerID) override;
-	void OnPointerUp(UI::InputContext &ic, UI::LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, UI::PointerType pointerType, unsigned int pointerID) override;
-	void OnPointerMove(UI::InputContext &ic, UI::LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, UI::PointerType pointerType, unsigned int pointerID, bool captured) override;
-	void OnTap(UI::InputContext &ic, UI::LayoutContext &lc, TextureManager &texman, vec2d pointerPosition) override;
+	bool OnPointerDown(UI::InputContext &ic, UI::LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, int button, UI::PointerType pointerType, unsigned int pointerID) override;
+	void OnPointerUp(UI::InputContext &ic, UI::LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, int button, UI::PointerType pointerType, unsigned int pointerID) override;
+	void OnPointerMove(UI::InputContext &ic, UI::LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, UI::PointerType pointerType, unsigned int pointerID, bool captured) override;
+	void OnTap(UI::InputContext &ic, UI::LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition) override;
 
 	// GameListener
 	void OnMurder(GC_Player &victim, GC_Player *killer, MurderType murderType) override;

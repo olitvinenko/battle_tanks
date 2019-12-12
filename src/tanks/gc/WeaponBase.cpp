@@ -61,7 +61,7 @@ void GC_Weapon::MyPropertySet::MyExchange(World &world, bool applyToObject)
 }
 
 
-GC_Weapon::GC_Weapon(vec2d pos)
+GC_Weapon::GC_Weapon(Vector2 pos)
   : GC_Pickup(pos)
   , _stayTimeout(15.0f)
   , _rotatorWeap(_angle)
@@ -142,8 +142,8 @@ void GC_Weapon::ProcessRotate(World &world, float dt)
 			_rotatorWeap.stop(false);
 	}
 
-	vec2d a = Vec2dDirection(_angle);
-	vec2d direction = Vec2dAddDirection(GetVehicle()->GetDirection(), a);
+	Vector2 a = Vec2dDirection(_angle);
+	Vector2 direction = Vec2dAddDirection(GetVehicle()->GetDirection(), a);
 	SetDirection(direction);
 
 	OnUpdateView(world);
@@ -172,7 +172,7 @@ void GC_Weapon::Serialize(World &world, SaveFile &f)
 	f.Serialize(_vehicle);
 }
 
-void GC_Weapon::MoveTo(World &world, const vec2d &pos)
+void GC_Weapon::MoveTo(World &world, const Vector2 &pos)
 {
 	if (_booster)
 		_booster->MoveTo(world, pos);
@@ -210,7 +210,7 @@ void GC_Weapon::TimeStep(World &world, float dt)
 
 /////////////////////////////////////////////////////////////////////
 
-GC_ProjectileBasedWeapon::GC_ProjectileBasedWeapon(vec2d pos)
+GC_ProjectileBasedWeapon::GC_ProjectileBasedWeapon(Vector2 pos)
 	: GC_Weapon(pos)
 	, _lastShotTime(-FLT_MAX)
 	, _lastShotPos()
@@ -271,7 +271,7 @@ void GC_ProjectileBasedWeapon::ResetSeries()
 
 void GC_ProjectileBasedWeapon::OnAttached(World &world, GC_Vehicle &vehicle)
 {
-	_fireLight = &world.New<GC_Light>(vec2d{}, GC_Light::LIGHT_POINT);
+	_fireLight = &world.New<GC_Light>(Vector2{}, GC_Light::LIGHT_POINT);
 	_fireLight->SetActive(false);
 	GC_Weapon::OnAttached(world, vehicle);
 }
@@ -303,8 +303,8 @@ void GC_ProjectileBasedWeapon::OnUpdateView(World &world)
 		if( time < feTime )
 		{
 			float op = 1.0f - pow(time / feTime, 2);
-			vec2d dir = GetDirection();
-			_fireLight->MoveTo(world, GetPos() + vec2d{ Vec2dDot(_lastShotPos, dir), _lastShotPos.x*dir.y - _lastShotPos.y*dir.x });
+			Vector2 dir = GetDirection();
+			_fireLight->MoveTo(world, GetPos() + Vector2{ Vec2dDot(_lastShotPos, dir), _lastShotPos.x*dir.y - _lastShotPos.y*dir.x });
 			_fireLight->SetIntensity(op);
 		}
 		else

@@ -3,8 +3,9 @@
 #include "gc/Vehicle.h"
 #include "gc/Player.h"
 
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/Color.h"
+#include "rendering/DrawingContext.h"
+#include "rendering/TextureManager.h"
 
 R_Vehicle::R_Vehicle(TextureManager &tm)
 	: _tm(tm)
@@ -17,8 +18,8 @@ void R_Vehicle::Draw(const World &world, const GC_Actor &actor, DrawingContext &
 	assert(dynamic_cast<const GC_Vehicle*>(&actor));
 	auto &vehicle = static_cast<const GC_Vehicle&>(actor);
 
-	vec2d pos = vehicle.GetPos();
-	vec2d dir = vehicle.GetDirection();
+	Vector2 pos = vehicle.GetPos();
+	Vector2 dir = vehicle.GetDirection();
 	float radius = vehicle.GetRadius();
 	size_t texId = _tm.FindSprite(vehicle.GetSkin());
 	dc.DrawSprite(texId, 0, 0x40000000, pos.x + 4, pos.y + 4, dir);
@@ -26,7 +27,7 @@ void R_Vehicle::Draw(const World &world, const GC_Actor &actor, DrawingContext &
 
 	if( vehicle.GetOwner() )
 	{
-		dc.DrawBitmapText(vec2d{ pos.x, pos.y + radius + 4 }, // leave space for ammo indicator
+		dc.DrawBitmapText(Vector2{ pos.x, pos.y + radius + 4 }, // leave space for ammo indicator
 			1.f, _nameFont, 0x7f7f7f7f, vehicle.GetOwner()->GetNick(), alignTextCT);
 	}
 

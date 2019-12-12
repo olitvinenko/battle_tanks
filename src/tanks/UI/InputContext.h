@@ -1,6 +1,6 @@
 #pragma once
 #include "Pointers.h"
-#include "math/MyMath.h"
+#include "math/Rect.h"
 #include <memory>
 #include <stack>
 #include <unordered_map>
@@ -41,8 +41,8 @@ public:
 		std::shared_ptr<Window> wnd,
 		const LayoutContext &lc,
 		const StateContext &sc,
-		vec2d pxPointerPosition,
-		vec2d pxPointerOffset,
+		Vector2 pxPointerPosition,
+		Vector2 pxPointerOffset,
 		Msg msg,
 		int button,
 		PointerType pointerType,
@@ -53,10 +53,10 @@ public:
 	IClipboard &GetClipboard() const { return _clipboard; }
 	IInput& GetInput() const { return _input; }
 
-	void PushTransform(vec2d offset, bool focused, bool hovered);
+	void PushTransform(Vector2 offset, bool focused, bool hovered);
 	void PopTransform();
 
-	vec2d GetMousePos() const;
+	Vector2 GetMousePos() const;
 	bool GetFocused() const;
 	bool GetHovered() const;
 
@@ -66,18 +66,18 @@ public:
 	bool GetMainWindowActive() const { return _isAppActive; }
 
 #ifndef NDEBUG
-	const std::unordered_map<unsigned int, vec2d>& GetLastPointerLocation() const { return _lastPointerLocation; }
+	const std::unordered_map<unsigned int, Vector2>& GetLastPointerLocation() const { return _lastPointerLocation; }
 #endif
 
 private:
-	bool ProcessScroll(TextureManager &texman, std::shared_ptr<Window> wnd, const LayoutContext &lc, const StateContext &sc, vec2d pxPointerPosition, vec2d offset);
+	bool ProcessScroll(TextureManager &texman, std::shared_ptr<Window> wnd, const LayoutContext &lc, const StateContext &sc, Vector2 pxPointerPosition, Vector2 offset);
 
 	IInput &_input;
 	IClipboard &_clipboard;
 
 	struct InputStackFrame
 	{
-		vec2d offset;
+		Vector2 offset;
 		bool focused;
 		bool hovered;
 	};
@@ -92,7 +92,7 @@ private:
 
 	bool _isAppActive;
 #ifndef NDEBUG
-	std::unordered_map<unsigned int, vec2d> _lastPointerLocation;
+	std::unordered_map<unsigned int, Vector2> _lastPointerLocation;
 #endif
 };
 
@@ -101,7 +101,7 @@ class LayoutContext;
 struct AreaSinkSearch
 {
 	TextureManager &texman;
-	vec2d pxGlobalPointerPosition;
+	Vector2 pxGlobalPointerPosition;
 	bool topMostPass;
 	std::vector<std::shared_ptr<Window>> outSinkPath;
 };

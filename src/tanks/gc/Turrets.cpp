@@ -28,7 +28,7 @@ IMPLEMENT_1LIST_MEMBER(GC_Turret, LIST_timestep);
 
 JobManager<GC_Turret> GC_Turret::_jobManager;
 
-GC_Turret::GC_Turret(vec2d pos, TurretState state)
+GC_Turret::GC_Turret(Vector2 pos, TurretState state)
   : GC_RigidBodyStatic(pos)
   , _rotator(_dir)
   , _initialDir(0)
@@ -168,7 +168,7 @@ void GC_Turret::ProcessState(World &world, float dt)
 		{
 			if( IsTargetVisible(world, _target, &pObstacle) )
 			{
-				vec2d fake;
+				Vector2 fake;
 				CalcOutstrip(world, _target, fake);
 
 				float ang2 = ( fake - GetPos() ).Angle();
@@ -327,7 +327,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_TurretRocket)
 	return true;
 }
 
-GC_TurretRocket::GC_TurretRocket(vec2d pos)
+GC_TurretRocket::GC_TurretRocket(Vector2 pos)
   : GC_Turret(pos, TS_WAITING)
   , _timeReload(0)
 {
@@ -349,7 +349,7 @@ void GC_TurretRocket::Serialize(World &world, SaveFile &f)
 	f.Serialize(_timeReload);
 }
 
-void GC_TurretRocket::CalcOutstrip(World &world, const GC_Vehicle *target, vec2d &fake)
+void GC_TurretRocket::CalcOutstrip(World &world, const GC_Vehicle *target, Vector2 &fake)
 {
 	world.CalcOutstrip(GetPos(), SPEED_ROCKET, target->GetPos(), target->_lv, fake);
 }
@@ -367,7 +367,7 @@ void GC_TurretRocket::TimeStep(World &world, float dt)
 
 void GC_TurretRocket::OnShoot(World &world)
 {
-	vec2d a = Vec2dDirection(GetWeaponDir());
+	Vector2 a = Vec2dDirection(GetWeaponDir());
 	auto &rocket = world.New<GC_Rocket>(GetPos() + a * 25.0f, a * SPEED_ROCKET, this, nullptr, true);
 	rocket.SelectTarget(world);
 }
@@ -380,7 +380,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_TurretCannon)
 	return true;
 }
 
-GC_TurretCannon::GC_TurretCannon(vec2d pos)
+GC_TurretCannon::GC_TurretCannon(Vector2 pos)
   : GC_Turret(pos, TS_WAITING)
   , _timeReload(0)
   , _time_smoke(0)
@@ -406,7 +406,7 @@ void GC_TurretCannon::Serialize(World &world, SaveFile &f)
 	f.Serialize(_time_smoke_dt);
 }
 
-void GC_TurretCannon::CalcOutstrip(World &world, const GC_Vehicle *target, vec2d &fake)
+void GC_TurretCannon::CalcOutstrip(World &world, const GC_Vehicle *target, Vector2 &fake)
 {
 	world.CalcOutstrip(GetPos(), SPEED_TANKBULLET, target->GetPos(), target->_lv, fake);
 }
@@ -440,13 +440,13 @@ void GC_TurretCannon::TimeStep(World &world, float dt)
 
 void GC_TurretCannon::OnShoot(World &world)
 {
-	vec2d a = Vec2dDirection(GetWeaponDir());
+	Vector2 a = Vec2dDirection(GetWeaponDir());
 	world.New<GC_TankBullet>(GetPos() + a * 31.9f, a * SPEED_TANKBULLET + world.net_vrand(40), this, nullptr, false);
 }
 
 ////////////////////////////////////////////////////////////////////
 
-GC_TurretBunker::GC_TurretBunker(vec2d pos)
+GC_TurretBunker::GC_TurretBunker(Vector2 pos)
   : GC_Turret(pos, TS_HIDDEN)
   , _time(0)
   , _time_wait_max(1.0f)
@@ -521,7 +521,7 @@ void GC_TurretBunker::ProcessState(World &world, float dt)
 		{
 			if( IsTargetVisible(world, _target, &pObstacle) )
 			{
-				vec2d fake;
+				Vector2 fake;
 				CalcOutstrip(world, _target, fake);
 
 				float ang2 = ( fake - GetPos() ).Angle();
@@ -626,7 +626,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_TurretMinigun)
 	return true;
 }
 
-GC_TurretMinigun::GC_TurretMinigun(vec2d pos)
+GC_TurretMinigun::GC_TurretMinigun(Vector2 pos)
   : GC_TurretBunker(pos)
 {
 	_delta_angle = 0.5f; // shooting accuracy
@@ -656,7 +656,7 @@ void GC_TurretMinigun::Serialize(World &world, SaveFile &f)
 	f.Serialize(_time);
 }
 
-void GC_TurretMinigun::CalcOutstrip(World &world, const GC_Vehicle *target, vec2d &fake)
+void GC_TurretMinigun::CalcOutstrip(World &world, const GC_Vehicle *target, Vector2 &fake)
 {
 	world.CalcOutstrip(GetPos(), SPEED_BULLET, target->GetPos(), target->_lv, fake);
 }
@@ -677,7 +677,7 @@ void GC_TurretMinigun::TimeStep(World &world, float dt)
 void GC_TurretMinigun::OnShoot(World &world)
 {
 	float ang = _dir + world.net_frand(0.1f) - 0.05f;
-	vec2d a = Vec2dDirection(_dir);
+	Vector2 a = Vec2dDirection(_dir);
 	world.New<GC_Bullet>(GetPos() + a * 31.9f, Vec2dDirection(ang) * SPEED_BULLET, this, nullptr, false);
 	world.New<GC_Particle>(GetPos() + a * 31.9f, a * (400 + frand(400.0f)), PARTICLE_TYPE1, frand(0.06f) + 0.03f);
 }
@@ -690,7 +690,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_TurretGauss)
 	return true;
 }
 
-GC_TurretGauss::GC_TurretGauss(vec2d pos)
+GC_TurretGauss::GC_TurretGauss(Vector2 pos)
   : GC_TurretBunker(pos)
 {
 	_delta_angle = 0.03f; // shooting accuracy
@@ -728,7 +728,7 @@ void GC_TurretGauss::Serialize(World &world, SaveFile &f)
 	f.Serialize(_time);
 }
 
-void GC_TurretGauss::CalcOutstrip(World &world, const GC_Vehicle *target, vec2d &fake)
+void GC_TurretGauss::CalcOutstrip(World &world, const GC_Vehicle *target, Vector2 &fake)
 {
 	world.CalcOutstrip(GetPos(), SPEED_GAUSS, target->GetPos(), target->_lv, fake);
 }
@@ -762,6 +762,6 @@ void GC_TurretGauss::OnShoot(World &world)
 	float c = cosf(_dir), s = sinf(_dir);
 
 	world.New<GC_GaussRay>(
-		vec2d{ GetPos().x + c * 20.0f - dy * s, GetPos().y + s * 20.0f + dy * c },
-		vec2d{ c, s } * SPEED_GAUSS, this, nullptr, false);
+		Vector2{ GetPos().x + c * 20.0f - dy * s, GetPos().y + s * 20.0f + dy * c },
+		Vector2{ c, s } * SPEED_GAUSS, this, nullptr, false);
 }

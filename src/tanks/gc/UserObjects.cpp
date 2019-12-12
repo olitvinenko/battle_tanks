@@ -12,7 +12,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_UserObject)
 	return true;
 }
 
-GC_UserObject::GC_UserObject(vec2d pos)
+GC_UserObject::GC_UserObject(Vector2 pos)
   : GC_RigidBodyStatic(pos)
   , _textureName("turret_platform")
   , _zOrder(Z_WALLS)
@@ -111,7 +111,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_Decoration)
 	return true;
 }
 
-GC_Decoration::GC_Decoration(vec2d pos)
+GC_Decoration::GC_Decoration(Vector2 pos)
   : GC_Actor(pos)
   , _textureName("turret_platform")
   , _frameRate(0)

@@ -1,8 +1,9 @@
 #include "rTurret.h"
 #include "gc/Turrets.h"
 
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/Color.h"
+#include "rendering/DrawingContext.h"
+#include "rendering/TextureManager.h"
 
 R_Turret::R_Turret(TextureManager &tm, const char *texPlatform, const char *texWeapon)
 	: _tm(tm)
@@ -16,9 +17,9 @@ void R_Turret::Draw(const World &world, const GC_Actor &actor, DrawingContext &d
 	assert(dynamic_cast<const GC_Turret*>(&actor));
 	auto &turret = static_cast<const GC_Turret&>(actor);
 
-	vec2d pos = turret.GetPos();
-	vec2d dir = turret.GetDirection();
-	vec2d weapDir = Vec2dDirection(turret.GetWeaponDir());
+	Vector2 pos = turret.GetPos();
+	Vector2 dir = turret.GetDirection();
+	Vector2 weapDir = Vec2dDirection(turret.GetWeaponDir());
 	float ready = turret.GetReadyState();
 	unsigned int nFrames = _tm.GetFrameCount(_texPlatform);
 	if (ready == 1)

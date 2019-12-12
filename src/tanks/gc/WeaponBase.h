@@ -22,7 +22,7 @@ struct AIWEAPSETTINGS
 class GC_Weapon : public GC_Pickup
 {
 public:
-	explicit GC_Weapon(vec2d pos);
+	explicit GC_Weapon(Vector2 pos);
 	explicit GC_Weapon(FromFile);
 	virtual ~GC_Weapon();
 
@@ -46,7 +46,7 @@ public:
     AIPRIORITY GetPriority(World &world, const GC_Vehicle &veh) const override;
 
 	// GC_Actor
-    void MoveTo(World &world, const vec2d &pos) override;
+    void MoveTo(World &world, const Vector2 &pos) override;
 
 	// GC_Object
     void Kill(World &world) override;
@@ -98,11 +98,11 @@ class ResumableObject;
 class GC_ProjectileBasedWeapon : public GC_Weapon
 {
 public:
-	explicit GC_ProjectileBasedWeapon(vec2d pos);
+	explicit GC_ProjectileBasedWeapon(Vector2 pos);
 	explicit GC_ProjectileBasedWeapon(FromFile);
 	virtual ~GC_ProjectileBasedWeapon();
 
-	vec2d GetLastShotPos() const { return _lastShotPos; }
+	Vector2 GetLastShotPos() const { return _lastShotPos; }
 	float GetLastShotTime() const { return _lastShotTime; }
 	unsigned int GetNumShots() const { return _numShots; }
 	void Shoot(World &world);
@@ -124,7 +124,7 @@ public:
     void Serialize(World &world, SaveFile &f) override;
 
 protected:
-	void SetLastShotPos(vec2d lastShotPos) { _lastShotPos = lastShotPos; }
+	void SetLastShotPos(Vector2 lastShotPos) { _lastShotPos = lastShotPos; }
 	void ResetSeries();
 
     void OnAttached(World &world, GC_Vehicle &vehicle) override;
@@ -132,7 +132,7 @@ protected:
 private:
 	ObjPtr<GC_Light> _fireLight;
 	float _lastShotTime;
-	vec2d _lastShotPos;
+	Vector2 _lastShotPos;
 	unsigned int _numShots;
 	ResumableObject *_firing;
 

@@ -10,7 +10,7 @@
 //-----------------------------------------------------------------------------
 #include <iostream>
 
-#include "utils.h"
+#include "math/Utils.h"
 #include "Stream_Utility_Functions.h"
 #include "GraphAlgorithms.h"
 #include "AStarHeuristicPolicies.h"
@@ -104,8 +104,7 @@ void GraphHelper_CreateGrid(graph_type& graph,
     for (int col=0; col<NumCellsX; ++col)
     {
       graph.AddNode(NavGraphNode<>(graph.GetNextFreeNodeIndex(),
-                                   Vector2(midX + (col*CellWidth),
-                                   midY + (row*CellHeight))));
+                                   Vector2{midX + (col*CellWidth),midY + (row*CellHeight)}));
 
     }
   }

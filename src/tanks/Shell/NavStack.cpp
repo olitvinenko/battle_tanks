@@ -102,7 +102,7 @@ float NavStack::GetTransitionTimeLeft() const
 	return std::max(0.f, _navTransitionStartTime + _foldTime - GetManager().GetTime());
 }
 
-FRECT NavStack::GetChildRect(TextureManager &texman, const UI::LayoutContext &lc, const UI::StateContext &sc, const UI::Window &child) const
+RectFloat NavStack::GetChildRect(TextureManager &texman, const UI::LayoutContext &lc, const UI::StateContext &sc, const UI::Window &child) const
 {
 	float transition = (1 - std::cos(PI * GetTransitionTimeLeft() / _foldTime)) / 2;
 
@@ -126,10 +126,10 @@ FRECT NavStack::GetChildRect(TextureManager &texman, const UI::LayoutContext &lc
 
 	for (auto wnd : children)
 	{
-		vec2d pxWndSize = wnd->GetContentSize(texman, sc, lc.GetScale());
+		Vector2 pxWndSize = wnd->GetContentSize(texman, sc, lc.GetScale());
 		if (wnd.get() == &child)
 		{
-			vec2d pxWndOffset = Vec2dFloor((lc.GetPixelSize().x - pxWndSize.x) / 2, pxTop);
+			Vector2 pxWndOffset = Vec2dFloor((lc.GetPixelSize().x - pxWndSize.x) / 2, pxTop);
 			return MakeRectWH(pxWndOffset, pxWndSize);
 		}
 		pxTop += pxWndSize.y + pxSpacing;

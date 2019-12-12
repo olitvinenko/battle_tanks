@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math/MyMath.h"
+#include "math/Vector2.h"
 
 class ConfControllerProfile;
 struct VehicleState;
@@ -17,17 +17,17 @@ class Controller
 public:
 	Controller();
 	void SetProfile(ConfControllerProfile &profile);
-	void ReadControllerState(UI::IInput &input, World &world, const GC_Vehicle &vehicle, const vec2d *mouse, vec2d dragDirection, bool reverse, VehicleState &vs);
+	void ReadControllerState(UI::IInput &input, World &world, const GC_Vehicle &vehicle, const Vector2 *mouse, Vector2 dragDirection, bool reverse, VehicleState &vs);
 
-	void OnTap(vec2d worldPos);
+	void OnTap(Vector2 worldPos);
 	void Step(float dt);
 
-	vec2d GetFireTarget() const { return _tapFireTarget; }
+	Vector2 GetFireTarget() const { return _tapFireTarget; }
 	float GetRemainingFireTime() const { return _tapFireTime; }
 
 private:
 	float _tapFireTime;
-	vec2d _tapFireTarget;
+	Vector2 _tapFireTarget;
 
 	//
 	// cached values from the profile

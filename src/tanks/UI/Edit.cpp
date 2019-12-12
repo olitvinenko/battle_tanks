@@ -5,8 +5,9 @@
 #include "GuiManager.h"
 #include "Keys.h"
 #include "UIInput.h"
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/Color.h"
+#include "rendering/TextureManager.h"
+#include "rendering/DrawingContext.h"
 
 #include <algorithm>
 #include <cstring>
@@ -121,7 +122,7 @@ void Edit::Draw(const StateContext &sc, const LayoutContext &lc, const InputCont
 	// selection
 	if( GetSelLength() && ic.GetFocused() )
 	{
-		FRECT rt;
+		RectFloat rt;
 		rt.left = 1 + (GetSelMin() - (float) _offset) * pxCharWidth;
 		rt.top = 0;
 		rt.right = rt.left + pxCharWidth * GetSelLength() - 1;
@@ -130,22 +131,22 @@ void Edit::Draw(const StateContext &sc, const LayoutContext &lc, const InputCont
 	}
 
 	// text
-	SpriteColor c = lc.GetEnabledCombined() ? 0xffffffff : 0xaaaaaaaa;
+	Color c = lc.GetEnabledCombined() ? 0xffffffff : 0xaaaaaaaa;
 	if( _offset < GetSelMin() )
 	{
-		dc.DrawBitmapText(vec2d{ 0, 1 }, lc.GetScale(), _font, c, GetText().substr(_offset, GetSelMin() - _offset));
+		dc.DrawBitmapText(Vector2{ 0, 1 }, lc.GetScale(), _font, c, GetText().substr(_offset, GetSelMin() - _offset));
 	}
-	dc.DrawBitmapText(vec2d{ (GetSelMin() - _offset) * pxCharWidth, 1 }, lc.GetScale(), _font, 0xffff0000, GetText().substr(GetSelMin(), GetSelLength()));
-	dc.DrawBitmapText(vec2d{ (GetSelMax() - _offset) * pxCharWidth, 1 }, lc.GetScale(), _font, c, GetText().substr(GetSelMax()));
+	dc.DrawBitmapText(Vector2{ (GetSelMin() - _offset) * pxCharWidth, 1 }, lc.GetScale(), _font, 0xffff0000, GetText().substr(GetSelMin(), GetSelLength()));
+	dc.DrawBitmapText(Vector2{ (GetSelMax() - _offset) * pxCharWidth, 1 }, lc.GetScale(), _font, c, GetText().substr(GetSelMax()));
 
 	float time = GetManager().GetTime() - _lastCursortime;
 
 	// cursor
 	if( ic.GetFocused() && fmodf(time, 1.0f) < 0.5f )
 	{
-		FRECT rt = MakeRectWH(
-            vec2d{(GetSelEnd() - (float) _offset) * pxCharWidth, 0},
-            vec2d{std::floor(texman.GetFrameWidth(_cursor, 0) * lc.GetScale()), lc.GetPixelSize().y});
+		RectFloat rt = MakeRectWH(
+            Vector2{(GetSelEnd() - (float) _offset) * pxCharWidth, 0},
+            Vector2{std::floor(texman.GetFrameWidth(_cursor, 0) * lc.GetScale()), lc.GetPixelSize().y});
 		dc.DrawSprite(rt, _cursor, 0xffffffff, 0);
 	}
 }
@@ -289,7 +290,7 @@ bool Edit::OnKeyPressed(InputContext &ic, Key key)
 	return false;
 }
 
-bool Edit::OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, PointerType pointerType, unsigned int pointerID)
+bool Edit::OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, int button, PointerType pointerType, unsigned int pointerID)
 {
 	if( pointerType == PointerType::Mouse && 1 == button && !ic.HasCapturedPointers(this) )
 	{
@@ -300,7 +301,7 @@ bool Edit::OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &te
 	return false;
 }
 
-void Edit::OnPointerMove(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, PointerType pointerType, unsigned int pointerID, bool captured)
+void Edit::OnPointerMove(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, PointerType pointerType, unsigned int pointerID, bool captured)
 {
 	if( captured )
 	{
@@ -309,7 +310,7 @@ void Edit::OnPointerMove(InputContext &ic, LayoutContext &lc, TextureManager &te
 	}
 }
 
-void Edit::OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition)
+void Edit::OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition)
 {
     if (!ic.HasCapturedPointers(this))
     {
@@ -343,7 +344,7 @@ void Edit::OnTextChange(TextureManager &texman)
 		eventChange();
 }
 
-int Edit::HitTest(TextureManager &texman, vec2d px, float scale) const
+int Edit::HitTest(TextureManager &texman, Vector2 px, float scale) const
 {
     float pxCharWidth = std::floor((texman.GetFrameWidth(_font, 0) - 1) * scale);
     return std::min(GetTextLength(), std::max(0, int(px.x / pxCharWidth)) + (int) _offset);
@@ -371,7 +372,7 @@ void Edit::Copy(InputContext &ic) const
 	}
 }
 
-vec2d Edit::GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const
+Vector2 Edit::GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const
 {
-	return vec2d{ 0, std::floor(texman.GetFrameHeight(_font, 0) * scale) + 2 };
+	return Vector2{ 0, std::floor(texman.GetFrameHeight(_font, 0) * scale) + 2 };
 }

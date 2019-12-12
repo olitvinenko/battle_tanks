@@ -2,7 +2,7 @@
 
 #include "Camera.h"
 #include "gc/WorldEvents.h"
-#include "math/MyMath.h"
+#include "math/Vector2.h"
 #include <stddef.h>
 #include <vector>
 
@@ -12,7 +12,7 @@ class WorldController;
 class WorldView;
 class GC_Player;
 
-RectRB GetCameraViewport(int screenW, int screenH, unsigned int camCount, unsigned int camIndex);
+RectInt GetCameraViewport(int screenW, int screenH, unsigned int camCount, unsigned int camIndex);
 
 class GameViewHarness
     : ObjectListener<GC_Explosion>
@@ -24,12 +24,12 @@ public:
 
     struct CanvasToWorldResult
     {
-        vec2d worldPos;
+        Vector2 worldPos;
         bool visible;
     };
 
     CanvasToWorldResult CanvasToWorld(unsigned int viewIndex, int x, int y) const;
-	vec2d WorldToCanvas(unsigned int viewIndex, vec2d worldPos) const;
+	Vector2 WorldToCanvas(unsigned int viewIndex, Vector2 worldPos) const;
 	void SetCanvasSize(int pxWidth, int pxHeight, float scale);
     void RenderGame(DrawingContext &dc, const WorldView &worldView) const;
     void Step(float dt);

@@ -1,8 +1,9 @@
 #include "rParticle.h"
 #include "gc/Particles.h"
 
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/Color.h"
+#include "rendering/DrawingContext.h"
+#include "rendering/TextureManager.h"
 
 #include <algorithm>
 
@@ -55,9 +56,9 @@ void R_Particle::Draw(const World &world, const GC_Actor &actor, DrawingContext 
 		size_t texId = _ptype2texId[ptype];
 		float state = particle.GetTime() / particle.GetLifeTime();
 		auto frame = std::min(_tm.GetFrameCount(texId) - 1, (unsigned int) ((float) _tm.GetFrameCount(texId) * state));
-		vec2d pos = particle.GetPos();
-		vec2d dir = particle.GetRotationSpeed() > 0 ? Vec2dDirection(particle.GetRotationSpeed() * particle.GetTime()) : particle.GetDirection();
-		SpriteColor color;
+		Vector2 pos = particle.GetPos();
+		Vector2 dir = particle.GetRotationSpeed() > 0 ? Vec2dDirection(particle.GetRotationSpeed() * particle.GetTime()) : particle.GetDirection();
+		Color color;
 		if (particle.GetFade())
 		{
 			unsigned char op = (unsigned char) int(255.0f * (1.0f - state));

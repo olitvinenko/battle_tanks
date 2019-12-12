@@ -2,7 +2,7 @@
 #include "World.h"
 #include "Object.h" // for ObjectType
 #include "Serialization.h"
-#include "math/MyMath.h"
+#include "math/Rect.h"
 #include <string>
 #include <map>
 #include <set>
@@ -23,13 +23,13 @@ public:
 		};
 		union
 		{
-			GC_Actor& (*CreateDetachedActor)(vec2d pos);
+			GC_Actor& (*CreateDetachedActor)(Vector2 pos);
 			GC_Service& (*CreateDetachedService)();
 		};
 		int           layer;
 		float         align;
 		float         offset;
-		vec2d         size;
+		Vector2       size;
 		const char*   name;
 		const char*   desc;
 		bool          service;
@@ -42,7 +42,7 @@ private:
 	typedef std::map<ObjectType, GC_Object& (*) (World&)> FromFileMap;
 
 	template<class T>
-	static GC_Actor& DetachedActorCtor(vec2d pos)
+	static GC_Actor& DetachedActorCtor(Vector2 pos)
 	{
 		return *new T(pos);
 	}
@@ -56,7 +56,7 @@ private:
 	template<class T>
 	static GC_Actor& ActorCtor(World &world, float x, float y)
 	{
-		return world.New<T>(vec2d{ x, y });
+		return world.New<T>(Vector2{ x, y });
 	}
 
 	template<class T>
@@ -174,7 +174,7 @@ public:
 	GC_Object* CreateFromFile(World &world, ObjectType type);
 
     // for editor
-	GC_Actor& CreateActor(World &world, ObjectType type, vec2d pos);
+	GC_Actor& CreateActor(World &world, ObjectType type, Vector2 pos);
     GC_Service& CreateService(World &world, ObjectType type);
 
 

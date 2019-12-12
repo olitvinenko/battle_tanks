@@ -7,8 +7,8 @@
 #include "Text.h"
 #include "UIInput.h"
 #include "GuiManager.h"
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/TextureManager.h"
+#include "rendering/DrawingContext.h"
 #include <algorithm>
 
 using namespace UI;
@@ -23,7 +23,7 @@ ButtonBase::State ButtonBase::GetState(const LayoutContext &lc, const InputConte
 	if (!lc.GetEnabledCombined())
 		return stateDisabled;
 
-	vec2d pointerPosition = ic.GetMousePos();
+	Vector2 pointerPosition = ic.GetMousePos();
 	bool pointerInside = pointerPosition.x >= 0 && pointerPosition.y >= 0 && pointerPosition.x < lc.GetPixelSize().x && pointerPosition.y < lc.GetPixelSize().y;
 	bool pointerPressed = ic.GetInput().IsMousePressed(1);
 
@@ -36,13 +36,13 @@ ButtonBase::State ButtonBase::GetState(const LayoutContext &lc, const InputConte
 	return stateNormal;
 }
 
-void ButtonBase::OnPointerMove(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, PointerType pointerType, unsigned int pointerID, bool captured)
+void ButtonBase::OnPointerMove(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, PointerType pointerType, unsigned int pointerID, bool captured)
 {
 	if( eventMouseMove )
 		eventMouseMove(pointerPosition.x, pointerPosition.y);
 }
 
-bool ButtonBase::OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, PointerType pointerType, unsigned int pointerID)
+bool ButtonBase::OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, int button, PointerType pointerType, unsigned int pointerID)
 {
 	if( !ic.HasCapturedPointers(this) && 1 == button ) // primary button only
 	{
@@ -53,7 +53,7 @@ bool ButtonBase::OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManag
 	return false;
 }
 
-void ButtonBase::OnPointerUp(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, PointerType pointerType, unsigned int pointerID)
+void ButtonBase::OnPointerUp(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, int button, PointerType pointerType, unsigned int pointerID)
 {
 	auto size = lc.GetPixelSize();
 	bool pointerInside = pointerPosition.x < size.x && pointerPosition.y < size.y && pointerPosition.x >= 0 && pointerPosition.y >= 0;
@@ -67,7 +67,7 @@ void ButtonBase::OnPointerUp(InputContext &ic, LayoutContext &lc, TextureManager
 	}
 }
 
-void ButtonBase::OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition)
+void ButtonBase::OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition)
 {
 	if( !ic.HasCapturedPointers(this))
 	{
@@ -164,29 +164,29 @@ void Button::SetBackground(TextureManager &texman, const char *tex, bool fitSize
 	}
 }
 
-FRECT Button::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
+RectFloat Button::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
 {
 	float scale = lc.GetScale();
-	vec2d size = lc.GetPixelSize();
+	Vector2 size = lc.GetPixelSize();
 
 	if (_background.get() == &child)
 	{
-		return MakeRectRB(vec2d{}, size);
+		return MakeRectRB(Vector2{}, size);
 	}
 
 	if (_icon)
 	{
 		if (_text.get() == &child)
 		{
-			vec2d pxChildPos = Vec2dFloor(size / 2);
+			Vector2 pxChildPos = Vec2dFloor(size / 2);
 			pxChildPos.y += std::floor(_icon->GetHeight() * scale / 2);
-			return MakeRectWH(pxChildPos, vec2d{});
+			return MakeRectWH(pxChildPos, Vector2{});
 		}
 
 		if (_icon.get() == &child)
 		{
-			vec2d pxChildSize = Vec2dFloor(_icon->GetSize() * scale);
-			vec2d pxChildPos = Vec2dFloor((size - pxChildSize) / 2);
+			Vector2 pxChildSize = Vec2dFloor(_icon->GetSize() * scale);
+			Vector2 pxChildPos = Vec2dFloor((size - pxChildSize) / 2);
 			pxChildPos.y -= std::floor(_text->GetContentSize(texman, sc, scale).y / 2);
 			return MakeRectWH(pxChildPos, pxChildSize);
 		}
@@ -195,7 +195,7 @@ FRECT Button::GetChildRect(TextureManager &texman, const LayoutContext &lc, cons
 	{
 		if (_text.get() == &child)
 		{
-			return MakeRectWH(Vec2dFloor(size / 2), vec2d{});
+			return MakeRectWH(Vec2dFloor(size / 2), Vector2{});
 		}
 	}
 
@@ -222,7 +222,7 @@ TextButton::TextButton(LayoutManager &manager, TextureManager &texman)
 	_text->SetFontColor(c_textColor);
 }
 
-vec2d TextButton::GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const
+Vector2 TextButton::GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const
 {
 	return _text->GetContentSize(texman, sc, scale);
 }
@@ -237,7 +237,7 @@ void TextButton::SetText(std::shared_ptr<DataSource<const std::string&>> text)
 	_text->SetText(std::move(text));
 }
 
-FRECT TextButton::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
+RectFloat TextButton::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
 {
 	if (_text.get() == &child)
 	{
@@ -304,16 +304,16 @@ void CheckBox::Draw(const StateContext &sc, const LayoutContext &lc, const Input
 	float bw = texman.GetFrameWidth(_boxTexture, frame);
 	float th = texman.GetFrameHeight(_fontTexture, 0);
 
-	FRECT box = {0, (lc.GetPixelSize().y - bh) / 2, bw, (lc.GetPixelSize().y - bh) / 2 + bh};
+	RectFloat box = {0, (lc.GetPixelSize().y - bh) / 2, bw, (lc.GetPixelSize().y - bh) / 2 + bh};
 	dc.DrawSprite(box, _boxTexture, 0xffffffff, frame);
 
 	// grep 'enum State'
-	SpriteColor colors[] =
+	Color colors[] =
 	{
-		SpriteColor(0xffffffff), // Normal
-		SpriteColor(0xffffffff), // Hottrack
-		SpriteColor(0xffffffff), // Pushed
-		SpriteColor(0xffffffff), // Disabled
+		Color(0xffffffff), // Normal
+		Color(0xffffffff), // Hottrack
+		Color(0xffffffff), // Pushed
+		Color(0xffffffff), // Disabled
 	};
-	dc.DrawBitmapText(vec2d{ bw, (lc.GetPixelSize().y - th) / 2 }, lc.GetScale(), _fontTexture, colors[state], GetText());
+	dc.DrawBitmapText(Vector2{ bw, (lc.GetPixelSize().y - th) / 2 }, lc.GetScale(), _fontTexture, colors[state], GetText());
 }

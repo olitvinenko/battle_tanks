@@ -52,11 +52,11 @@ public:
 	PointerSink* GetPointerSink() override { return this; }
 	KeyboardSink *GetKeyboardSink() override;
 	TextSink* GetTextSink() override { return this; }
-	vec2d GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const override;
+	Vector2 GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const override;
 
 private:
 	void OnTextChange(TextureManager &texman);
-    int HitTest(TextureManager &texman, vec2d px, float scale) const;
+    int HitTest(TextureManager &texman, Vector2 px, float scale) const;
 
 	// TextSink
 	bool OnChar(int c) override;
@@ -65,9 +65,9 @@ private:
 	bool OnKeyPressed(InputContext &ic, Key key) override;
 	
 	// PointerSink
-	bool OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, PointerType pointerType, unsigned int pointerID) override;
-	void OnPointerMove(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, PointerType pointerType, unsigned int pointerID, bool captured) override;
-    void OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, vec2d pointerPosition) override;
+	bool OnPointerDown(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, int button, PointerType pointerType, unsigned int pointerID) override;
+	void OnPointerMove(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, PointerType pointerType, unsigned int pointerID, bool captured) override;
+    void OnTap(InputContext &ic, LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition) override;
 };
 
 } // namespace UI

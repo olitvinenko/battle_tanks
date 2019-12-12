@@ -10,7 +10,7 @@
 #include "Macros.h"
 #include "SaveFile.h"
 
-GC_Explosion::GC_Explosion(vec2d pos)
+GC_Explosion::GC_Explosion(Vector2 pos)
   : GC_Actor(pos)
   , _damage(1)
   , _radius(32)
@@ -142,7 +142,7 @@ void GC_Explosion::Boom(World &world, float radius, float damage)
 	// get a list of locations which are affected by the explosion
 	//
 	std::vector<ObjectList*> receive;
-	FRECT rt = {GetPos().x - radius, GetPos().y - radius, GetPos().x + radius, GetPos().y + radius};
+	RectFloat rt = {GetPos().x - radius, GetPos().y - radius, GetPos().x + radius, GetPos().y + radius};
 	rt.left   /= LOCATION_SIZE;
 	rt.top    /= LOCATION_SIZE;
 	rt.right  /= LOCATION_SIZE;
@@ -179,7 +179,7 @@ void GC_Explosion::Boom(World &world, float radius, float damage)
 		(*it)->for_each([&](ObjectList::id_type, GC_Object *o)
 		{
 			auto pDamObject = static_cast<GC_RigidBodyStatic*>(o);
-			vec2d dir = pDamObject->GetPos() - GetPos();
+			Vector2 dir = pDamObject->GetPos() - GetPos();
 			float d = dir.len();
 
 			if( d <= radius)
@@ -236,7 +236,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_ExplosionBig)
 	return true;
 }
 
-GC_ExplosionBig::GC_ExplosionBig(vec2d pos)
+GC_ExplosionBig::GC_ExplosionBig(Vector2 pos)
   : GC_Explosion(pos)
 {
 	SetDamage(90);
@@ -255,7 +255,7 @@ void GC_ExplosionBig::Init(World &world)
 	SetTimeout(world, 0.10f);
 
 	float duration = 0.72f;
-	world.New<GC_ParticleExplosion>(GetPos(), vec2d{}, PARTICLE_EXPLOSION2, duration, vrand(1));
+	world.New<GC_ParticleExplosion>(GetPos(), Vector2{}, PARTICLE_EXPLOSION2, duration, vrand(1));
 
 	auto &light = world.New<GC_Light>(GetPos(), GC_Light::LIGHT_POINT);
 	light.SetRadius(128 * 5);
@@ -269,7 +269,7 @@ void GC_ExplosionBig::Init(World &world)
 			world.New<GC_Particle>(GetPos() + vrand(frand(20.0f)), vrand((200.0f + frand(30.0f)) * 0.9f), PARTICLE_TYPE1, frand(0.6f) + 0.1f);
 		}
 
-		vec2d a;
+		Vector2 a;
 
 		//dust
 		a = vrand(frand(40.0f));
@@ -285,7 +285,7 @@ void GC_ExplosionBig::Init(World &world)
 		p2._time = frand(1.0f);
 	}
 
-	auto &p = world.New<GC_ParticleDecal>(GetPos(), vec2d{}, PARTICLE_BIGBLAST, 20.0f, vrand(1));
+	auto &p = world.New<GC_ParticleDecal>(GetPos(), Vector2{}, PARTICLE_BIGBLAST, 20.0f, vrand(1));
 	p.SetFade(true);
 }
 
@@ -296,7 +296,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_ExplosionStandard)
 	return true;
 }
 
-GC_ExplosionStandard::GC_ExplosionStandard(vec2d pos)
+GC_ExplosionStandard::GC_ExplosionStandard(Vector2 pos)
   : GC_Explosion(pos)
 {
 	SetDamage(150);
@@ -315,7 +315,7 @@ void GC_ExplosionStandard::Init(World &world)
 	SetTimeout(world, 0.03f);
 
 	float duration = 0.32f;
-	world.New<GC_ParticleExplosion>(GetPos(), vec2d{}, PARTICLE_EXPLOSION1, duration, vrand(1));
+	world.New<GC_ParticleExplosion>(GetPos(), Vector2{}, PARTICLE_EXPLOSION1, duration, vrand(1));
 
 	auto &light = world.New<GC_Light>(GetPos(), GC_Light::LIGHT_POINT);
 	light.SetRadius(70 * 5);
@@ -334,6 +334,6 @@ void GC_ExplosionStandard::Init(World &world)
 		auto &p1 = world.New<GC_Particle>(GetPos() + Vec2dDirection(ang) * d, SPEED_SMOKE, PARTICLE_SMOKE, 1.5f);
 		p1._time = frand(1.0f);
 	}
-	auto &p = world.New<GC_ParticleDecal>(GetPos(), vec2d{}, PARTICLE_SMALLBLAST, 8.0f, vrand(1));
+	auto &p = world.New<GC_ParticleDecal>(GetPos(), Vector2{}, PARTICLE_SMALLBLAST, 8.0f, vrand(1));
 	p.SetFade(true);
 }

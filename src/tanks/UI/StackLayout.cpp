@@ -8,10 +8,10 @@ StackLayout::StackLayout(LayoutManager &manager)
 {
 }
 
-FRECT StackLayout::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
+RectFloat StackLayout::GetChildRect(TextureManager &texman, const LayoutContext &lc, const StateContext &sc, const Window &child) const
 {
 	float scale = lc.GetScale();
-	vec2d size = lc.GetPixelSize();
+	Vector2 size = lc.GetPixelSize();
 
 	// FIXME: O(n^2) complexity
 	float pxOffset = 0;
@@ -27,16 +27,16 @@ FRECT StackLayout::GetChildRect(TextureManager &texman, const LayoutContext &lc,
 			}
 			pxOffset += pxSpacing + item->GetContentSize(texman, sc, scale).y;
 		}
-		vec2d pxChildSize = child.GetContentSize(texman, sc, scale);
+		Vector2 pxChildSize = child.GetContentSize(texman, sc, scale);
 		if (_align == Align::LT)
 		{
-			return FRECT{ 0.f, pxOffset, size.x, pxOffset + pxChildSize.y };
+			return RectFloat{ 0.f, pxOffset, size.x, pxOffset + pxChildSize.y };
 		}
 		else
 		{
 			assert(_align == Align::CT); // TODO: support others
 			float pxMargin = std::floor(size.x - pxChildSize.x) / 2;
-			return FRECT{ pxMargin, pxOffset, size.x - pxMargin, pxOffset + pxChildSize.y };
+			return RectFloat{ pxMargin, pxOffset, size.x - pxMargin, pxOffset + pxChildSize.y };
 		}
 	}
 	else
@@ -50,11 +50,11 @@ FRECT StackLayout::GetChildRect(TextureManager &texman, const LayoutContext &lc,
 			}
 			pxOffset += pxSpacing + item->GetContentSize(texman, sc, scale).x;
 		}
-		return FRECT{ pxOffset, 0.f, pxOffset + child.GetContentSize(texman, sc, scale).x, size.y };
+		return RectFloat{ pxOffset, 0.f, pxOffset + child.GetContentSize(texman, sc, scale).x, size.y };
 	}
 }
 
-vec2d StackLayout::GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const
+Vector2 StackLayout::GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const
 {
 	float pxTotalSize = 0; // in flow direction
 	unsigned int sumComponent = FlowDirection::Vertical == _flowDirection;
@@ -65,7 +65,7 @@ vec2d StackLayout::GetContentSize(TextureManager &texman, const StateContext &sc
 	auto &children = GetChildren();
 	for (auto &item : children)
 	{
-		vec2d pxItemSize = item->GetContentSize(texman, sc, scale);
+		Vector2 pxItemSize = item->GetContentSize(texman, sc, scale);
 		pxTotalSize += pxItemSize[sumComponent];
 		pxMaxSize = std::max(pxMaxSize, pxItemSize[maxComponent]);
 	}
@@ -76,7 +76,7 @@ vec2d StackLayout::GetContentSize(TextureManager &texman, const StateContext &sc
 	}
 
 	return FlowDirection::Horizontal == _flowDirection ?
-		vec2d{ pxTotalSize, pxMaxSize } :
-		vec2d{ pxMaxSize, pxTotalSize };
+		Vector2{ pxTotalSize, pxMaxSize } :
+		Vector2{ pxMaxSize, pxTotalSize };
 }
 

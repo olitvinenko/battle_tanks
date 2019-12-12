@@ -14,10 +14,10 @@ InputContext::InputContext(IInput &input, IClipboard &clipboard)
 	, _lastPointerLocation()
 #endif
 {
-	_transformStack.emplace(InputStackFrame{vec2d{}, true, true});
+	_transformStack.emplace(InputStackFrame{Vector2{}, true, true});
 }
 
-void InputContext::PushTransform(vec2d offset, bool focused, bool hovered)
+void InputContext::PushTransform(Vector2 offset, bool focused, bool hovered)
 {
 	assert(!_transformStack.empty());
 	_transformStack.push(InputStackFrame{
@@ -33,7 +33,7 @@ void InputContext::PopTransform()
 	_transformStack.pop();
 }
 
-vec2d InputContext::GetMousePos() const
+Vector2 InputContext::GetMousePos() const
 {
 	return _input.GetMousePos() - _transformStack.top().offset;
 }
@@ -101,7 +101,7 @@ SinkType* UI::FindAreaSink(
 {
 	SinkType *sink = nullptr;
 
-	vec2d pxPointerPosition = search.pxGlobalPointerPosition - lc.GetPixelOffset();
+	Vector2 pxPointerPosition = search.pxGlobalPointerPosition - lc.GetPixelOffset();
 	bool pointerInside = PtInFRect(MakeRectWH(lc.GetPixelSize()), pxPointerPosition);
 
 	if (pointerInside || !wnd->GetClipChildren())
@@ -171,8 +171,8 @@ bool InputContext::ProcessPointer(
 	std::shared_ptr<Window> wnd,
 	const LayoutContext &lc,
 	const StateContext &sc,
-	vec2d pxPointerPosition,
-	vec2d pxPointerOffset,
+	Vector2 pxPointerPosition,
+	Vector2 pxPointerOffset,
 	Msg msg,
 	int button,
 	PointerType pointerType,
@@ -256,7 +256,7 @@ bool InputContext::ProcessPointer(
 	return !!pointerSink;
 }
 
-bool InputContext::ProcessScroll(TextureManager &texman, std::shared_ptr<Window> wnd, const LayoutContext &lc, const StateContext &sc, vec2d pxPointerPosition, vec2d offset)
+bool InputContext::ProcessScroll(TextureManager &texman, std::shared_ptr<Window> wnd, const LayoutContext &lc, const StateContext &sc, Vector2 pxPointerPosition, Vector2 offset)
 {
 	ScrollSink *scrollSink = nullptr;
 	std::vector<std::shared_ptr<Window>> sinkPath;

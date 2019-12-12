@@ -19,7 +19,7 @@
 #include "ui/ScrollView.h"
 #include "ui/StackLayout.h"
 #include "ui/Text.h"
-#include "video/TextureManager.h"
+#include "rendering/TextureManager.h"
 #include <algorithm>
 
 PropertyList::PropertyList(UI::LayoutManager &manager, TextureManager &texman, World &world, ShellConfig &conf, UI::ConsoleBuffer &logger, LangCache &lang)
@@ -176,7 +176,7 @@ void PropertyList::DoExchange(bool applyToObject, TextureManager &texman)
 					for( auto &name: names )
 					{
 						// only allow using textures which are less than half of a cell
-						const LogicalTexture &lt = texman.GetSpriteInfo(texman.FindSprite(name));
+						const TextureManager::LogicalTexture &lt = texman.GetSpriteInfo(texman.FindSprite(name));
 						if( lt.pxFrameWidth <= LOCATION_SIZE / 2 && lt.pxFrameHeight <= LOCATION_SIZE / 2 )
 						{
 							int index = static_cast<DefaultComboBox *>(ctrl.get())->GetData()->AddItem(name);
@@ -222,7 +222,7 @@ void PropertyList::ConnectTo(std::shared_ptr<PropertySet> ps, TextureManager &te
 	DoExchange(false, texman);
 }
 
-FRECT PropertyList::GetChildRect(TextureManager &texman, const UI::LayoutContext &lc, const UI::StateContext &sc, const UI::Window &child) const
+RectFloat PropertyList::GetChildRect(TextureManager &texman, const UI::LayoutContext &lc, const UI::StateContext &sc, const UI::Window &child) const
 {
 	if (_deleteButton.get() == &child)
 	{
@@ -230,8 +230,8 @@ FRECT PropertyList::GetChildRect(TextureManager &texman, const UI::LayoutContext
 	}
 	if (_scrollView.get() == &child)
 	{
-		vec2d pxMargins = { std::floor(4 * lc.GetScale()), 1 };
-		return MakeRectRB(pxMargins + vec2d{0, _deleteButton->GetContentSize(texman, sc, lc.GetScale()).y}, lc.GetPixelSize() - pxMargins);
+		Vector2 pxMargins = { std::floor(4 * lc.GetScale()), 1 };
+		return MakeRectRB(pxMargins + Vector2{0, _deleteButton->GetContentSize(texman, sc, lc.GetScale()).y}, lc.GetPixelSize() - pxMargins);
 	}
 	return UI::Dialog::GetChildRect(texman, lc, sc, child);
 }

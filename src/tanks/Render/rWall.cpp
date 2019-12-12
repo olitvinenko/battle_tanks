@@ -3,8 +3,9 @@
 #include "gc/Wall.h"
 #include "gc/WorldCfg.h"
 
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/Color.h"
+#include "rendering/DrawingContext.h"
+#include "rendering/TextureManager.h"
 
 R_Wall::R_Wall(TextureManager &tm, const char *tex)
 	: _tm(tm)
@@ -20,8 +21,8 @@ void R_Wall::Draw(const World &world, const GC_Actor &actor, DrawingContext &dc)
 {
 	assert(dynamic_cast<const GC_Wall*>(&actor));
 	auto &wall = static_cast<const GC_Wall&>(actor);
-	vec2d pos = wall.GetPos();
-	vec2d dir = wall.GetDirection();
+	Vector2 pos = wall.GetPos();
+	Vector2 dir = wall.GetDirection();
 	unsigned int corner = wall.GetCorner();
 	assert(corner < 5);
 	unsigned int fcount = _tm.GetFrameCount(_texId[corner]);

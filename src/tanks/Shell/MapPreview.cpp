@@ -7,8 +7,8 @@
 #include "ui/LayoutContext.h"
 #include "ui/Rating.h"
 #include "ui/StateContext.h"
-#include "video/DrawingContext.h"
-#include "video/TextureManager.h"
+#include "rendering/DrawingContext.h"
+#include "rendering/TextureManager.h"
 
 MapPreview::MapPreview(UI::LayoutManager &manager, TextureManager &texman, FileSystem::IFileSystem &fs, WorldView &worldView, MapCache &mapCache)
 	: UI::Window(manager)
@@ -38,11 +38,11 @@ void MapPreview::Draw(const UI::StateContext &sc, const UI::LayoutContext &lc, c
 	{
 		const World &world = _mapCache.GetCachedWorld(_fs, _mapName->GetValue(sc));
 
-		vec2d pxPadding = UI::ToPx(vec2d{ _padding, _padding }, lc);
-		vec2d pxViewSize = lc.GetPixelSize() - pxPadding * 2;
+		Vector2 pxPadding = UI::ToPx(Vector2{ _padding, _padding }, lc);
+		Vector2 pxViewSize = lc.GetPixelSize() - pxPadding * 2;
 
-		vec2d worldSize = Size(world._bounds);
-		vec2d eye = Center(world._bounds);
+		Vector2 worldSize = Size(world._bounds);
+		Vector2 eye = Center(world._bounds);
 		float zoom = std::max(pxViewSize.x / worldSize.x, pxViewSize.y / worldSize.y);
 
 		_worldView.Render(
@@ -59,7 +59,7 @@ void MapPreview::Draw(const UI::StateContext &sc, const UI::LayoutContext &lc, c
 		dc.DrawBitmapText(Vec2dFloor(lc.GetPixelSize() / 2), lc.GetScale(), _font, 0xffffffff, _mapName->GetValue(sc), alignTextCC);
 	}
 
-	FRECT sel = MakeRectRB(vec2d{}, lc.GetPixelSize());
+	RectFloat sel = MakeRectRB(Vector2{}, lc.GetPixelSize());
 	if (sc.GetState() == "Focused")
 	{
 		dc.DrawSprite(sel, _texSelection, 0xffffffff, 0);
@@ -75,11 +75,11 @@ void MapPreview::Draw(const UI::StateContext &sc, const UI::LayoutContext &lc, c
 	}
 }
 
-FRECT MapPreview::GetChildRect(TextureManager &texman, const UI::LayoutContext &lc, const UI::StateContext &sc, const UI::Window &child) const
+RectFloat MapPreview::GetChildRect(TextureManager &texman, const UI::LayoutContext &lc, const UI::StateContext &sc, const UI::Window &child) const
 {
 	if (_rating.get() == &child)
 	{
-		vec2d pxPadding = UI::ToPx(vec2d{ _padding, _padding }, lc);
+		Vector2 pxPadding = UI::ToPx(Vector2{ _padding, _padding }, lc);
 		return MakeRectWH(pxPadding, lc.GetPixelSize() / 2);
 	}
 	return UI::Window::GetChildRect(texman, lc, sc, child);

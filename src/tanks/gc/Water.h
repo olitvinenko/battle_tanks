@@ -11,7 +11,7 @@ class GC_Water : public GC_RigidBodyStatic
     typedef GC_RigidBodyStatic base;
 
 public:
-	GC_Water(vec2d pos);
+	GC_Water(Vector2 pos);
 	GC_Water(FromFile);
 	~GC_Water();
 
@@ -20,7 +20,7 @@ public:
 	void Kill(World &world) override;
 
 	// GC_Actor
-	void MoveTo(World &world, const vec2d &pos) override;
+	void MoveTo(World &world, const Vector2 &pos) override;
 
 	// GI_NeighborAware
 	int GetNeighbors(const World &world) const override;

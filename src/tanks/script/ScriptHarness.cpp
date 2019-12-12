@@ -9,7 +9,7 @@
 #include "gc/SaveFile.h"
 #include "gclua/lObjUtil.h"
 
-#include <FileSystem.h>
+#include "filesystem/FileSystem.h"
 
 extern "C"
 {

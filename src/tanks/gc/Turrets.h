@@ -30,7 +30,7 @@ protected:
 
 protected:
 	virtual void ProcessState(World &world, float dt);
-	virtual void CalcOutstrip(World &world, const GC_Vehicle *target, vec2d &fake) = 0;
+	virtual void CalcOutstrip(World &world, const GC_Vehicle *target, Vector2 &fake) = 0;
 	bool IsTargetVisible(World &world, GC_Vehicle* target, GC_RigidBodyStatic** pObstacle);
 	virtual void TargetLost();
 	GC_Vehicle* EnumTargets(World &world);
@@ -38,7 +38,7 @@ protected:
 	void SetFire(World &world, bool fire);
 
 public:
-	GC_Turret(vec2d pos, TurretState state);
+	GC_Turret(Vector2 pos, TurretState state);
 	GC_Turret(FromFile);
 	virtual ~GC_Turret();
 
@@ -98,12 +98,12 @@ class GC_TurretRocket : public GC_Turret
 	DECLARE_SELF_REGISTRATION(GC_TurretRocket);
 
 public:
-	explicit GC_TurretRocket(vec2d pos);
+	explicit GC_TurretRocket(Vector2 pos);
 	explicit GC_TurretRocket(FromFile);
 	virtual ~GC_TurretRocket();
 
 	// GC_Turret
-    void CalcOutstrip(World &world, const GC_Vehicle *target, vec2d &fake) override;
+    void CalcOutstrip(World &world, const GC_Vehicle *target, Vector2 &fake) override;
 
 	// GC_RigidBodyStatic
     float GetDefaultHealth() const override { return 500; }
@@ -127,12 +127,12 @@ class GC_TurretCannon : public GC_Turret
 	DECLARE_SELF_REGISTRATION(GC_TurretCannon);
 
 public:
-	explicit GC_TurretCannon(vec2d pos);
+	explicit GC_TurretCannon(Vector2 pos);
 	explicit GC_TurretCannon(FromFile);
 	~GC_TurretCannon();
 
 	// GC_Turret
-    void CalcOutstrip(World &world, const GC_Vehicle *target, vec2d &fake) override;
+    void CalcOutstrip(World &world, const GC_Vehicle *target, Vector2 &fake) override;
 
 	// GC_RigidBodyStatic
     float GetDefaultHealth() const override { return 600; }
@@ -173,7 +173,7 @@ public:
 	float _time_wake_max;
 
 public:
-	explicit GC_TurretBunker(vec2d pos);
+	explicit GC_TurretBunker(Vector2 pos);
 	explicit GC_TurretBunker(FromFile);
 	virtual ~GC_TurretBunker();
 
@@ -197,12 +197,12 @@ class GC_TurretMinigun : public GC_TurretBunker
 	DECLARE_SELF_REGISTRATION(GC_TurretMinigun);
 
 public:
-	explicit GC_TurretMinigun(vec2d pos);
+	explicit GC_TurretMinigun(Vector2 pos);
 	explicit GC_TurretMinigun(FromFile);
 	virtual ~GC_TurretMinigun();
 
 	// GC_Turret
-    void CalcOutstrip(World &world, const GC_Vehicle *target, vec2d &fake) override;
+    void CalcOutstrip(World &world, const GC_Vehicle *target, Vector2 &fake) override;
     unsigned char GetPassability() const override { return 1; }
 
 	// GC_RigidBodyStatic
@@ -226,12 +226,12 @@ class GC_TurretGauss : public GC_TurretBunker
 	DECLARE_SELF_REGISTRATION(GC_TurretGauss);
 
 public:
-	explicit GC_TurretGauss(vec2d pos);
+	explicit GC_TurretGauss(Vector2 pos);
 	explicit GC_TurretGauss(FromFile);
 	virtual ~GC_TurretGauss();
 
 	// GC_Turret
-    void CalcOutstrip(World &world, const GC_Vehicle *target, vec2d &fake) override;
+    void CalcOutstrip(World &world, const GC_Vehicle *target, Vector2 &fake) override;
     void TargetLost() override;
 
 	// GC_RigidBodyStatic

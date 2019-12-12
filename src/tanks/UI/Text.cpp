@@ -2,8 +2,8 @@
 #include "DataSource.h"
 #include "GuiManager.h"
 #include "LayoutContext.h"
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/TextureManager.h"
+#include "rendering/DrawingContext.h"
 
 using namespace UI;
 
@@ -15,7 +15,7 @@ Text::Text(LayoutManager &manager, TextureManager &texman)
 	SetFont(texman, "font_small");
 }
 
-void Text::SetAlign(enumAlignText align)
+void Text::SetAlign(AlignTextKind align)
 {
 	_align = align;
 }
@@ -25,7 +25,7 @@ void Text::SetFont(TextureManager &texman, const char *fontName)
 	_fontTexture = texman.FindSprite(fontName);
 }
 
-void Text::SetFontColor(std::shared_ptr<DataSource<SpriteColor>> color)
+void Text::SetFontColor(std::shared_ptr<DataSource<Color>> color)
 {
 	_fontColor = std::move(color);
 }
@@ -39,14 +39,14 @@ void Text::Draw(const StateContext &sc, const LayoutContext &lc, const InputCont
 {
 	if (_text)
 	{
-		dc.DrawBitmapText(vec2d{}, lc.GetScale(), _fontTexture, _fontColor ? _fontColor->GetValue(sc) : 0xffffffff, _text->GetValue(sc), _align);
+		dc.DrawBitmapText(Vector2{}, lc.GetScale(), _fontTexture, _fontColor ? _fontColor->GetValue(sc) : 0xffffffff, _text->GetValue(sc), _align);
 	}
 }
 
-vec2d Text::GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const
+Vector2 Text::GetContentSize(TextureManager &texman, const StateContext &sc, float scale) const
 {
 	if (!_text)
-		return vec2d{};
+		return Vector2{};
 
 	unsigned int lineCount = 1;
 	unsigned  maxline = 0;
@@ -69,6 +69,6 @@ vec2d Text::GetContentSize(TextureManager &texman, const StateContext &sc, float
 	}
 	float w = std::floor(texman.GetFrameWidth(_fontTexture, 0) * scale);
 	float h = std::floor(texman.GetFrameHeight(_fontTexture, 0) * scale);
-	return vec2d{ (w - 1) * (float)maxline, h * (float)lineCount };
+	return Vector2{ (w - 1) * (float)maxline, h * (float)lineCount };
 }
 

@@ -20,8 +20,8 @@
 #include "ui/LayoutContext.h"
 #include "ui/StackLayout.h"
 #include "ui/UIInput.h"
-#include "video/DrawingContext.h"
-#include "video/TextureManager.h"
+#include "rendering/DrawingContext.h"
+#include "rendering/TextureManager.h"
 
 #include <sstream>
 #include <iomanip>
@@ -126,16 +126,16 @@ GameLayout::~GameLayout()
 	_conf.ui_showtime.eventChange = nullptr;
 }
 
-vec2d GameLayout::GetDragDirection() const
+Vector2 GameLayout::GetDragDirection() const
 {
-	vec2d dragDirection{ 0, 0 };
+	Vector2 dragDirection{ 0, 0 };
 
 	if (!_activeDrags.empty())
 	{
 		float maxDragLength = 0;
 		for (auto &drag : _activeDrags)
 		{
-			vec2d dir = drag.second.second - drag.second.first;
+			Vector2 dir = drag.second.second - drag.second.first;
 			maxDragLength = std::max(maxDragLength, dir.sqr());
 		}
 		maxDragLength = std::sqrt(maxDragLength);
@@ -144,7 +144,7 @@ vec2d GameLayout::GetDragDirection() const
 		unsigned int count = 0;
 		for (auto &drag : _activeDrags)
 		{
-			vec2d dir = drag.second.second - drag.second.first;
+			Vector2 dir = drag.second.second - drag.second.first;
 			if (dir.len() > maxDragLength/2)
 			{
 				dragDirection += dir;
@@ -161,7 +161,7 @@ unsigned int GameLayout::GetEffectiveDragCount() const
 	float maxDragLength = 0;
 	for (auto &drag : _activeDrags)
 	{
-		vec2d dir = drag.second.second - drag.second.first;
+		Vector2 dir = drag.second.second - drag.second.first;
 		maxDragLength = std::max(maxDragLength, dir.sqr());
 	}
 	maxDragLength = std::sqrt(maxDragLength);
@@ -170,7 +170,7 @@ unsigned int GameLayout::GetEffectiveDragCount() const
 	unsigned int count = 0;
 	for (auto &drag : _activeDrags)
 	{
-		vec2d dir = drag.second.second - drag.second.first;
+		Vector2 dir = drag.second.second - drag.second.first;
 		if (dir.len() > maxDragLength/2)
 		{
 			count++;
@@ -210,7 +210,7 @@ void GameLayout::OnTimeStep(UI::LayoutManager &manager, float dt)
 	{
 		WorldController::ControllerStateMap controlStates;
 
-		vec2d dragDirection = GetDragDirection();
+		Vector2 dragDirection = GetDragDirection();
 		bool reversing = GetEffectiveDragCount() > 1;
 		
 		for (unsigned int playerIndex = 0; playerIndex != players.size(); ++playerIndex)
@@ -220,7 +220,7 @@ void GameLayout::OnTimeStep(UI::LayoutManager &manager, float dt)
 				controller->Step(dt);
 				if( GC_Vehicle *vehicle = players[playerIndex]->GetVehicle() )
 				{
-					vec2d mouse = manager.GetInputContext().GetInput().GetMousePos();
+					Vector2 mouse = manager.GetInputContext().GetInput().GetMousePos();
 					auto c2w = _gameViewHarness.CanvasToWorld(playerIndex, (int) mouse.x, (int) mouse.y);
 
 					VehicleState vs;
@@ -241,7 +241,7 @@ void GameLayout::Draw(const UI::StateContext &sc, const UI::LayoutContext &lc, c
 
 	_gameViewHarness.RenderGame(dc, _worldView);
 
-	vec2d dir = GetDragDirection();
+	Vector2 dir = GetDragDirection();
 	bool reversing = GetEffectiveDragCount() > 1;
 	std::vector<GC_Player*> players = _worldController.GetLocalPlayers();
 	for (unsigned int playerIndex = 0; playerIndex != players.size(); ++playerIndex)
@@ -250,7 +250,7 @@ void GameLayout::Draw(const UI::StateContext &sc, const UI::LayoutContext &lc, c
 		{
 			if (const GC_Vehicle *vehicle = players[playerIndex]->GetVehicle())
 			{
-				vec2d pos = _gameViewHarness.WorldToCanvas(playerIndex, vehicle->GetPos());
+				Vector2 pos = _gameViewHarness.WorldToCanvas(playerIndex, vehicle->GetPos());
 				pos += dir;
 				uint32_t opacity = uint32_t(std::min(dir.len() / 200.f, 1.f) * 255.f) & 0xff;
 				uint32_t rgb = reversing ? opacity : opacity << 8;
@@ -263,21 +263,21 @@ void GameLayout::Draw(const UI::StateContext &sc, const UI::LayoutContext &lc, c
 			float time = controller->GetRemainingFireTime();
 			if (time > 0)
 			{
-				vec2d pos = _gameViewHarness.WorldToCanvas(playerIndex, controller->GetFireTarget());
+				Vector2 pos = _gameViewHarness.WorldToCanvas(playerIndex, controller->GetFireTarget());
 				dc.DrawSprite(_texTarget, 0, 0xff00ff00, pos.x, pos.y, Vec2dDirection(_gameContext.GetWorld().GetTime()*3));
 			}
 		}
 	}
 }
 
-FRECT GameLayout::GetChildRect(TextureManager &texman, const UI::LayoutContext &lc, const UI::StateContext &sc, const UI::Window &child) const
+RectFloat GameLayout::GetChildRect(TextureManager &texman, const UI::LayoutContext &lc, const UI::StateContext &sc, const UI::Window &child) const
 {
 	float scale = lc.GetScale();
-	vec2d size = lc.GetPixelSize();
+	Vector2 size = lc.GetPixelSize();
 
 	if (_scoreAndControls.get() == &child)
 	{
-		vec2d pxChildSize = child.GetContentSize(texman, sc, lc.GetScale());
+		Vector2 pxChildSize = child.GetContentSize(texman, sc, lc.GetScale());
 		return MakeRectWH(Vec2dFloor((size - pxChildSize) / 2), pxChildSize);
 	}
 	if (_timerDisplay.get() == &child)
@@ -286,12 +286,12 @@ FRECT GameLayout::GetChildRect(TextureManager &texman, const UI::LayoutContext &
 	}
 	if (_msg.get() == &child)
 	{
-		return UI::CanvasLayout(vec2d{ 50, size.y / scale - 50 }, _msg->GetSize(), scale);
+		return UI::CanvasLayout(Vector2{ 50, size.y / scale - 50 }, _msg->GetSize(), scale);
 	}
 	return UI::Window::GetChildRect(texman, lc, sc, child);
 }
 
-bool GameLayout::OnPointerDown(UI::InputContext &ic, UI::LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, UI::PointerType pointerType, unsigned int pointerID)
+bool GameLayout::OnPointerDown(UI::InputContext &ic, UI::LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, int button, UI::PointerType pointerType, unsigned int pointerID)
 {
 	if (UI::PointerType::Touch == pointerType)
 	{
@@ -302,18 +302,18 @@ bool GameLayout::OnPointerDown(UI::InputContext &ic, UI::LayoutContext &lc, Text
 	return false;
 }
 
-void GameLayout::OnPointerUp(UI::InputContext &ic, UI::LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, int button, UI::PointerType pointerType, unsigned int pointerID)
+void GameLayout::OnPointerUp(UI::InputContext &ic, UI::LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, int button, UI::PointerType pointerType, unsigned int pointerID)
 {
 	_activeDrags.erase(pointerID);
 }
 
-void GameLayout::OnPointerMove(UI::InputContext &ic, UI::LayoutContext &lc, TextureManager &texman, vec2d pointerPosition, UI::PointerType pointerType, unsigned int pointerID, bool captured)
+void GameLayout::OnPointerMove(UI::InputContext &ic, UI::LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition, UI::PointerType pointerType, unsigned int pointerID, bool captured)
 {
 	if( captured )
 	{
 		auto &drag = _activeDrags[pointerID];
 		drag.second = pointerPosition;
-		vec2d dir = drag.second - drag.first;
+		Vector2 dir = drag.second - drag.first;
 		const float maxDragLength = 100;
 		if (dir.len() > maxDragLength)
 		{
@@ -322,7 +322,7 @@ void GameLayout::OnPointerMove(UI::InputContext &ic, UI::LayoutContext &lc, Text
 	}
 }
 
-void GameLayout::OnTap(UI::InputContext &ic, UI::LayoutContext &lc, TextureManager &texman, vec2d pointerPosition)
+void GameLayout::OnTap(UI::InputContext &ic, UI::LayoutContext &lc, TextureManager &texman, Vector2 pointerPosition)
 {
 	std::vector<GC_Player*> players = _worldController.GetLocalPlayers();
 	for (unsigned int playerIndex = 0; playerIndex != players.size(); ++playerIndex)

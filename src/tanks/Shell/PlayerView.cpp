@@ -1,8 +1,10 @@
 #include "PlayerView.h"
 #include "Configuration.h"
 #include "ui/LayoutContext.h"
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+
+#include "rendering/Color.h"
+#include "rendering/TextureManager.h"
+#include "rendering/DrawingContext.h"
 
 PlayerView::PlayerView(UI::LayoutManager &manager, TextureManager &texman)
 	: UI::Window(manager)
@@ -19,7 +21,7 @@ void PlayerView::Draw(const UI::StateContext &sc, const UI::LayoutContext &lc, c
 {
 	if (_playerConfCache)
 	{
-		vec2d pxSize = UI::ToPx(vec2d{ 64, 64 }, lc);
+		Vector2 pxSize = UI::ToPx(Vector2{ 64, 64 }, lc);
 		dc.DrawSprite(MakeRectWH(pxSize), _texSkin, 0xffffffff, 0);
 	}
 }

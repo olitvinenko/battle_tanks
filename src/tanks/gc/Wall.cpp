@@ -16,7 +16,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_Wall)
 
 IMPLEMENT_GRID_MEMBER(GC_Wall, grid_walls);
 
-GC_Wall::GC_Wall(vec2d pos)
+GC_Wall::GC_Wall(Vector2 pos)
   : GC_RigidBodyStatic(pos)
 {
 	SetHealth(50, 50);
@@ -36,7 +36,7 @@ static void RemoveCorner(Field &field, GC_RigidBodyStatic &obj, int corner)
 {
 	if (corner)
 	{
-		vec2d p = obj.GetPos() / CELL_SIZE;
+		Vector2 p = obj.GetPos() / CELL_SIZE;
 		int x, y;
 		switch( corner )
 		{
@@ -82,9 +82,9 @@ void GC_Wall::Kill(World &world)
     GC_RigidBodyStatic::Kill(world);
 }
 
-static const vec2d angles[4] = { Vec2dDirection(5*PI4), Vec2dDirection(7*PI4), Vec2dDirection(PI4), Vec2dDirection(3*PI4)};
+static const Vector2 angles[4] = { Vec2dDirection(5*PI4), Vec2dDirection(7*PI4), Vec2dDirection(PI4), Vec2dDirection(3*PI4)};
 
-bool GC_Wall::IntersectWithLine(const vec2d &lineCenter, const vec2d &lineDirection, vec2d &outEnterNormal, float &outEnter, float &outExit) const
+bool GC_Wall::IntersectWithLine(const Vector2 &lineCenter, const Vector2 &lineDirection, Vector2 &outEnterNormal, float &outEnter, float &outExit) const
 {
 	assert(!std::isnan(lineCenter.x) && std::isfinite(lineCenter.x));
 	assert(!std::isnan(lineCenter.y) && std::isfinite(lineCenter.y));
@@ -94,7 +94,7 @@ bool GC_Wall::IntersectWithLine(const vec2d &lineCenter, const vec2d &lineDirect
 	unsigned int corner = GetCorner();
 	if( corner )
 	{
-		vec2d delta = GetPos() - lineCenter;
+		Vector2 delta = GetPos() - lineCenter;
 
 		//
 		// project lineDirection to triangle axes
@@ -112,7 +112,7 @@ bool GC_Wall::IntersectWithLine(const vec2d &lineCenter, const vec2d &lineDirect
 		if( fabs(deltaCrossDir) > lineProjW_abs / 2 + GetHalfWidth() )
 			return false;
 
-		vec2d diagonal = Vec2dAddDirection(angles[corner-1], GetDirection());
+		Vector2 diagonal = Vec2dAddDirection(angles[corner-1], GetDirection());
 		float halfDiag = sqrt(GetHalfWidth()*GetHalfWidth() + GetHalfLength()*GetHalfLength());
 		float lineProjD = Vec2dDot(lineDirection, diagonal);
 		float lineProjD_abs = fabs(lineProjD);
@@ -129,7 +129,7 @@ bool GC_Wall::IntersectWithLine(const vec2d &lineCenter, const vec2d &lineDirect
 		float halfProjLineD = lineProjD_abs * halfDiag;
 		float halfProjLine = std::max(halfProjLineW, std::max(halfProjLineL, halfProjLineD));
 		float dirLen = lineDirection.len();
-		vec2d offset = diagonal * (halfProjLineW + halfProjLineL - halfProjLine);
+		Vector2 offset = diagonal * (halfProjLineW + halfProjLineL - halfProjLine);
 		if( fabs(Vec2dCross(delta * dirLen + offset, lineDirection)) > halfProjLine * dirLen )
 			return false;
 
@@ -153,7 +153,7 @@ bool GC_Wall::IntersectWithLine(const vec2d &lineCenter, const vec2d &lineDirect
 		{
 			outEnter = lineProjW_abs > 0 ? bW / lineProjW_abs : 0;
 			outEnterNormal = lineProjW > 0 ?
-				vec2d{ -GetDirection().y, GetDirection().x } : vec2d{ GetDirection().y, -GetDirection().x };
+				Vector2{ -GetDirection().y, GetDirection().x } : Vector2{ GetDirection().y, -GetDirection().x };
 		}
 		else
 		{
@@ -186,7 +186,7 @@ bool GC_Wall::IntersectWithLine(const vec2d &lineCenter, const vec2d &lineDirect
 	}
 }
 
-bool GC_Wall::IntersectWithRect(const vec2d &rectHalfSize, const vec2d &rectCenter, const vec2d &rectDirection, vec2d &outWhere, vec2d &outNormal, float &outDepth) const
+bool GC_Wall::IntersectWithRect(const Vector2 &rectHalfSize, const Vector2 &rectCenter, const Vector2 &rectDirection, Vector2 &outWhere, Vector2 &outNormal, float &outDepth) const
 {
 	assert(!std::isnan(rectHalfSize.x) && std::isfinite(rectHalfSize.x));
 	assert(!std::isnan(rectHalfSize.y) && std::isfinite(rectHalfSize.y));
@@ -198,7 +198,7 @@ bool GC_Wall::IntersectWithRect(const vec2d &rectHalfSize, const vec2d &rectCent
 	unsigned int corner = GetCorner();
 	if( corner )
 	{
-		vec2d delta = GetPos() - rectCenter;
+		Vector2 delta = GetPos() - rectCenter;
 		float depth[5];
 
 		float projL = Vec2dDot(rectDirection, GetDirection());
@@ -220,7 +220,7 @@ bool GC_Wall::IntersectWithRect(const vec2d &rectHalfSize, const vec2d &rectCent
 		depth[3] = GetHalfLength() + halfProjThisW - fabs(deltaDotDir);
 		if( depth[3] < 0 ) return false;
 
-		vec2d diagonal = Vec2dAddDirection(angles[corner-1], GetDirection());
+		Vector2 diagonal = Vec2dAddDirection(angles[corner-1], GetDirection());
 		float halfDiag = sqrt(GetHalfWidth()*GetHalfWidth() + GetHalfLength()*GetHalfLength());
 		float deltaDotDiag = Vec2dDot(delta, diagonal);
 		float projLd = Vec2dDot(rectDirection, diagonal);
@@ -240,7 +240,7 @@ bool GC_Wall::IntersectWithRect(const vec2d &rectHalfSize, const vec2d &rectCent
 		float halfProjLineLp = projL_abs * GetHalfLength();
 		float halfProjLineDp = projLd_abs * halfDiag;
 		float halfProjRectL = std::max(halfProjLineWp, std::max(halfProjLineLp, halfProjLineDp));
-		vec2d offsetL = diagonal * (halfProjLineWp + halfProjLineLp - halfProjRectL);
+		Vector2 offsetL = diagonal * (halfProjLineWp + halfProjLineLp - halfProjRectL);
 
 		float deltaCrossRectDir = Vec2dCross(delta, rectDirection);
 		depth[0] = rectHalfSize.y + halfProjRectL - fabs(Vec2dCross(delta+offsetL, rectDirection));
@@ -251,7 +251,7 @@ bool GC_Wall::IntersectWithRect(const vec2d &rectHalfSize, const vec2d &rectCent
 		float halfProjLineL = projW_abs * GetHalfLength();
 		float halfProjLineD = projWd_abs * halfDiag;
 		float halfProjRectW = std::max(halfProjLineW, std::max(halfProjLineL, halfProjLineD));
-		vec2d offsetW = diagonal * (halfProjLineW + halfProjLineL - halfProjRectW);
+		Vector2 offsetW = diagonal * (halfProjLineW + halfProjLineL - halfProjRectW);
 
 		float deltaDotRectDir = Vec2dDot(delta, rectDirection);
 		depth[1] = rectHalfSize.x + halfProjRectW - fabs(Vec2dDot(delta+offsetW, rectDirection));
@@ -278,14 +278,14 @@ bool GC_Wall::IntersectWithRect(const vec2d &rectHalfSize, const vec2d &rectCent
 		{
 		case 0:
 			outNormal = deltaCrossRectDir > 0 ?
-				vec2d{ -rectDirection.y, rectDirection.x } : vec2d{ rectDirection.y, -rectDirection.x };
+				Vector2{ -rectDirection.y, rectDirection.x } : Vector2{ rectDirection.y, -rectDirection.x };
 			break;
 		case 1:
 			outNormal = deltaDotRectDir > 0 ? -rectDirection : rectDirection;
 			break;
 		case 2:
 			outNormal = deltaCrossDir > 0 ?
-				vec2d{ -GetDirection().y, GetDirection().x } : vec2d{ GetDirection().y, -GetDirection().x };
+				Vector2{ -GetDirection().y, GetDirection().x } : Vector2{ GetDirection().y, -GetDirection().x };
 			break;
 		case 3:
 			outNormal = deltaDotDir > 0 ? -GetDirection() : GetDirection();
@@ -301,9 +301,9 @@ bool GC_Wall::IntersectWithRect(const vec2d &rectHalfSize, const vec2d &rectCent
 		// contact manifold
 		float xx, xy, yx, yy;
 		float sign;
-		vec2d center;
+		Vector2 center;
 		unsigned int vcount = 0;
-		vec2d v[4];
+		Vector2 v[4];
 		if( mdIndex < 2 )
 		{
 			xx = GetHalfLength()*GetDirection().x;
@@ -421,7 +421,7 @@ void GC_Wall::OnDestroy(World &world, const DamageDesc &dd)
 {
 	for( int n = 0; n < 5; ++n )
 	{
-		world.New<GC_BrickFragment>(GetPos() + vrand(GetRadius()), vec2d{ frand(100.0f) - 50, -frand(100.0f) });
+		world.New<GC_BrickFragment>(GetPos() + vrand(GetRadius()), Vector2{ frand(100.0f) - 50, -frand(100.0f) });
 	}
 	world.New<GC_Particle>(GetPos(), SPEED_SMOKE, PARTICLE_SMOKE, frand(0.2f) + 0.3f);
 
@@ -432,7 +432,7 @@ void GC_Wall::OnDamage(World &world, DamageDesc &dd)
 {
 	if( dd.damage >= DAMAGE_BULLET && GetHealthMax() > 0 )
 	{
-		vec2d v = dd.hit - GetPos();
+		Vector2 v = dd.hit - GetPos();
 		if( fabsf(v.x) > fabsf(v.y) )
 		{
 			v.x = v.x > 0 ? 50.0f : -50.0f;
@@ -453,7 +453,7 @@ void GC_Wall::OnDamage(World &world, DamageDesc &dd)
 void GC_Wall::SetCorner(World &world, unsigned int index) // 0 means normal view
 {
 	// restore current corner
-	vec2d p = GetPos() / CELL_SIZE;
+	Vector2 p = GetPos() / CELL_SIZE;
 	if( CheckFlags(GC_FLAG_WALL_CORNER_ALL) )
 	{
 		int x, y;
@@ -590,7 +590,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_Wall_Concrete)
 	return true;
 }
 
-GC_Wall_Concrete::GC_Wall_Concrete(vec2d pos)
+GC_Wall_Concrete::GC_Wall_Concrete(Vector2 pos)
   : GC_Wall(pos)
 {
 	SetSize(CELL_SIZE, CELL_SIZE);

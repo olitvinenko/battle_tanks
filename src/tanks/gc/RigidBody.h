@@ -10,7 +10,7 @@ class GC_Player;
 struct DamageDesc
 {
 	float  damage;
-	vec2d  hit;
+	Vector2  hit;
 	GC_Player *from;
 };
 
@@ -20,7 +20,7 @@ class GC_RigidBodyStatic : public GC_Actor
 	typedef GC_Actor base;
 
 public:
-	explicit GC_RigidBodyStatic(vec2d pos);
+	explicit GC_RigidBodyStatic(Vector2 pos);
 	explicit GC_RigidBodyStatic(FromFile);
 	virtual ~GC_RigidBodyStatic();
 
@@ -37,11 +37,11 @@ public:
 	float GetHalfWidth() const { return _width/2; }
 	float GetHalfLength() const { return _length/2; }
 	float GetRadius() const { return _radius; }
-	vec2d GetVertex(int index) const;
+	Vector2 GetVertex(int index) const;
 	bool GetTrace0() const { return CheckFlags(GC_FLAG_RBSTATIC_TRACE0); }
 
-	virtual bool IntersectWithLine(const vec2d &lineCenter, const vec2d &lineDirection, vec2d &outEnterNormal, float &outEnter, float &outExit) const;
-	virtual bool IntersectWithRect(const vec2d &rectHalfSize, const vec2d &rectCenter, const vec2d &rectDirection, vec2d &outWhere, vec2d &outNormal, float &outDepth) const;
+	virtual bool IntersectWithLine(const Vector2 &lineCenter, const Vector2 &lineDirection, Vector2 &outEnterNormal, float &outEnter, float &outExit) const;
+	virtual bool IntersectWithRect(const Vector2 &rectHalfSize, const Vector2 &rectCenter, const Vector2 &rectDirection, Vector2 &outWhere, Vector2 &outNormal, float &outDepth) const;
 
 	// return true if object has been killed
 	void TakeDamage(World &world, DamageDesc dd);
@@ -51,7 +51,7 @@ public:
 	virtual GC_Player* GetOwner() const { return nullptr; }
 
 	// GC_Actor
-	void MoveTo(World &world, const vec2d &pos) override;
+	void MoveTo(World &world, const Vector2 &pos) override;
 
 	// GC_Object
 	void Init(World &world) override;

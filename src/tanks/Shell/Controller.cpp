@@ -49,7 +49,7 @@ void Controller::SetProfile(ConfControllerProfile &profile)
 	_arcadeStyle = profile.arcade_style.Get();
 }
 
-void Controller::ReadControllerState(UI::IInput &input, World &world, const GC_Vehicle &vehicle, const vec2d *mouse, vec2d dragDirection, bool reverse, VehicleState &vs)
+void Controller::ReadControllerState(UI::IInput &input, World &world, const GC_Vehicle &vehicle, const Vector2 *mouse, Vector2 dragDirection, bool reverse, VehicleState &vs)
 {
 	memset(&vs, 0, sizeof(VehicleState));
 
@@ -78,7 +78,7 @@ void Controller::ReadControllerState(UI::IInput &input, World &world, const GC_V
 	vs._bState_Fire = input.IsKeyPressed(_keyFire);
     if (_tapFireTime > 0 && !vs._bState_Fire && vehicle.GetWeapon())
     {
-        vec2d dir = _tapFireTarget - vehicle.GetPos();
+        Vector2 dir = _tapFireTarget - vehicle.GetPos();
         if( dir.sqr() > 1 )
         {
             dir.Normalize();
@@ -93,7 +93,7 @@ void Controller::ReadControllerState(UI::IInput &input, World &world, const GC_V
 	// move with keyboard
 	if( _arcadeStyle )
 	{
-		vec2d tmp{0, 0};
+		Vector2 tmp{0, 0};
 		if( input.IsKeyPressed(_keyForward) ) tmp.y -= 1;
 		if( input.IsKeyPressed(_keyBack)    ) tmp.y += 1;
 		if( input.IsKeyPressed(_keyLeft)    ) tmp.x -= 1;
@@ -128,7 +128,7 @@ void Controller::ReadControllerState(UI::IInput &input, World &world, const GC_V
 
 		if( input.IsMousePressed(2) && mouse )
 		{
-			vec2d tmp = *mouse - vehicle.GetPos() - vehicle.GetBrakingLength();
+			Vector2 tmp = *mouse - vehicle.GetPos() - vehicle.GetBrakingLength();
 			if( tmp.sqr() > 1 )
 			{
 				if(Vec2dDot(tmp, vehicle.GetDirection()) < 0 )
@@ -212,7 +212,7 @@ void Controller::ReadControllerState(UI::IInput &input, World &world, const GC_V
 	}
 }
 
-void Controller::OnTap(vec2d worldPos)
+void Controller::OnTap(Vector2 worldPos)
 {
 	_tapFireTime = std::min(.25f + std::max(_tapFireTime, 0.f) * 2.f, 1.f);
 	_tapFireTarget = worldPos;

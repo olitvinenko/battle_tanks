@@ -90,7 +90,7 @@ GC_RigidBodyDynamic::ContactList GC_RigidBodyDynamic::_contacts;
 std::stack<GC_RigidBodyDynamic::ContactList> GC_RigidBodyDynamic::_contactsStack;
 bool GC_RigidBodyDynamic::_glob_parity = false;
 
-GC_RigidBodyDynamic::GC_RigidBodyDynamic(vec2d pos)
+GC_RigidBodyDynamic::GC_RigidBodyDynamic(Vector2 pos)
 	: GC_RigidBodyStatic(pos)
 	, _external_force()
 	, _external_momentum(0)
@@ -189,7 +189,7 @@ float GC_RigidBodyDynamic::GetSpinup() const
 	return result;
 }
 
-vec2d GC_RigidBodyDynamic::GetBrakingLength() const
+Vector2 GC_RigidBodyDynamic::GetBrakingLength() const
 {
 	float result;
 	float vx = Vec2dDot(_lv, GetDirection());
@@ -216,11 +216,11 @@ vec2d GC_RigidBodyDynamic::GetBrakingLength() const
 
 void GC_RigidBodyDynamic::TimeStep(World &world, float dt)
 {
-	vec2d dx = _lv * dt;
-	vec2d da = Vec2dDirection(_av * dt);
+	Vector2 dx = _lv * dt;
+	Vector2 da = Vec2dDirection(_av * dt);
 
 	MoveTo(world, GetPos() + dx);
-	vec2d dirTmp = Vec2dAddDirection(GetDirection(), da);
+	Vector2 dirTmp = Vec2dAddDirection(GetDirection(), da);
 	dirTmp.Normalize();
 	SetDirection(dirTmp);
 
@@ -241,13 +241,13 @@ void GC_RigidBodyDynamic::TimeStep(World &world, float dt)
 	// linear friction
 	//
 
-	vec2d dir_y{ GetDirection().y, -GetDirection().x };
+	Vector2 dir_y{ GetDirection().y, -GetDirection().x };
 
 	float vx = Vec2dDot(_lv, GetDirection());
 	float vy = Vec2dDot(_lv, dir_y);
 
 	_lv.Normalize();
-	vec2d dev{ Vec2dDot(_lv, GetDirection()), Vec2dDot(_lv, dir_y) };
+	Vector2 dev{ Vec2dDot(_lv, GetDirection()), Vec2dDot(_lv, dir_y) };
 
 	if( vx > 0 )
 		vx = std::max(.0f, vx - _Nx * dt * dev.x);
@@ -298,7 +298,7 @@ void GC_RigidBodyDynamic::TimeStep(World &world, float dt)
 	contact.total_tp = 0;
 	contact.obj1_d   = this;
 
-	vec2d myHalfSize{ GetHalfLength(), GetHalfWidth() };
+	Vector2 myHalfSize{ GetHalfLength(), GetHalfWidth() };
 
 	for( auto rit = receive.begin(); rit != receive.end(); ++rit )
 	{
@@ -333,7 +333,7 @@ void GC_RigidBodyDynamic::TimeStep(World &world, float dt)
 	}
 }
 
-float GC_RigidBodyDynamic::geta_s(const vec2d &n, const vec2d &c, const GC_RigidBodyStatic *obj) const
+float GC_RigidBodyDynamic::geta_s(const Vector2 &n, const Vector2 &c, const GC_RigidBodyStatic *obj) const
 {
 	float k1 = n.x*(c.y-GetPos().y) - n.y*(c.x-GetPos().x);
 	return (float)
@@ -343,7 +343,7 @@ float GC_RigidBodyDynamic::geta_s(const vec2d &n, const vec2d &c, const GC_Rigid
 		);
 }
 
-float GC_RigidBodyDynamic::geta_d(const vec2d &n, const vec2d &c, const GC_RigidBodyDynamic *obj) const
+float GC_RigidBodyDynamic::geta_d(const Vector2 &n, const Vector2 &c, const GC_RigidBodyDynamic *obj) const
 {
 	float k1 = n.x*(c.y-GetPos().y) - n.y*(c.x-GetPos().x);
 	float k2 = n.y*(c.x-obj->GetPos().x) - n.x*(c.y-obj->GetPos().y);
@@ -407,7 +407,7 @@ void GC_RigidBodyDynamic::ProcessResponse(World &world)
 				if( !it->obj1_d || !it->obj2_s )
 					a *= 0.1f;
 
-				vec2d delta_p = it->normal * (a + it->depth);
+				Vector2 delta_p = it->normal * (a + it->depth);
 				if( it->obj1_d )
 					it->obj1_d->impulse(it->origin, delta_p);
 				if( it->obj2_s && it->obj2_d )
@@ -449,7 +449,7 @@ void GC_RigidBodyDynamic::ProcessResponse(World &world)
 	_contacts.clear();
 }
 
-void GC_RigidBodyDynamic::impulse(const vec2d &origin, const vec2d &impulse)
+void GC_RigidBodyDynamic::impulse(const Vector2 &origin, const Vector2 &impulse)
 {
 	_lv += impulse * _inv_m;
 	_av += ((origin.x-GetPos().x)*impulse.y-(origin.y-GetPos().y)*impulse.x) * _inv_i;
@@ -462,25 +462,25 @@ void GC_RigidBodyDynamic::ApplyMomentum(float momentum)
 	assert(!std::isnan(_external_momentum) && std::isfinite(_external_momentum));
 }
 
-void GC_RigidBodyDynamic::ApplyForce(const vec2d &force)
+void GC_RigidBodyDynamic::ApplyForce(const Vector2 &force)
 {
 	_external_force += force;
 }
 
-void GC_RigidBodyDynamic::ApplyForce(const vec2d &force, const vec2d &origin)
+void GC_RigidBodyDynamic::ApplyForce(const Vector2 &force, const Vector2 &origin)
 {
 	_external_force += force;
 	_external_momentum += (origin.x-GetPos().x)*force.y-(origin.y-GetPos().y)*force.x;
 }
 
-void GC_RigidBodyDynamic::ApplyImpulse(const vec2d &impulse, const vec2d &origin)
+void GC_RigidBodyDynamic::ApplyImpulse(const Vector2 &impulse, const Vector2 &origin)
 {
 	_external_impulse += impulse;
 	_external_torque  += (origin.x-GetPos().x)*impulse.y-(origin.y-GetPos().y)*impulse.x;
 	assert(!std::isnan(_external_torque) && std::isfinite(_external_torque));
 }
 
-void GC_RigidBodyDynamic::ApplyImpulse(const vec2d &impulse)
+void GC_RigidBodyDynamic::ApplyImpulse(const Vector2 &impulse)
 {
 	_external_impulse += impulse;
 }

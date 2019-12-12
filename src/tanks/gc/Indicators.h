@@ -29,7 +29,7 @@ protected:
 
 
 public:
-	explicit GC_SpawnPoint(vec2d pos);
+	explicit GC_SpawnPoint(Vector2 pos);
 	explicit GC_SpawnPoint(FromFile);
 
 	// GC_Object
@@ -43,6 +43,6 @@ class GC_HideLabel : public GC_Actor
 {
 	DECLARE_SELF_REGISTRATION(GC_HideLabel);
 public:
-	GC_HideLabel(vec2d pos);
+	GC_HideLabel(Vector2 pos);
 	GC_HideLabel(FromFile);
 };

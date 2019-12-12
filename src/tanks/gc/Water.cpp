@@ -10,7 +10,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_Water)
 	return true;
 }
 
-GC_Water::GC_Water(vec2d pos)
+GC_Water::GC_Water(Vector2 pos)
   : GC_RigidBodyStatic(pos)
 {
 	SetSize(CELL_SIZE, CELL_SIZE);
@@ -26,7 +26,7 @@ GC_Water::~GC_Water()
 {
 }
 
-void GC_Water::MoveTo(World &world, const vec2d &pos)
+void GC_Water::MoveTo(World &world, const Vector2 &pos)
 {
 	int oldTile = world.GetTileIndex(GetPos());
 	int newTile = world.GetTileIndex(pos);

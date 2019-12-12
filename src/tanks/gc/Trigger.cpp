@@ -19,7 +19,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_Trigger)
 
 IMPLEMENT_1LIST_MEMBER(GC_Trigger, LIST_timestep);
 
-GC_Trigger::GC_Trigger(vec2d pos)
+GC_Trigger::GC_Trigger(Vector2 pos)
   : GC_Actor(pos)
   , _radius(1)
   , _radiusDelta(0)

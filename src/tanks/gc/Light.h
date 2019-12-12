@@ -28,10 +28,10 @@ private:
 	float  _radius;
 	float  _intensity;
 	enumLightType _type;
-	vec2d  _lightDirection;
+	Vector2  _lightDirection;
 
 public:
-	GC_Light(vec2d pos, enumLightType type);
+	GC_Light(Vector2 pos, enumLightType type);
 	explicit GC_Light(FromFile);
 	virtual ~GC_Light();
 
@@ -50,8 +50,8 @@ public:
 		else
 			_radius = r;
 	}
-	void SetLightDirection(const vec2d &d) { _lightDirection = d; }
-	vec2d GetLightDirection() const { return _lightDirection; }
+	void SetLightDirection(const Vector2 &d) { _lightDirection = d; }
+	Vector2 GetLightDirection() const { return _lightDirection; }
 	void SetOffset(float o)
 	{
 		assert(LIGHT_DIRECT != _type);
@@ -112,12 +112,12 @@ class GC_Spotlight : public GC_Actor
 	DECLARE_SELF_REGISTRATION(GC_Spotlight);
 
 public:
-	explicit GC_Spotlight(vec2d pos);
+	explicit GC_Spotlight(Vector2 pos);
 	explicit GC_Spotlight(FromFile);
 	virtual ~GC_Spotlight();
 
 	// GC_Actor
-    void MoveTo(World &world, const vec2d &pos) override;
+    void MoveTo(World &world, const Vector2 &pos) override;
 
 	// GC_Object
     void Init(World &world) override;

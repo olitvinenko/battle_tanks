@@ -3,14 +3,14 @@
 #include "gc/Actor.h"
 #include "gc/NeighborAware.h"
 
-#include "video/TextureManager.h"
-#include "video/DrawingContext.h"
+#include "rendering/TextureManager.h"
+#include "rendering/DrawingContext.h"
 
 static const float dx[8]   = { 32, 32,  0,-32,-32,-32,  0, 32 };
 static const float dy[8]   = {  0, 32, 32, 32,  0,-32,-32,-32 };
 static const int frames[8] = {  5,  8,  7,  6,  3,  0,  1,  2 };
 
-R_Tile::R_Tile(TextureManager &tm, const char *tex, SpriteColor color, vec2d offset)
+R_Tile::R_Tile(TextureManager &tm, const char *tex, Color color, Vector2 offset)
 	: _texId(tm.FindSprite(tex))
 	, _color(color)
 	, _offset(offset)
@@ -23,8 +23,8 @@ void R_Tile::Draw(const World &world, const GC_Actor &actor, DrawingContext &dc)
 	assert(dynamic_cast<const GI_NeighborAware*>(&actor));
 	auto &na = dynamic_cast<const GI_NeighborAware&>(actor);
 
-	vec2d pos = actor.GetPos() + _offset;
-	vec2d dir = actor.GetDirection();
+	Vector2 pos = actor.GetPos() + _offset;
+	Vector2 dir = actor.GetDirection();
 	int tile = na.GetNeighbors(world);
 
 	for( int i = 0; i < 8; ++i )

@@ -10,7 +10,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_BrickFragment)
 
 IMPLEMENT_1LIST_MEMBER(GC_BrickFragment, LIST_timestep);
 
-GC_BrickFragment::GC_BrickFragment(vec2d pos, vec2d v0)
+GC_BrickFragment::GC_BrickFragment(Vector2 pos, Vector2 v0)
   : GC_Actor(pos)
   , _startFrame(rand())
   , _time(0)
@@ -44,7 +44,7 @@ void GC_BrickFragment::TimeStep(World &world, float dt)
 	}
 
 	MoveTo(world, GetPos() + _velocity * dt);
-	_velocity += vec2d{ 0, 300.0f } *dt;
+	_velocity += Vector2{ 0, 300.0f } *dt;
 }
 
 /////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ IMPLEMENT_SELF_REGISTRATION(GC_Particle)
 
 IMPLEMENT_1LIST_MEMBER(GC_Particle, LIST_timestep);
 
-GC_Particle::GC_Particle(vec2d pos, vec2d v, ParticleType ptype, float lifeTime, vec2d orient)
+GC_Particle::GC_Particle(Vector2 pos, Vector2 v, ParticleType ptype, float lifeTime, Vector2 orient)
   : GC_Actor(pos)
   , _time(0)
   , _timeLife(lifeTime)

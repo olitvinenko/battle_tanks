@@ -3,7 +3,7 @@
 #include <list>
 #include <ostream>
 #include <fstream>
-#include "Vector2.h"
+#include "math/Vector2.h"
 #include "NodeTypeEnumerations.h"
 
 

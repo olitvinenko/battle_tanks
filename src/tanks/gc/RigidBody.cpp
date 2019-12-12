@@ -12,7 +12,7 @@
 
 IMPLEMENT_GRID_MEMBER(GC_RigidBodyStatic, grid_rigid_s);
 
-GC_RigidBodyStatic::GC_RigidBodyStatic(vec2d pos)
+GC_RigidBodyStatic::GC_RigidBodyStatic(Vector2 pos)
   : GC_Actor(pos)
   , _health(1)
   , _health_max(1)
@@ -45,7 +45,7 @@ void GC_RigidBodyStatic::Kill(World &world)
     GC_Actor::Kill(world);
 }
 
-void GC_RigidBodyStatic::MoveTo(World &world, const vec2d &pos)
+void GC_RigidBodyStatic::MoveTo(World &world, const Vector2 &pos)
 {
 	if( GetPassability() > 0 )
 		world._field.ProcessObject(this, false);
@@ -56,8 +56,8 @@ void GC_RigidBodyStatic::MoveTo(World &world, const vec2d &pos)
 		world._field.ProcessObject(this, true);
 }
 
-bool GC_RigidBodyStatic::IntersectWithLine(const vec2d &lineCenter, const vec2d &lineDirection,
-                                         vec2d &outEnterNormal, float &outEnter, float &outExit) const
+bool GC_RigidBodyStatic::IntersectWithLine(const Vector2 &lineCenter, const Vector2 &lineDirection,
+                                         Vector2 &outEnterNormal, float &outEnter, float &outExit) const
 {
 	assert(!std::isnan(lineCenter.x) && std::isfinite(lineCenter.x));
 	assert(!std::isnan(lineCenter.y) && std::isfinite(lineCenter.y));
@@ -73,7 +73,7 @@ bool GC_RigidBodyStatic::IntersectWithLine(const vec2d &lineCenter, const vec2d 
 	// project box to lineDirection axis
 	//
 
-	vec2d delta = GetPos() - lineCenter;
+	Vector2 delta = GetPos() - lineCenter;
 	float halfProjLine = lineProjL_abs * GetHalfWidth() + lineProjW_abs * GetHalfLength();
 	if( fabs(Vec2dCross(delta, lineDirection)) > halfProjLine )
 		return false;
@@ -103,7 +103,7 @@ bool GC_RigidBodyStatic::IntersectWithLine(const vec2d &lineCenter, const vec2d 
 	{
 		outEnter = lineProjW_abs > std::numeric_limits<float>::epsilon() ? b1 / lineProjW_abs : 0;
 		outEnterNormal = lineProjW > 0 ?
-			vec2d{ -GetDirection().y, GetDirection().x } : vec2d{ GetDirection().y, -GetDirection().x };
+			Vector2{ -GetDirection().y, GetDirection().x } : Vector2{ GetDirection().y, -GetDirection().x };
 	}
 	else
 	{
@@ -125,8 +125,8 @@ bool GC_RigidBodyStatic::IntersectWithLine(const vec2d &lineCenter, const vec2d 
 	return true;
 }
 
-bool GC_RigidBodyStatic::IntersectWithRect(const vec2d &rectHalfSize, const vec2d &rectCenter, const vec2d &rectDirection,
-                                         vec2d &outWhere, vec2d &outNormal, float &outDepth) const
+bool GC_RigidBodyStatic::IntersectWithRect(const Vector2 &rectHalfSize, const Vector2 &rectCenter, const Vector2 &rectDirection,
+                                         Vector2 &outWhere, Vector2 &outNormal, float &outDepth) const
 {
 	assert(!std::isnan(rectHalfSize.x) && std::isfinite(rectHalfSize.x));
 	assert(!std::isnan(rectHalfSize.y) && std::isfinite(rectHalfSize.y));
@@ -135,7 +135,7 @@ bool GC_RigidBodyStatic::IntersectWithRect(const vec2d &rectHalfSize, const vec2
 	assert(!std::isnan(rectDirection.x) && std::isfinite(rectDirection.x));
 	assert(!std::isnan(rectDirection.y) && std::isfinite(rectDirection.y));
 
-	vec2d delta = GetPos() - rectCenter;
+	Vector2 delta = GetPos() - rectCenter;
 	float depth[4];
 
 	//
@@ -194,14 +194,14 @@ bool GC_RigidBodyStatic::IntersectWithRect(const vec2d &rectHalfSize, const vec2
 	{
 	case 0:
 		outNormal = deltaCrossRectDir > 0 ?
-			vec2d{ -rectDirection.y, rectDirection.x } : vec2d{ rectDirection.y, -rectDirection.x };
+			Vector2{ -rectDirection.y, rectDirection.x } : Vector2{ rectDirection.y, -rectDirection.x };
 		break;
 	case 1:
 		outNormal = deltaDotRectDir > 0 ? -rectDirection : rectDirection;
 		break;
 	case 2:
 		outNormal = deltaCrossDir > 0 ?
-			vec2d{ -GetDirection().y, GetDirection().x } : vec2d{ GetDirection().y, -GetDirection().x };
+			Vector2{ -GetDirection().y, GetDirection().x } : Vector2{ GetDirection().y, -GetDirection().x };
 		break;
 	case 3:
 		outNormal = deltaDotDir > 0 ? -GetDirection() : GetDirection();
@@ -219,7 +219,7 @@ bool GC_RigidBodyStatic::IntersectWithRect(const vec2d &rectHalfSize, const vec2
 
 	float xx, xy, yx, yy;
 	float sign;
-	vec2d center;
+	Vector2 center;
 	if( mdIndex < 2 )
 	{
 		xx = GetHalfLength()*GetDirection().x;
@@ -239,7 +239,7 @@ bool GC_RigidBodyStatic::IntersectWithRect(const vec2d &rectHalfSize, const vec2
 		sign = 1;
 	}
 
-	vec2d v[4] =
+	Vector2 v[4] =
 	{
 		{xx - yy, yx + xy},
 		{xx + yy, -yx + xy},
@@ -351,7 +351,7 @@ void GC_RigidBodyStatic::SetSize(float width, float length)
 	_radius = sqrt(width*width + length*length) / 2;
 }
 
-vec2d GC_RigidBodyStatic::GetVertex(int index) const
+Vector2 GC_RigidBodyStatic::GetVertex(int index) const
 {
 	float x, y;
 	switch( index )

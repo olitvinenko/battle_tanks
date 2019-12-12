@@ -52,7 +52,7 @@ class GC_Explosion : public GC_Actor
 	float _radius;
 
 public:
-	GC_Explosion(vec2d pos);
+	GC_Explosion(Vector2 pos);
 	GC_Explosion(FromFile);
 	virtual ~GC_Explosion();
 
@@ -70,7 +70,7 @@ class GC_ExplosionBig : public GC_Explosion
 {
 	DECLARE_SELF_REGISTRATION(GC_ExplosionBig);
 public:
-	GC_ExplosionBig(vec2d pos);
+	GC_ExplosionBig(Vector2 pos);
 	GC_ExplosionBig(FromFile);
 
 	// GC_Object
@@ -81,7 +81,7 @@ class GC_ExplosionStandard : public GC_Explosion
 {
 	DECLARE_SELF_REGISTRATION(GC_ExplosionStandard);
 public:
-	GC_ExplosionStandard(vec2d pos);
+	GC_ExplosionStandard(Vector2 pos);
 	GC_ExplosionStandard(FromFile);
 
 	// GC_Object
