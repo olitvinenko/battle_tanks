@@ -6,7 +6,12 @@
 #include "LuaDeleter.h"
 #include "base/IImage.h"
 #include "filesystem/FileSystem.h"
+
+#if defined(SOIL_ENABLED)
+#include "SoilImage.h"
+#else
 #include "TGAImage.h"
+#endif
 
 extern "C"
 {
@@ -242,7 +247,11 @@ ParsePackage(const std::string &packageName, std::shared_ptr<FileSystem::Memory>
                 try
                 {
                     auto file = fs.Open(fileName)->AsMemory();
+#if defined(SOIL_ENABLED)
+                    cachedImage = std::make_shared<SoilImage>(file->GetData(), file->GetSize());
+#else
                     cachedImage = std::make_shared<TgaImage>(file->GetData(), file->GetSize());
+#endif
                 }
                 catch (const std::exception &e)
                 {

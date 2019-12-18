@@ -14,6 +14,7 @@ include_directories(
 	${box2d_SOURCE_DIR}
 	${jsoncpp_SOURCE_DIR}
 	${audio_SOURCE_DIR}
+	${soil_SOURCE_DIR}/src
 )
 
 ############################ FILE SYSTEM ################################
@@ -87,6 +88,7 @@ elseif(UNIX)
 		jsoncpp
 		pluto
 		audio
+		soil
 		${GLFW_LIBRARIES}
 		${OPENGL_LIBRARIES}
 	)
