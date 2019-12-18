@@ -113,7 +113,7 @@ void RenderOpenGL::SetMode(RenderMode mode)
 	{
 	case LIGHT:
 		glClearColor(0, 0, 0, m_ambient);
-		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_TRUE);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glDisable(GL_TEXTURE_2D);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
