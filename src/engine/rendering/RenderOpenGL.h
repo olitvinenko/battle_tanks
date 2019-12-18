@@ -3,6 +3,10 @@
 #include "base/IRender.h"
 #include "Vertex.h"
 
+#if defined (__APPLE__)
+#define GL_SILENCE_DEPRECATION
+#endif
+
 #include <GLFW/glfw3.h>
 
 class IImage;
