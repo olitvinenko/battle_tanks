@@ -17,7 +17,7 @@ public:
     ~SoilImage();
     
 	// Image methods
-    const void* GetData() const override { return m_soilData; }
+    const uint8* GetData() const override { return m_soilData; }
     uint8 GetBitsPerPixel() const override { return m_bpp; }
     uint32 GetWidth() const override { return m_width; }
     uint32 GetHeight() const override { return m_height; }

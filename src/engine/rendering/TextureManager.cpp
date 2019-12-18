@@ -27,7 +27,7 @@ class CheckerImage : public IImage
 {
 public:
     // Image methods
-    virtual const void* GetData() const override { return _bytes; }
+    virtual const uint8* GetData() const override { return _bytes; }
     virtual uint8 GetBitsPerPixel() const override { return 24; }
     virtual uint32 GetWidth() const override { return 4; }
     virtual uint32 GetHeight() const override { return 4; }
