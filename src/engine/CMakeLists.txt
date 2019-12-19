@@ -15,6 +15,7 @@ include_directories(
 	${jsoncpp_SOURCE_DIR}
 	${audio_SOURCE_DIR}
 	${soil_SOURCE_DIR}/src
+	${glm_SOURCE_DIR}
 )
 
 ############################ FILE SYSTEM ################################
@@ -92,5 +93,12 @@ elseif(UNIX)
 		${GLFW_LIBRARIES}
 		${OPENGL_LIBRARIES}
 	)
+ 
+     if(BUILD_GLM_STATIC_LIBS)
+         target_link_libraries(engine glm_static)
+     else()
+        target_link_libraries(engine glm_shared)
+     endif()
+ 
 endif()
 
