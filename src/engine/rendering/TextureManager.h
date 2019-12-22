@@ -4,6 +4,7 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include <string>
 
 #include "base/IRender.h"
 #include "GlTexture.h"

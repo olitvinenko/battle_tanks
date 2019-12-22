@@ -9,7 +9,6 @@ include_directories(
 	${pluto_SOURCE_DIR}
 	${box2d_SOURCE_DIR}
 	${jsoncpp_SOURCE_DIR}
-	${audio_SOURCE_DIR}
 	${engine_SOURCE_DIR}
 )
 #########################################################################
@@ -63,15 +62,13 @@ endif()
 
 if(WIN32)
 	target_link_libraries(tanks
-		opengl32
-		glfw
-		lua
-		box2d
-		jsoncpp
-		pluto
-		${GLFW_LIBRARIES}
+		engine
 	)
 elseif(UNIX)
+	include_directories(
+		${audio_SOURCE_DIR}
+	)
+
 	target_link_libraries(tanks
 		engine
 	)

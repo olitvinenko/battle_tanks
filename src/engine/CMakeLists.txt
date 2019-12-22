@@ -51,6 +51,15 @@ file(GLOB_RECURSE SRC_FILE_SYSTEM_ALL
 list(REMOVE_ITEM SRC_ALL ${SRC_FILE_SYSTEM_ALL})
 list(APPEND SRC_ALL ${SRC_FILE_SYSTEM_ABSOLUTE})
 
+if(WIN32)
+	file(GLOB_RECURSE SRC_AUDIO_ALL
+		"audio/*.h*"
+		"audio/*.c*"
+	)
+
+	list(REMOVE_ITEM SRC_ALL ${SRC_AUDIO_ALL})
+endif()
+
 foreach(FILE ${SRC_ALL})
 	# Get the directory of the source file
 	get_filename_component(PARENT_DIR "${FILE}" DIRECTORY)
@@ -69,15 +78,25 @@ endforeach()
 add_library(engine ${SRC_ALL})
 
 if(WIN32)
+	find_package(OpenGL REQUIRED)
+	include_directories(${OPENGL_INCLUDE_DIR})
+
 	target_link_libraries(engine
-		opengl32
 		glfw
 		lua
 		box2d
 		jsoncpp
 		pluto
+		soil
 		${GLFW_LIBRARIES}
+		${OPENGL_LIBRARIES}
 	)
+ 
+     if(BUILD_GLM_STATIC_LIBS)
+         target_link_libraries(engine glm_static)
+     else()
+        target_link_libraries(engine glm_shared)
+     endif()
 elseif(UNIX)
 	find_package(OpenGL REQUIRED)
 	include_directories(${OPENGL_INCLUDE_DIR})

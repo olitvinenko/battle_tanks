@@ -29,7 +29,7 @@ endforeach()
 add_library(audio ${SRC_ALL})
 
 if(WIN32)
-	message ("not implemented")
+	message ("audio lib is not implemented")
 elseif(UNIX)
 
 	find_package(OpenAL REQUIRED)

@@ -3,11 +3,12 @@
 #include "WavDecoder.hpp"
 
 #include <fstream>
+#include <algorithm>
 
 size_t CAudioDecoder::fileRead(void* ptr, size_t size, size_t nmemb, void* datasource)
 {
     CAudioDecoder* thiz = (CAudioDecoder*)datasource;
-    ssize_t toReadBytes = std::min((ssize_t)(thiz->m_size - thiz->m_fileCurrPos), (ssize_t)(nmemb * size));
+    size_t toReadBytes = std::min((size_t)(thiz->m_size - thiz->m_fileCurrPos), (size_t)(nmemb * size));
     if (toReadBytes > 0)
     {
         memcpy(ptr, (unsigned char*) thiz->m_data + thiz->m_fileCurrPos, toReadBytes);

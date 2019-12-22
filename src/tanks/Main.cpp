@@ -52,7 +52,7 @@ static UI::ConsoleBuffer s_logger(100, 500);
 
 //static long xxx = _CrtSetBreakAlloc(12649);
 
-#include "audio/SoundEngine.hpp"
+//#include "audio/SoundEngine.hpp"
 
 #include <glm/vec3.hpp> // glm::vec3
 #include <glm/vec4.hpp> // glm::vec4
@@ -78,8 +78,8 @@ glm::mat4 camera(float Translate, const glm::vec2& Rotate)
 int main(int, const char**)
 try
 {
-    std::unique_ptr<SoundEngine> sound(new SoundEngine);
-    sound->PlayOnce("file_example.wav");
+    //std::unique_ptr<SoundEngine> sound(new SoundEngine);
+    //sound->PlayOnce("file_example.wav");
     
     
 	srand((unsigned int) time(nullptr));
