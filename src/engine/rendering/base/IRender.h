@@ -6,6 +6,8 @@ class IImage;
 struct GlTexture;
 struct Line;
 struct Vertex;
+struct Point;
+struct Color;
 
 enum RenderMode
 {
@@ -42,6 +44,8 @@ struct IRender
     //
     virtual Vertex* DrawQuad(GlTexture tex) = 0;
     virtual Vertex* DrawFan(unsigned int nEdges) = 0;
-
+    
+    virtual void DrawTriangle(const Vector2& v, Color color) = 0;
+    virtual void DrawPoint(Point point) = 0;
     virtual void DrawLines(const Line *lines, size_t count) = 0;
 };

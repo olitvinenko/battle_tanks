@@ -1,6 +1,7 @@
 #pragma once
 
 #include "math/Vector2.h"
+#include "common/Types.h"
 #include "Color.h"
 
 struct Line

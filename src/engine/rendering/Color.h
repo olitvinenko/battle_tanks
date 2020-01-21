@@ -8,7 +8,10 @@ struct Color
         uint8 rgba[4];
         uint32 color;
         struct {
-            unsigned char r, g, b, a;
+            uint8 r;
+            uint8 g;
+            uint8 b;
+            uint8 a;
         };
     };
 
