@@ -171,14 +171,23 @@ Vertex* RenderOpenGLv2::DrawFan(unsigned int nEdges)
     return m_renderFan->GetVertices(nEdges, m_modelViewMatrix, m_projectionMatrix);
 }
 
-void RenderOpenGLv2::DrawTriangle(const Vector2& v, Color color)
+void RenderOpenGLv2::DrawTriangles(const ColoredVertex* vertices, std::size_t count)
 {
-    m_renderSolidTriangles->Vertex(v, color, m_modelViewMatrix, m_projectionMatrix);
+    for (std::size_t i = 1; i < count - 1; ++i)
+    {
+        m_renderSolidTriangles->Vertex(vertices[0].position, vertices[0].color, m_modelViewMatrix, m_projectionMatrix);
+        m_renderSolidTriangles->Vertex(vertices[i].position, vertices[i].color, m_modelViewMatrix, m_projectionMatrix);
+        m_renderSolidTriangles->Vertex(vertices[i+1].position, vertices[i+1].color, m_modelViewMatrix, m_projectionMatrix);
+    }
 }
 
-void RenderOpenGLv2::DrawPoint(Point point)
+void RenderOpenGLv2::DrawPoints(const ColoredVertex* points, std::size_t count, float pointSize)
 {
-    m_renderPoints->Draw(point, m_modelViewMatrix, m_projectionMatrix);
+    for (std::size_t i = 0; i < count; ++i)
+    {
+        Point p { points[i].position, points[i].color, pointSize };
+        m_renderPoints->Draw(p, m_modelViewMatrix, m_projectionMatrix);
+    }
 }
 
 void RenderOpenGLv2::DrawLines(const Line *lines, size_t count)

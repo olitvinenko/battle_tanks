@@ -9,7 +9,7 @@
 #include "Point.h"
 #include "Line.h"
 #include "Vertex.h"
-#include "FanVertex.h"
+#include "ColoredVertex.h"
 #include "math/Vector2.h"
 
 class RenderPointsOpenGL : public IRenderPoints

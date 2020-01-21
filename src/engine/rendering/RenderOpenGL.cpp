@@ -2,6 +2,8 @@
 #include "GlTexture.h"
 #include "base/IImage.h"
 #include "Line.h"
+#include "Point.h"
+#include "ColoredVertex.h"
 
 RenderOpenGL::RenderOpenGL()
 	: m_windowWidth(0)
@@ -253,6 +255,52 @@ void RenderOpenGL::DrawLines(const Line *lines, size_t count)
 	glEnd();
 
 	SetMode(m_mode); // to enable texture
+}
+
+void RenderOpenGL::DrawTriangles(const ColoredVertex* vertices, std::size_t count)
+{
+    Flush();
+    
+    glDisable(GL_TEXTURE_2D);
+    
+    glBegin(GL_TRIANGLES);
+    for (std::size_t i = 1; i < count - 1; ++i)
+    {
+        glColor4ub(vertices[0].color.r, vertices[0].color.g, vertices[0].color.b, vertices[0].color.a);
+        glVertex2fv(reinterpret_cast<const float *>(&vertices[0].position));
+        
+        glColor4ub(vertices[i].color.r, vertices[i].color.g, vertices[i].color.b, vertices[i].color.a);
+        glVertex2fv(reinterpret_cast<const float *>(&vertices[i].position));
+        
+        glColor4ub(vertices[i + 1].color.r, vertices[i + 1].color.g, vertices[i + 1].color.b, vertices[i + 1].color.a);
+        glVertex2fv(reinterpret_cast<const float *>(&vertices[i + 1].position));
+    }
+    glEnd();
+    
+    SetMode(m_mode);
+}
+
+void RenderOpenGL::DrawPoints(const ColoredVertex* points, std::size_t count, float pointSize)
+{
+    Flush();
+    
+    glDisable(GL_TEXTURE_2D);
+    
+    GLfloat prevSize = 0;
+    glGetFloatv(GL_POINT_SIZE, &prevSize);
+    glPointSize(pointSize);
+
+    glBegin(GL_POINTS);
+    for (std::size_t i = 0; i < count; ++i)
+    {
+        glColor4ub(points[i].color.r, points[i].color.g, points[i].color.b, points[i].color.a);
+        glVertex2fv(reinterpret_cast<const float *>(&points[i].position));
+    }
+    glEnd();
+    
+    glPointSize(prevSize);
+    
+    SetMode(m_mode);
 }
 
 void RenderOpenGL::SetAmbient(float ambient)

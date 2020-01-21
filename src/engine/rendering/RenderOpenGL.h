@@ -39,6 +39,8 @@ public:
 	Vertex* DrawQuad(GlTexture tex) override;
 	Vertex* DrawFan(unsigned int nEdges) override;
 
+    void DrawTriangles(const ColoredVertex* vertices, std::size_t count) override;
+    void DrawPoints(const ColoredVertex* points, std::size_t count, float pointSize) override;
 	void DrawLines(const Line* lines, size_t count) override;
 
 private:

@@ -15,6 +15,7 @@
 class IImage;
 struct Line;
 struct GlTexture;
+struct ColoredVertex;
 
 class RenderOpenGLv2 : public IRender
 {
@@ -42,8 +43,8 @@ public:
 	Vertex* DrawQuad(GlTexture tex) override;
 	Vertex* DrawFan(unsigned int nEdges) override;
 
-    void DrawTriangle(const Vector2& v, Color color) override;
-    void DrawPoint(Point point) override;
+    void DrawTriangles(const ColoredVertex* vertices, std::size_t count) override;
+    void DrawPoints(const ColoredVertex* point, std::size_t count, float pointSize) override;
 	void DrawLines(const Line* lines, size_t count) override;
 
 private:
