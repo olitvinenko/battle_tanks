@@ -8,29 +8,13 @@
 #include "ui/Pointers.h"
 #include "ui/StateContext.h"
 #include "ui/Window.h"
+
 #include "rendering/RenderOpenGL.h"
+#include "rendering/RenderOpenGLv2.h"
 
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 #include <iostream>
-
-GlfwInitHelper::GlfwInitHelper()
-{
-	if( !glfwInit() )
-		throw std::runtime_error("Failed to initialize OpenGL");
-}
-
-GlfwInitHelper::~GlfwInitHelper()
-{
-	glfwTerminate();
-}
-
-
-void GlfwWindowDeleter::operator()(GLFWwindow *window)
-{
-	glfwDestroyWindow(window);
-}
-
 
 static float GetLayoutScale(GLFWwindow *window)
 {
@@ -192,12 +176,23 @@ static std::unique_ptr<GLFWwindow, GlfwWindowDeleter> NewWindow(const char *titl
 	return result;
 }
 
-GlfwAppWindow::GlfwAppWindow(const char *title, bool fullscreen, int width, int height)
-	: _window(NewWindow(title, fullscreen, width, height))
-	, _clipboard(new GlfwClipboard(*_window))
-	, _input(new GlfwInput(*_window))
-	, _render(std::unique_ptr<IRender>(new RenderOpenGL))
+void GlfwWindowDeleter::operator()(GLFWwindow *window)
 {
+    glfwDestroyWindow(window);
+}
+
+GlfwAppWindow::GlfwAppWindow(const char *title, bool fullscreen, int width, int height)
+{
+    if( !glfwInit() )
+        throw std::runtime_error("Failed to initialize OpenGL");
+    
+    _render = std::make_unique<RenderOpenGLv2>();
+    //_render = std::make_unique<RenderOpenGL>();
+    
+    _window = NewWindow(title, fullscreen, width, height);
+    _clipboard = std::make_unique<GlfwClipboard>(_window.get());
+    _input = std::make_unique<GlfwInput>(_window.get());
+    
 	glfwSetMouseButtonCallback(_window.get(), OnMouseButton);
 	glfwSetCursorPosCallback(_window.get(), OnCursorPos);
 	glfwSetScrollCallback(_window.get(), OnScroll);
@@ -207,6 +202,8 @@ GlfwAppWindow::GlfwAppWindow(const char *title, bool fullscreen, int width, int 
 
 	glfwMakeContextCurrent(_window.get());
 	glfwSwapInterval(1);
+    
+    _render->Init();
 }
 
 GlfwAppWindow::~GlfwAppWindow()
@@ -214,6 +211,8 @@ GlfwAppWindow::~GlfwAppWindow()
 	glfwMakeContextCurrent(_window.get());
 	_render.reset();
 	glfwMakeContextCurrent(nullptr);
+    
+    glfwTerminate();
 }
 
 UI::IClipboard& GlfwAppWindow::GetClipboard()

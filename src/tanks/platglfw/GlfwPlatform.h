@@ -8,7 +8,7 @@ struct GLFWwindow;
 class GlfwInput : public UI::IInput
 {
 public:
-	GlfwInput(GLFWwindow &window);
+	GlfwInput(GLFWwindow* window);
 
 	// UI::IInput
 	bool IsKeyPressed(UI::Key key) const override;
@@ -16,20 +16,20 @@ public:
 	Vector2 GetMousePos() const override;
 
 private:
-	GLFWwindow &_window;
+	GLFWwindow* m_window;
 };
 
 class GlfwClipboard : public UI::IClipboard
 {
 public:
-	GlfwClipboard(GLFWwindow &window);
+	GlfwClipboard(GLFWwindow* window);
 
 	// UI::IClipboard
 	const char* GetClipboardText() const override;
 	void SetClipboardText(std::string text) override;
 
 private:
-	GLFWwindow &_window;
+	GLFWwindow* m_window;
 };
 
 Vector2 GetCursorPosInPixels(GLFWwindow *window);

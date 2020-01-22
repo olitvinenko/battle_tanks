@@ -24,37 +24,37 @@ Vector2 GetCursorPosInPixels(GLFWwindow *window)
 }
 
 
-GlfwInput::GlfwInput(GLFWwindow &window)
-	: _window(window)
+GlfwInput::GlfwInput(GLFWwindow* window)
+	: m_window(window)
 {}
 
 bool GlfwInput::IsKeyPressed(UI::Key key) const
 {
 	int platformKey = UnmapGlfwKeyCode(key);
-	return GLFW_PRESS == glfwGetKey(&_window, platformKey);
+	return GLFW_PRESS == glfwGetKey(m_window, platformKey);
 }
 
 bool GlfwInput::IsMousePressed(int button) const
 {
-	return GLFW_PRESS == glfwGetMouseButton(&_window, button-1);
+	return GLFW_PRESS == glfwGetMouseButton(m_window, button-1);
 }
 
 Vector2 GlfwInput::GetMousePos() const
 {
-	return GetCursorPosInPixels(&_window);
+	return GetCursorPosInPixels(m_window);
 }
 
 
-GlfwClipboard::GlfwClipboard(GLFWwindow &window)
-	: _window(window)
+GlfwClipboard::GlfwClipboard(GLFWwindow* window)
+	: m_window(window)
 {}
 
 const char* GlfwClipboard::GetClipboardText() const
 {
-	return glfwGetClipboardString(&_window);
+	return glfwGetClipboardString(m_window);
 }
 
 void GlfwClipboard::SetClipboardText(std::string text)
 {
-	glfwSetClipboardString(&_window, text.c_str());
+	glfwSetClipboardString(m_window, text.c_str());
 }

@@ -21,6 +21,8 @@ enum RenderMode
 struct IRender
 {
     virtual ~IRender() = default;
+
+    virtual void Init() = 0;
     virtual void OnResizeWnd(unsigned int width, unsigned int height) = 0;
 
     virtual void SetScissor(const RectInt *rect) = 0;
@@ -32,17 +34,12 @@ struct IRender
     
     virtual void Begin() = 0;
     virtual void End() = 0;
-    //
-    // texture management
-    //
 
+    // texture management
     virtual bool TexCreate(GlTexture &tex, const IImage &img, bool magFilter) = 0;
     virtual void TexFree(GlTexture tex) = 0;
 
-
-    //
     // high level primitive drawing
-    //
     virtual Vertex* DrawQuad(GlTexture tex) = 0;
     virtual Vertex* DrawFan(unsigned int nEdges) = 0;
 

@@ -21,6 +21,7 @@ public:
 
 	void Flush();
 
+    void Init() override;
 	void OnResizeWnd(unsigned int width, unsigned int height) override;
 
 	void SetViewport(const RectInt *rect) override;

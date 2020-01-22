@@ -20,6 +20,10 @@ RenderOpenGL::RenderOpenGL()
 
 RenderOpenGL::~RenderOpenGL() = default;
 
+void RenderOpenGL::Init()
+{
+}
+
 void RenderOpenGL::OnResizeWnd(unsigned int width, unsigned int height)
 {
 	m_windowWidth = (int)width;

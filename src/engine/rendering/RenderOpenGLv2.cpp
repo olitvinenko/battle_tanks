@@ -12,14 +12,22 @@ RenderOpenGLv2::RenderOpenGLv2()
 	, m_windowHeight(0)
 	, m_ambient(0)
 {
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+}
+
+RenderOpenGLv2::~RenderOpenGLv2() = default;
+
+void RenderOpenGLv2::Init()
+{
     m_renderPoints = std::make_unique<RenderPointsOpenGL>(GL_TRUE);
     m_renderLines = std::make_unique<RenderLinesOpenGL>(GL_TRUE);
     m_renderSolidTriangles = std::make_unique<RenderSolidTrianglesOpenGL>(GL_TRUE);
     m_renderTexturedTriangles = std::make_unique<RenderTexturedTrianglesOpenGL>();
     m_renderFan = std::make_unique<RenderFanOpenGL>();
 }
-
-RenderOpenGLv2::~RenderOpenGLv2() = default;
 
 void RenderOpenGLv2::OnResizeWnd(unsigned int width, unsigned int height)
 {
