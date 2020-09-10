@@ -4,11 +4,11 @@
 
 struct lua_State;
 
-class VariableString : public VariableBase
+class VariableString final : public VariableBase
 {
 public:
 	VariableString();
-	virtual ~VariableString();
+    ~VariableString();
 
 	const std::string& Get() const;
 	void Set(std::string value);

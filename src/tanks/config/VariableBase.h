@@ -42,10 +42,10 @@ public:
 	VariableTable&        AsTable();
 
 	// lua binding helpers
-	virtual void Push(lua_State *L) const;
-	virtual bool Assign(lua_State *L);
+    virtual void Push(lua_State *L) const = 0;
+    virtual bool Assign(lua_State *L) = 0;
     // serialization
-    virtual bool Write(FILE *file, int indent) const;
+    virtual bool Write(FILE *file, int indent) const = 0;
     
 	// notifications
 	std::function<void(void)> eventChange;

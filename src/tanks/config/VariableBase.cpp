@@ -5,6 +5,7 @@
 #include "VariableString.h"
 #include "VariableArray.h"
 #include "VariableTable.h"
+#include "VariableNil.h"
 
 extern "C"
 {
@@ -108,7 +109,7 @@ void VariableBase::SetType(Type type)
     {
 #pragma push_macro("new")
 #undef new
-        case typeNil:     new(this) VariableBase();    break;
+        case typeNil:     new(this) VariableNil();    break;
         case typeNumber:  new(this) VariableNumber();  break;
         case typeBoolean: new(this) VariableBool();    break;
         case typeString:  new(this) VariableString();  break;
@@ -148,21 +149,4 @@ VariableTable& VariableBase::AsTable()
 {
 	assert(m_type == typeTable);
 	return static_cast<VariableTable&>(*this);
-}
-
-bool VariableBase::Write(FILE *file, int indent) const
-{
-	fprintf(file, "nil");
-	return true;
-}
-
-bool VariableBase::Assign(lua_State *)
-{
-	assert(false);
-	return false;
-}
-
-void VariableBase::Push(lua_State *) const
-{
-	assert(false);
 }

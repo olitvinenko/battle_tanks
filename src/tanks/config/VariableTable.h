@@ -9,11 +9,11 @@ class VariableArray;
 
 struct lua_State;
 
-class VariableTable : public VariableBase
+class VariableTable final : public VariableBase
 {
 public:
 	VariableTable();
-	virtual ~VariableTable();
+    ~VariableTable();
 
 	VariableBase* Find(const std::string &name); // returns nullptr if variable not found
 	size_t GetSize() const;

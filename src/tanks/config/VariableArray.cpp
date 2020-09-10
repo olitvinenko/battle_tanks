@@ -4,6 +4,7 @@
 #include "VariableNumber.h"
 #include "VariableString.h"
 #include "VariableTable.h"
+#include "VariableNil.h"
 
 extern "C"
 {
@@ -136,7 +137,7 @@ void VariableArray::Resize(size_t newSize)
 		{
 			for (size_t i = oldSize; i < newSize; ++i)
 			{
-				(*m_val.asArray)[i].reset(new VariableBase());
+				(*m_val.asArray)[i].reset(new VariableNil());
 			}
 		}
 		FireValueUpdate(this);
@@ -172,7 +173,7 @@ void VariableArray::PopFront()
 VariableBase& VariableArray::PushBack(Type type)
 {
 	assert(m_type == typeArray);
-	std::unique_ptr<VariableBase> result(new VariableBase());
+	std::unique_ptr<VariableBase> result(new VariableNil());
 	result->SetType(type);
 	m_val.asArray->push_back(std::move(result));
 	FireValueUpdate(this);
@@ -189,7 +190,7 @@ void VariableArray::PopBack()
 VariableBase& VariableArray::PushFront(Type type)
 {
 	assert(m_type == typeArray);
-	std::unique_ptr<VariableBase> result(new VariableBase());
+	std::unique_ptr<VariableBase> result(new VariableNil());
 	result->SetType(type);
 	m_val.asArray->push_front(std::move(result));
 	FireValueUpdate(this);

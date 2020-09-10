@@ -7,11 +7,11 @@ class VariableBool;
 class VariableString;
 class VariableTable;
 
-class VariableArray : public VariableBase
+class VariableArray final : public VariableBase
 {
 public:
 	VariableArray();
-	virtual ~VariableArray();
+    ~VariableArray();
 
 	// bool part contains true if value with the specified type was found
 	std::pair<VariableBase*, bool> GetVar(size_t index, VariableBase::Type type);

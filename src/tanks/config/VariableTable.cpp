@@ -5,6 +5,7 @@
 #include "VariableNumber.h"
 #include "VariableArray.h"
 #include "VariableString.h"
+#include "VariableNil.h"
 
 extern "C"
 {
@@ -60,7 +61,7 @@ std::pair<VariableBase*, bool> VariableTable::GetVar(const std::string &name, Va
 	if( m_val.asTable->end() == it )
 	{
 		// create new item
-		result.first = m_val.asTable->emplace(std::move(name), std::unique_ptr<VariableBase>(new VariableBase())).first->second.get();
+		result.first = m_val.asTable->emplace(std::move(name), std::unique_ptr<VariableBase>(new VariableNil())).first->second.get();
 		FireValueUpdate(this);
 	}
 	else

@@ -4,11 +4,11 @@
 
 struct lua_State;
 
-class VariableNumber : public VariableBase
+class VariableNumber final : public VariableBase
 {
 public:
 	VariableNumber();
-	virtual ~VariableNumber();
+    ~VariableNumber();
 
 	double GetRawNumber() const;
 	void SetRawNumber(double value);
