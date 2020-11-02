@@ -3,13 +3,7 @@
 #include "base/IRender.h"
 #include "Vertex.h"
 
-#if defined (__APPLE__)
-#define GL_SILENCE_DEPRECATION
-#endif
-
-#include <GL/glew.h>
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#include "OpenGL.h"
 
 class IImage;
 struct Line;
@@ -23,7 +17,7 @@ public:
 
 	void Flush();
 
-    void Init() override;
+    bool Init() override;
 	void OnResizeWnd(unsigned int width, unsigned int height) override;
 
 	void SetViewport(const RectInt *rect) override;

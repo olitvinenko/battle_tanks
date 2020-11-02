@@ -1,8 +1,6 @@
 #include "GlfwPlatform.h"
 #include "GlfwKeys.h"
-#include <GL/glew.h>
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#include "rendering/OpenGL.h"
 
 Vector2 GetCursorPosInPixels(GLFWwindow *window, double dipX, double dipY)
 {

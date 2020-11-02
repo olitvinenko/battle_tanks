@@ -12,9 +12,6 @@
 #include "rendering/RenderOpenGL.h"
 #include "rendering/RenderOpenGLv2.h"
 
-#include <GL/glew.h>
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
 #include <stdexcept>
 #include <iostream>
 
@@ -203,17 +200,13 @@ GlfwAppWindow::GlfwAppWindow(const char *title, bool fullscreen, int width, int 
 	glfwSetFramebufferSizeCallback(_window.get(), OnFramebufferSize);
 
 	glfwMakeContextCurrent(_window.get());
-
-	if (glewInit() != GLEW_OK) {
-		fprintf(stderr, "Failed to initialize GLEW\n");
-		getchar();
-		glfwTerminate();
-		return;
-	}
-
 	glfwSwapInterval(1);
     
-    _render->Init();
+    if (!_render->Init())
+    {
+		//TODO:: message + log
+		glfwTerminate();
+    }
 }
 
 GlfwAppWindow::~GlfwAppWindow()

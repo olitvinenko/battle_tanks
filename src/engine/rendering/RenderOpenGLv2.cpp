@@ -6,14 +6,7 @@
 #include "glm/ext/matrix_clip_space.hpp" // glm::perspective
 #include "glm/ext/matrix_transform.hpp" // glm::translate, glm::rotate, glm::scale
 
-#if defined (__APPLE__)
-#define GL_SILENCE_DEPRECATION
-#include <GLFW/glfw3.h>
-#else
-#include <GL/glew.h>
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-#endif
+#include "OpenGL.h"
 
 RenderOpenGLv2::RenderOpenGLv2()
 	: m_windowWidth(0)
@@ -28,13 +21,21 @@ RenderOpenGLv2::RenderOpenGLv2()
 
 RenderOpenGLv2::~RenderOpenGLv2() = default;
 
-void RenderOpenGLv2::Init()
+bool RenderOpenGLv2::Init()
 {
+	if (glewInit() != GLEW_OK)
+	{
+		fprintf(stderr, "Failed to initialize GLEW\n");
+		return false;
+	}
+
     m_renderPoints = std::make_unique<RenderPointsOpenGL>(GL_TRUE);
     m_renderLines = std::make_unique<RenderLinesOpenGL>(GL_TRUE);
     m_renderSolidTriangles = std::make_unique<RenderSolidTrianglesOpenGL>(GL_TRUE);
     m_renderTexturedTriangles = std::make_unique<RenderTexturedTrianglesOpenGL>();
     m_renderFan = std::make_unique<RenderFanOpenGL>();
+
+	return true;
 }
 
 void RenderOpenGLv2::OnResizeWnd(unsigned int width, unsigned int height)

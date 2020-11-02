@@ -2,15 +2,7 @@
 
 #include "base/IRenderParts.h"
 
-//#if defined (__APPLE__)
-//#define GL_SILENCE_DEPRECATION
-//#include <GLFW/glfw3.h>
-//#else
-#include <GL/glew.h>
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-//#endif
-
+#include "OpenGL.h"
 
 #include "Color.h"
 #include "Point.h"

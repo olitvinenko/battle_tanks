@@ -22,7 +22,7 @@ struct IRender
 {
     virtual ~IRender() = default;
 
-    virtual void Init() = 0;
+    virtual bool Init() = 0;
     virtual void OnResizeWnd(unsigned int width, unsigned int height) = 0;
 
     virtual void SetScissor(const RectInt *rect) = 0;
