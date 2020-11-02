@@ -47,6 +47,8 @@ if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-DNOMINMAX)
 	
+	include_directories(${glew_SOURCE_DIR}/include)
+	
 	list(APPEND tanks_SOURCES Main.cpp)
 	
 	add_executable(tanks ${tanks_SOURCES})

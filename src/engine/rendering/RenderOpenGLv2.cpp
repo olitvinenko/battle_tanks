@@ -6,6 +6,14 @@
 #include "glm/ext/matrix_clip_space.hpp" // glm::perspective
 #include "glm/ext/matrix_transform.hpp" // glm::translate, glm::rotate, glm::scale
 
+#if defined (__APPLE__)
+#define GL_SILENCE_DEPRECATION
+#include <GLFW/glfw3.h>
+#else
+#include <GL/glew.h>
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+#endif
 
 RenderOpenGLv2::RenderOpenGLv2()
 	: m_windowWidth(0)
@@ -171,12 +179,12 @@ void RenderOpenGLv2::Flush()
 
 Vertex* RenderOpenGLv2::DrawQuad(GlTexture tex)
 {
-    return m_renderTexturedTriangles->GetVertices(tex, m_modelViewMatrix, m_projectionMatrix);
+	return m_renderTexturedTriangles->GetVertices(tex, m_modelViewMatrix, m_projectionMatrix);
 }
 
 Vertex* RenderOpenGLv2::DrawFan(unsigned int nEdges)
 {
-    return m_renderFan->GetVertices(nEdges, m_modelViewMatrix, m_projectionMatrix);
+	return m_renderFan->GetVertices(nEdges, m_modelViewMatrix, m_projectionMatrix);
 }
 
 void RenderOpenGLv2::DrawTriangles(const ColoredVertex* vertices, std::size_t count)
@@ -200,7 +208,7 @@ void RenderOpenGLv2::DrawPoints(const ColoredVertex* points, std::size_t count, 
 
 void RenderOpenGLv2::DrawLines(const Line *lines, size_t count)
 {
-    m_renderLines->Draw(lines, count, m_modelViewMatrix, m_projectionMatrix);
+	m_renderLines->Draw(lines, count, m_modelViewMatrix, m_projectionMatrix);
 }
 
 void RenderOpenGLv2::SetAmbient(float ambient)

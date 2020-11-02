@@ -80,7 +80,7 @@ add_library(engine ${SRC_ALL})
 if(WIN32)
 	find_package(OpenGL REQUIRED)
 	include_directories(${OPENGL_INCLUDE_DIR})
-
+	
 	target_link_libraries(engine
 		glfw
 		lua
@@ -91,9 +91,12 @@ if(WIN32)
 		${GLFW_LIBRARIES}
 		${OPENGL_LIBRARIES}
 	)
+	
+	include_directories(${glew_SOURCE_DIR}/include)
+	target_link_libraries(engine glew_s)
  
      if(BUILD_GLM_STATIC_LIBS)
-         target_link_libraries(engine glm_static)
+        target_link_libraries(engine glm_static)
      else()
         target_link_libraries(engine glm_shared)
      endif()
@@ -114,7 +117,7 @@ elseif(UNIX)
 	)
  
      if(BUILD_GLM_STATIC_LIBS)
-         target_link_libraries(engine glm_static)
+        target_link_libraries(engine glm_static)
      else()
         target_link_libraries(engine glm_shared)
      endif()

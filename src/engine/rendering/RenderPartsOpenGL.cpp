@@ -7,6 +7,65 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#if WIN32
+//#include <wincon.h>
+//
+//// Определение прототипа функции
+//typedef GLboolean (*GL_ISSHADER) (GLuint);
+//typedef void(*GL_GETSHADERIV) (GLuint, GLenum, GLint*);
+//
+//typedef GLboolean(*GL_GETISPROGRAM) (GLuint);
+//typedef GLboolean(*GL_glGetProgramiv) (GLuint, GLenum, GLint*);
+//
+//typedef void(*GL_glGetShaderInfoLog)(GLuint, GLsizei, GLsizei*, char*);
+//typedef void(*GL_glGetProgramInfoLog)(GLuint, GLsizei, GLsizei*, char*);
+//
+//typedef GLuint(*GL_glCreateShader)(GLenum);
+//
+//typedef void(*GL_glShaderSource)(GLuint, GLsizei, const char* const*, const GLint*);
+//typedef void(*GL_glCompileShader)(GLuint);
+//
+//typedef void(*GL_glDeleteShader)(GLuint);
+//
+//template<typename TRet, typename ... Args>
+//auto GetFuncAddress(const char* addressName) ->TRet(*)(Args...)
+//{
+//    using function_ptr_t = TRet(*)(Args...);
+//    auto func = reinterpret_cast<function_ptr_t>(wglGetProcAddress(addressName));
+//    if (!func)
+//    {
+//	    //TODO::
+//    }
+//    return func;
+//}
+//
+//namespace
+//{
+//#define GL_INFO_LOG_LENGTH 0x8B84
+//#define GL_COMPILE_STATUS 0x8B81
+//
+//    auto glIsShader = GetFuncAddress<GLboolean, GLuint>("glIsShader");
+//
+//    GL_GETSHADERIV glGetShaderiv = (GL_GETSHADERIV)wglGetProcAddress("glGetShaderiv");
+//
+//    GL_GETISPROGRAM glIsProgram = (GL_GETISPROGRAM)wglGetProcAddress("glIsProgram");
+//    GL_glGetProgramiv glGetProgramiv = (GL_glGetProgramiv)wglGetProcAddress("glGetProgramiv");
+//
+//    GL_glGetShaderInfoLog glGetShaderInfoLog = (GL_glGetShaderInfoLog)wglGetProcAddress("glGetShaderInfoLog");
+//    GL_glGetProgramInfoLog glGetProgramInfoLog = (GL_glGetProgramInfoLog)wglGetProcAddress("glGetProgramInfoLog");
+//
+//    GL_glCreateShader glCreateShader = (GL_glCreateShader)wglGetProcAddress("glCreateShader");
+//
+//    GL_glShaderSource glShaderSource = (GL_glShaderSource)wglGetProcAddress("glShaderSource");
+//    GL_glCompileShader glCompileShader = (GL_glCompileShader)wglGetProcAddress("glCompileShader");
+//
+//    GL_glDeleteShader glDeleteShader = (GL_glDeleteShader)wglGetProcAddress("glDeleteShader");
+//}
+
+#endif
+
+
+
 static void sCheckGLError()
 {
     GLenum errCode = glGetError();
@@ -170,14 +229,14 @@ RenderPointsOpenGL::~RenderPointsOpenGL()
 {
     if (m_vaoId)
     {
-        glDeleteVertexArrays(1, &m_vaoId);
-        glDeleteBuffers(2, m_vboIds);
+        //glDeleteVertexArrays(1, &m_vaoId);
+        //glDeleteBuffers(2, m_vboIds);
         m_vaoId = 0;
     }
     
     if (m_programId)
     {
-        glDeleteProgram(m_programId);
+        //glDeleteProgram(m_programId);
         m_programId = 0;
     }
 }

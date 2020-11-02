@@ -7,10 +7,9 @@
 #define GL_SILENCE_DEPRECATION
 #endif
 
-#include <GLFW/glfw3.h>
-
 #include "RenderPartsOpenGL.h"
 #include <memory>
+#include "glm/mat4x4.hpp"
 
 class IImage;
 struct Line;

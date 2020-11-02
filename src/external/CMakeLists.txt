@@ -19,6 +19,10 @@ add_subdirectory(pluto)
 add_subdirectory(soil)
 add_subdirectory(glm)
 
+if(WIN32)
+	add_subdirectory(glew-2.1.0)
+endif()
+
 if(UNIX)
 	add_subdirectory(audio)
 endif()

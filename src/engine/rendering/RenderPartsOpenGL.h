@@ -2,8 +2,15 @@
 
 #include "base/IRenderParts.h"
 
+#if defined (__APPLE__)
 #define GL_SILENCE_DEPRECATION
-#include <OpenGL/gl3.h>
+#include <GLFW/glfw3.h>
+#else
+#include <GL/glew.h>
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+#endif
+
 
 #include "Color.h"
 #include "Point.h"
@@ -11,6 +18,7 @@
 #include "Vertex.h"
 #include "ColoredVertex.h"
 #include "math/Vector2.h"
+
 
 class RenderPointsOpenGL : public IRenderPoints
 {

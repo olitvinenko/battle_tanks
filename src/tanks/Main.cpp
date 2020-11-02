@@ -8,6 +8,8 @@
 
 #include <exception>
 
+#include "../engine/ECS/ecsTest.h"
+
 namespace
 {
 	class ConsoleLog final
@@ -78,6 +80,8 @@ glm::mat4 camera(float Translate, const glm::vec2& Rotate)
 int main(int, const char**)
 try
 {
+	ECSTest();
+
     //std::unique_ptr<SoundEngine> sound(new SoundEngine);
     //sound->PlayOnce("file_example.wav");
     
