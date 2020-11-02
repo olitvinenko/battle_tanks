@@ -1,10 +1,6 @@
 // ConfigCache.h
 // this file is designed to be included twice
 
-#include "VariableBool.h"
-#include "VariableNumber.h"
-#include "VariableString.h"
-#include "VariableArray.h"
 #include "VariableTable.h"
 
 #include <cassert>
@@ -19,7 +15,7 @@
         class ReflectionBase
         {
         public:
-            operator VariableTable&() { return *m_root; }
+            operator VariableTable&() const { return *m_root; }
             VariableTable* operator->() { return m_root; }
             const VariableTable* operator->() const { return m_root; }
 
@@ -57,6 +53,11 @@
     {                                                              \
     public:                                                        \
         ReflectionName(VariableTable *bindTo = nullptr);
+
+#include "VariableBool.h"
+#include "VariableNumber.h"
+#include "VariableString.h"
+#include "VariableArray.h"
 
 
  #define VAR_FLOAT( var, def )              VariableNumber &var;

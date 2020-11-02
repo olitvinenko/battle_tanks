@@ -9,8 +9,7 @@
 extern "C"
 {
     #include <lua.h>
-    #include <lualib.h>
-    #include <lauxlib.h>
+	#include <lauxlib.h>
 }
 
 #include <cassert>
@@ -18,15 +17,15 @@ extern "C"
 
 VariableArray::VariableArray()
 {
-	m_type = typeArray;
+	m_type = ARRAY;
 	m_val.asArray = new std::deque<std::unique_ptr<VariableBase>>();
 }
 
 VariableArray::~VariableArray()
 {
-	assert(m_type == typeArray);
+	assert(m_type == ARRAY);
 	delete m_val.asArray;
-	m_type = typeNil;
+	m_type = NIL;
 }
 
 std::pair<VariableBase*, bool> VariableArray::GetVar(size_t index, VariableBase::Type type)
@@ -47,7 +46,7 @@ std::pair<VariableBase*, bool> VariableArray::GetVar(size_t index, VariableBase:
 
 VariableNumber& VariableArray::GetNum(size_t index, float def)
 {
-	std::pair<VariableBase*, bool> p = GetVar(index, VariableBase::typeNumber);
+	std::pair<VariableBase*, bool> p = GetVar(index, VariableBase::NUMBER);
 	if( !p.second )
 		p.first->AsNum().SetFloat(def);
 	return p.first->AsNum();
@@ -55,14 +54,14 @@ VariableNumber& VariableArray::GetNum(size_t index, float def)
 
 VariableNumber& VariableArray::SetNum(size_t index, float value)
 {
-	VariableNumber &v = GetVar(index, VariableBase::typeNumber).first->AsNum();
+	VariableNumber &v = GetVar(index, VariableBase::NUMBER).first->AsNum();
 	v.SetFloat(value);
 	return v;
 }
 
 VariableNumber& VariableArray::GetNum(size_t index, int def)
 {
-	std::pair<VariableBase*, bool> p = GetVar(index, VariableBase::typeNumber);
+	std::pair<VariableBase*, bool> p = GetVar(index, VariableBase::NUMBER);
 	if( !p.second )
 		p.first->AsNum().SetInt(def);
 	return p.first->AsNum();
@@ -70,14 +69,14 @@ VariableNumber& VariableArray::GetNum(size_t index, int def)
 
 VariableNumber& VariableArray::SetNum(size_t index, int value)
 {
-	VariableNumber &v = GetVar(index, VariableBase::typeNumber).first->AsNum();
+	VariableNumber& v = GetVar(index, VariableBase::NUMBER).first->AsNum();
 	v.SetInt(value);
 	return v;
 }
 
 VariableBool& VariableArray::GetBool(size_t index, bool def)
 {
-	std::pair<VariableBase*, bool> p = GetVar(index, VariableBase::typeBoolean);
+	std::pair<VariableBase*, bool> p = GetVar(index, VariableBase::BOOLEAN);
 	if( !p.second )
 		p.first->AsBool().Set(def);
 	return p.first->AsBool();
@@ -85,19 +84,19 @@ VariableBool& VariableArray::GetBool(size_t index, bool def)
 
 VariableBool& VariableArray::SetBool(size_t index, bool value)
 {
-	VariableBool &v = GetVar(index, VariableBase::typeBoolean).first->AsBool();
+	VariableBool& v = GetVar(index, VariableBase::BOOLEAN).first->AsBool();
 	v.Set(value);
 	return v;
 }
 
 VariableString& VariableArray::GetStr(size_t index)
 {
-	return GetVar(index, VariableBase::typeString).first->AsStr();
+	return GetVar(index, VariableBase::STRING).first->AsStr();
 }
 
 VariableString& VariableArray::GetStr(size_t index, std::string def)
 {
-	std::pair<VariableBase*, bool> p = GetVar(index, VariableBase::typeString);
+	std::pair<VariableBase*, bool> p = GetVar(index, VariableBase::STRING);
 	if (!p.second)
 		p.first->AsStr().Set(std::move(def));
 	return p.first->AsStr();
@@ -105,19 +104,19 @@ VariableString& VariableArray::GetStr(size_t index, std::string def)
 
 VariableString& VariableArray::SetStr(size_t index, std::string value)
 {
-	VariableString &v = GetVar(index, VariableBase::typeString).first->AsStr();
+	VariableString &v = GetVar(index, VariableBase::STRING).first->AsStr();
 	v.Set(std::move(value));
 	return v;
 }
 
 VariableArray& VariableArray::GetArray(size_t index)
 {
-	return GetVar(index, VariableBase::typeArray).first->AsArray();
+	return GetVar(index, VariableBase::ARRAY).first->AsArray();
 }
 
 VariableTable& VariableArray::GetTable(size_t index)
 {
-	return GetVar(index, VariableBase::typeTable).first->AsTable();
+	return GetVar(index, VariableBase::TABLE).first->AsTable();
 }
 
 void VariableArray::EnsureIndex(size_t index)
@@ -128,7 +127,7 @@ void VariableArray::EnsureIndex(size_t index)
 
 void VariableArray::Resize(size_t newSize)
 {
-	assert(m_type == typeArray);
+	assert(m_type == ARRAY);
 	size_t oldSize = m_val.asArray->size();
 	if (newSize != oldSize)
 	{
@@ -146,33 +145,33 @@ void VariableArray::Resize(size_t newSize)
 
 size_t VariableArray::GetSize() const
 {
-	assert(m_type == typeArray);
+	assert(m_type == ARRAY);
 	return m_val.asArray->size();
 }
 
 VariableBase& VariableArray::GetAt(size_t index) const
 {
-	assert(m_type == typeArray);
+	assert(m_type == ARRAY);
 	return *(*m_val.asArray)[index];
 }
 
 void VariableArray::RemoveAt(size_t index)
 {
-	assert(m_type == typeArray);
+	assert(m_type == ARRAY);
 	m_val.asArray->erase(m_val.asArray->begin() + index);
 	FireValueUpdate(this);
 }
 
 void VariableArray::PopFront()
 {
-	assert(m_type == typeArray);
+	assert(m_type == ARRAY);
 	m_val.asArray->pop_front();
 	FireValueUpdate(this);
 }
 
 VariableBase& VariableArray::PushBack(Type type)
 {
-	assert(m_type == typeArray);
+	assert(m_type == ARRAY);
 	std::unique_ptr<VariableBase> result(new VariableNil());
 	result->SetType(type);
 	m_val.asArray->push_back(std::move(result));
@@ -182,14 +181,14 @@ VariableBase& VariableArray::PushBack(Type type)
 
 void VariableArray::PopBack()
 {
-	assert(m_type == typeArray);
+	assert(m_type == ARRAY);
 	m_val.asArray->pop_back();
 	FireValueUpdate(this);
 }
 
 VariableBase& VariableArray::PushFront(Type type)
 {
-	assert(m_type == typeArray);
+	assert(m_type == ARRAY);
 	std::unique_ptr<VariableBase> result(new VariableNil());
 	result->SetType(type);
 	m_val.asArray->push_front(std::move(result));
@@ -197,7 +196,7 @@ VariableBase& VariableArray::PushFront(Type type)
 	return *m_val.asArray->front();
 }
 
-bool VariableArray::Write(FILE *file, int indent) const
+bool VariableArray::Write(FILE* file, int indent) const
 {
 	fprintf(file, "{\n");
 	bool delim = false;
@@ -217,7 +216,7 @@ bool VariableArray::Write(FILE *file, int indent) const
 	return true;
 }
 
-bool VariableArray::Assign(lua_State *L)
+bool VariableArray::Assign(lua_State* L)
 {
 	Resize( lua_objlen(L, -1) );
 
@@ -226,7 +225,7 @@ bool VariableArray::Assign(lua_State *L)
 		lua_pushinteger(L, i+1); // push the key
 		lua_gettable(L, -2);   // pop the key, push the value
 
-		if( VariableBase *v = ArrayElementFromLua(L, this, i) )
+		if( VariableBase* v = config_detail::ArrayElementFromLua(L, this, i) )
 		{
 			if( !v->Assign(L) )
 				return false;
@@ -238,7 +237,7 @@ bool VariableArray::Assign(lua_State *L)
 	return true;
 }
 
-void VariableArray::Push(lua_State *L) const
+void VariableArray::Push(lua_State* L) const
 {
 	*reinterpret_cast<VariableArray const**>( lua_newuserdata(L, sizeof(this)) ) = this;
 	luaL_getmetatable(L, "conf_array");  // metatable for config

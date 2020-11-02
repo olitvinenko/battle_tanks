@@ -3,34 +3,32 @@
 extern "C"
 {
     #include <lua.h>
-    #include <lualib.h>
-    #include <lauxlib.h>
+	#include <lauxlib.h>
 }
 
 #include <cassert>
-#include <stdexcept>
 
 
 VariableNumber::VariableNumber()
 {
-	m_type = typeNumber;
+	m_type = NUMBER;
 	m_val.asNumber = 0;
 }
 
 VariableNumber::~VariableNumber()
 {
-	m_type = typeNil;
+	m_type = NIL;
 }
 
 double VariableNumber::GetRawNumber() const
 {
-	assert(m_type == typeNumber);
+	assert(m_type == NUMBER);
 	return m_val.asNumber;
 }
 
 void VariableNumber::SetRawNumber(double value)
 {
-	assert(m_type == typeNumber);
+	assert(m_type == NUMBER);
 	if( m_val.asNumber != value )
 	{
 		m_val.asNumber = value;
@@ -40,12 +38,13 @@ void VariableNumber::SetRawNumber(double value)
 
 float VariableNumber::GetFloat() const
 {
-	assert(m_type == typeNumber);
-	return (float) m_val.asNumber;
+	assert(m_type == NUMBER);
+	return static_cast<float>(m_val.asNumber);
 }
+
 void VariableNumber::SetFloat(float value)
 {
-	assert(m_type == typeNumber);
+	assert(m_type == NUMBER);
 	if( m_val.asNumber != value )
 	{
 		m_val.asNumber = value;
@@ -55,12 +54,13 @@ void VariableNumber::SetFloat(float value)
 
 int VariableNumber::GetInt() const
 {
-	assert(m_type == typeNumber);
-	return (int) m_val.asNumber;
+	assert(m_type == NUMBER);
+	return static_cast<int>(m_val.asNumber);
 }
+
 void VariableNumber::SetInt(int value)
 {
-	assert(m_type == typeNumber);
+	assert(m_type == NUMBER);
 	if( m_val.asNumber != value )
 	{
 		m_val.asNumber = value;
@@ -68,19 +68,19 @@ void VariableNumber::SetInt(int value)
 	}
 }
 
-bool VariableNumber::Write(FILE *file, int indent) const
+bool VariableNumber::Write(FILE* file, int indent) const
 {
 	fprintf(file, "%.10g", m_val.asNumber);
 	return true;
 }
 
-bool VariableNumber::Assign(lua_State *L)
+bool VariableNumber::Assign(lua_State* L)
 {
-	SetFloat( (float) lua_tonumber(L, -1) );
+	SetFloat( static_cast<float>(lua_tonumber(L, -1)) );
 	return true;
 }
 
-void VariableNumber::Push(lua_State *L) const
+void VariableNumber::Push(lua_State* L) const
 {
 	lua_pushnumber(L, GetFloat());
 }

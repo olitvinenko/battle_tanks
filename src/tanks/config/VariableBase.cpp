@@ -10,85 +10,85 @@
 extern "C"
 {
     #include <lua.h>
-    #include <lualib.h>
-    #include <lauxlib.h>
 }
 
 #include <cassert>
-#include <stdexcept>
 
-VariableBase* GetVarIfTypeMatch(VariableTable *parent, const char *key, VariableBase::Type type)
+namespace config_detail
 {
-	if( VariableBase *v = parent->Find(key) )
+	VariableBase* GetVarIfTypeMatch(VariableTable* parent, const char* key, VariableBase::Type type)
 	{
-		return v->GetType() == type ? v : nullptr;
+		if (VariableBase* v = parent->Find(key))
+		{
+			return v->GetType() == type ? v : nullptr;
+		}
+
+		return parent->GetVar(key, type).first;
 	}
 
-	return parent->GetVar(key, type).first;
-}
-
-VariableBase* TableElementFromLua(lua_State *L, VariableTable *parent, const char *key)
-{
-	VariableBase* result = nullptr;
-	int valueType = lua_type(L, -1);
-    
-	switch( valueType )
+	VariableBase* TableElementFromLua(lua_State* L, VariableTable* parent, const char* key)
 	{
-	case LUA_TSTRING:
-		result = GetVarIfTypeMatch(parent, key, VariableBase::typeString);
-		break;
-	case LUA_TBOOLEAN:
-		result = GetVarIfTypeMatch(parent, key, VariableBase::typeBoolean);
-		break;
-	case LUA_TNUMBER:
-		result = GetVarIfTypeMatch(parent, key, VariableBase::typeNumber);
-		break;
-	case LUA_TTABLE:
-		result = GetVarIfTypeMatch(parent, key, lua_objlen(L,-1) ? VariableBase::typeArray : VariableBase::typeTable);
-		break;
-            
-	default:
-		return nullptr;
+		VariableBase* result = nullptr;
+		int valueType = lua_type(L, -1);
+
+		switch (valueType)
+		{
+		case LUA_TSTRING:
+			result = GetVarIfTypeMatch(parent, key, VariableBase::STRING);
+			break;
+		case LUA_TBOOLEAN:
+			result = GetVarIfTypeMatch(parent, key, VariableBase::BOOLEAN);
+			break;
+		case LUA_TNUMBER:
+			result = GetVarIfTypeMatch(parent, key, VariableBase::NUMBER);
+			break;
+		case LUA_TTABLE:
+			result = GetVarIfTypeMatch(parent, key, lua_objlen(L, -1) ? VariableBase::ARRAY : VariableBase::TABLE);
+			break;
+
+		default:
+			return nullptr;
+		}
+
+		return result;
 	}
 
-	return result;
-}
-
-VariableBase* ArrayElementFromLua(lua_State *L, VariableArray *parent, size_t key)
-{
-	VariableBase* result = nullptr;
-	int valueType = lua_type(L, -1);
-    
-	switch( valueType )
+	VariableBase* ArrayElementFromLua(lua_State* L, VariableArray* parent, size_t key)
 	{
-	case LUA_TSTRING:
-		result = parent->GetVar(key, VariableBase::typeString).first;
-		break;
-	case LUA_TBOOLEAN:
-		result = parent->GetVar(key, VariableBase::typeBoolean).first;
-		break;
-	case LUA_TNUMBER:
-		result = parent->GetVar(key, VariableBase::typeNumber).first;
-		break;
-	case LUA_TTABLE:
-		result = parent->GetVar(key, lua_objlen(L,-1) ? VariableBase::typeArray : VariableBase::typeTable).first;
-		break;
-            
-	default:
-        return nullptr;
-	}
+		VariableBase* result = nullptr;
+		int valueType = lua_type(L, -1);
 
-	return result;
+		switch (valueType)
+		{
+		case LUA_TSTRING:
+			result = parent->GetVar(key, VariableBase::STRING).first;
+			break;
+		case LUA_TBOOLEAN:
+			result = parent->GetVar(key, VariableBase::BOOLEAN).first;
+			break;
+		case LUA_TNUMBER:
+			result = parent->GetVar(key, VariableBase::NUMBER).first;
+			break;
+		case LUA_TTABLE:
+			result = parent->GetVar(key, lua_objlen(L, -1) ? VariableBase::ARRAY : VariableBase::TABLE).first;
+			break;
+
+		default:
+			return nullptr;
+		}
+
+		return result;
+	}
 }
 
 VariableBase::VariableBase()
-  : m_type(typeNil)
+  : m_type(NIL)
 {
 }
 
 VariableBase::~VariableBase()
 {
-	assert(m_type == typeNil);
+	assert(m_type == NIL);
 }
 
 void VariableBase::FireValueUpdate(VariableBase *pVar)
@@ -109,12 +109,12 @@ void VariableBase::SetType(Type type)
     {
 #pragma push_macro("new")
 #undef new
-        case typeNil:     new(this) VariableNil();    break;
-        case typeNumber:  new(this) VariableNumber();  break;
-        case typeBoolean: new(this) VariableBool();    break;
-        case typeString:  new(this) VariableString();  break;
-        case typeArray:   new(this) VariableArray();   break;
-        case typeTable:   new(this) VariableTable();   break;
+        case NIL:     new(this) VariableNil();    break;
+        case NUMBER:  new(this) VariableNumber();  break;
+        case BOOLEAN: new(this) VariableBool();    break;
+        case STRING:  new(this) VariableString();  break;
+        case ARRAY:   new(this) VariableArray();   break;
+        case TABLE:   new(this) VariableTable();   break;
         default: assert(!"unknown ConfVar type");
 #pragma pop_macro("new")
     }
@@ -123,30 +123,30 @@ void VariableBase::SetType(Type type)
 
 VariableNumber& VariableBase::AsNum()
 {
-	assert(m_type == typeNumber);
+	assert(m_type == NUMBER);
 	return static_cast<VariableNumber&>(*this);
 }
 
 VariableBool& VariableBase::AsBool()
 {
-	assert(m_type == typeBoolean);
+	assert(m_type == BOOLEAN);
 	return static_cast<VariableBool&>(*this);
 }
 
 VariableString& VariableBase::AsStr()
 {
-	assert(m_type == typeString);
+	assert(m_type == STRING);
 	return static_cast<VariableString&>(*this);
 }
 
 VariableArray& VariableBase::AsArray()
 {
-	assert(m_type == typeArray);
+	assert(m_type == ARRAY);
 	return static_cast<VariableArray&>(*this);
 }
 
 VariableTable& VariableBase::AsTable()
 {
-	assert(m_type == typeTable);
+	assert(m_type == TABLE);
 	return static_cast<VariableTable&>(*this);
 }

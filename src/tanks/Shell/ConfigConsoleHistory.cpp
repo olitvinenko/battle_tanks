@@ -8,7 +8,7 @@ ConfigConsoleHistory::ConfigConsoleHistory(const ShellConfig &conf)
 
 void ConfigConsoleHistory::Enter(std::string str)
 {
-	_conf.con_history.PushBack(VariableBase::typeString).AsStr().Set(std::move(str));
+	_conf.con_history.PushBack(VariableBase::STRING).AsStr().Set(std::move(str));
 	while ((signed)_conf.con_history.GetSize() > _conf.con_maxhistory.GetInt())
 	{
 		_conf.con_history.PopFront();

@@ -27,7 +27,7 @@ static void InitProfiles(VariableTable &profiles)
 
 static void InitLobbyList(VariableArray &lobby_servers)
 {
-	lobby_servers.PushBack(VariableBase::typeString).AsStr().Set("tzod.fatal.ru/lobby");
+	lobby_servers.PushBack(VariableBase::STRING).AsStr().Set("tzod.fatal.ru/lobby");
 }
 
 // second time include it to implement initialize function

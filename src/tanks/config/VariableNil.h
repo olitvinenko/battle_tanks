@@ -6,8 +6,8 @@ struct lua_State;
 
 class VariableNil final : public VariableBase
 {
-public:
-    void Push(lua_State *L) const override;
-    bool Assign(lua_State *L) override;
-    bool Write(FILE *file, int indent) const override;
+protected:
+    void Push(lua_State*) const override;
+    bool Assign(lua_State*) override;
+    bool Write(FILE* file, int indent) const override;
 };

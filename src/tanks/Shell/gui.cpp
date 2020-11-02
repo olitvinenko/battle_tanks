@@ -293,7 +293,7 @@ void NewGameDlg::OnAddPlayer()
 	std::vector<std::string> skinNames;
 	_texman.GetTextureNames(skinNames, "skin/");
 
-	VariableTable &p = _conf.dm_players.PushBack(VariableBase::typeTable).AsTable();
+	VariableTable &p = _conf.dm_players.PushBack(VariableBase::TABLE).AsTable();
 	p.SetStr("skin", skinNames[rand() % skinNames.size()]);
 
 	_newPlayer = true;
@@ -349,7 +349,7 @@ void NewGameDlg::OnAddBot()
 	std::vector<std::string> skinNames;
 	_texman.GetTextureNames(skinNames, "skin/");
 
-	VariableTable &p = _conf.dm_bots.PushBack(VariableBase::typeTable).AsTable();
+	VariableTable &p = _conf.dm_bots.PushBack(VariableBase::TABLE).AsTable();
 	p.SetStr("skin", skinNames[rand() % skinNames.size()]);
 
 	_newPlayer = true;
