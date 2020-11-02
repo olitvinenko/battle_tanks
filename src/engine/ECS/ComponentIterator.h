@@ -7,85 +7,85 @@ namespace Internal
 	{
 	public:
 		ComponentIteratorTemplate(TWorld* world, size_t index, bool bIsEnd, bool bIncludePendingDestroy)
-			: bIsEnd(bIsEnd), index(index), world(world), bIncludePendingDestroy(bIncludePendingDestroy)
+			: m_isEnd(bIsEnd), m_index(index), m_world(world), m_includePendingDestroy(bIncludePendingDestroy)
 		{
-			if (index >= world->getCount())
-				this->bIsEnd = true;
+			if (index >= world->GetCount())
+				this->m_isEnd = true;
 		}
 
-		size_t getIndex() const
+		size_t GetIndex() const
 		{
-			return index;
+			return m_index;
 		}
 
-		bool isEnd() const
+		bool IsEnd() const
 		{
-			return bIsEnd || index >= world->getCount();
+			return m_isEnd || m_index >= m_world->GetCount();
 		}
 
-		bool includePendingDestroy() const
+		bool IncludePendingDestroy() const
 		{
-			return bIncludePendingDestroy;
+			return m_includePendingDestroy;
 		}
 
-		TWorld* getWorld() const
+		TWorld* GetWorld() const
 		{
-			return world;
+			return m_world;
 		}
 
-		TEntity* get() const
+		TEntity* Get() const
 		{
-			if (isEnd())
+			if (IsEnd())
 				return nullptr;
 
-			return world->getByIndex(index);
+			return m_world->GetByIndex(m_index);
 		}
 
 		TEntity* operator*() const
 		{
-			return get();
+			return Get();
 		}
 
 		bool operator==(const ComponentIteratorTemplate<TWorld, TEntity, Types...>& other) const
 		{
-			if (world != other.world)
+			if (m_world != other.m_world)
 				return false;
 
-			if (isEnd())
-				return other.isEnd();
+			if (IsEnd())
+				return other.IsEnd();
 
-			return index == other.index;
+			return m_index == other.m_index;
 		}
 
 		bool operator!=(const ComponentIteratorTemplate<TWorld, TEntity, Types...>& other) const
 		{
-			if (world != other.world)
+			if (m_world != other.m_world)
 				return true;
 
-			if (isEnd())
-				return !other.isEnd();
+			if (IsEnd())
+				return !other.IsEnd();
 
-			return index != other.index;
+			return m_index != other.m_index;
 		}
 
 		ComponentIteratorTemplate<TWorld, TEntity, Types...>& operator++()
 		{
-			++index;
-			while (index < world->getCount() && (get() == nullptr || !get()->template has<Types...>() || (get()->isPendingDestroy() && !bIncludePendingDestroy)))
+			++m_index;
+			while (m_index < m_world->GetCount() && (Get() == nullptr || !Get()->template Has<Types...>() || (Get()->IsPendingDestroy() && !m_includePendingDestroy)))
 			{
-				++index;
+				++m_index;
 			}
 
-			if (index >= world->getCount())
-				bIsEnd = true;
+			if (m_index >= m_world->GetCount())
+				m_isEnd = true;
 
 			return *this;
 		}
 
 	private:
-		bool bIsEnd = false;
-		size_t index;
-		TWorld* world;
-		bool bIncludePendingDestroy;
+		bool m_isEnd = false;
+		size_t m_index;
+		TWorld* m_world;
+		bool m_includePendingDestroy;
 	};
 }

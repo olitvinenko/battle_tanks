@@ -9,27 +9,27 @@ namespace Internal
 	{
 	public:
 		ComponentViewTemplate(const ComponentIteratorTemplate<TWorld, TEntity, Types...>& first, const ComponentIteratorTemplate<TWorld, TEntity, Types...>& last)
-			: firstItr(first), lastItr(last)
+			: m_firstItr(first), m_lastItr(last)
 		{
-			if (firstItr.get() == nullptr || (firstItr.get()->isPendingDestroy() && !firstItr.includePendingDestroy())
-				|| !firstItr.get()->template has<Types...>())
+			if (m_firstItr.Get() == nullptr || (m_firstItr.Get()->IsPendingDestroy() && !m_firstItr.IncludePendingDestroy())
+				|| !m_firstItr.Get()->template Has<Types...>())
 			{
-				++firstItr;
+				++m_firstItr;
 			}
 		}
 
 		const ComponentIteratorTemplate<TWorld, TEntity, Types...>& begin() const
 		{
-			return firstItr;
+			return m_firstItr;
 		}
 
 		const ComponentIteratorTemplate<TWorld, TEntity, Types...>& end() const
 		{
-			return lastItr;
+			return m_lastItr;
 		}
 
 	private:
-		ComponentIteratorTemplate<TWorld, TEntity, Types...> firstItr;
-		ComponentIteratorTemplate<TWorld, TEntity, Types...> lastItr;
+		ComponentIteratorTemplate<TWorld, TEntity, Types...> m_firstItr;
+		ComponentIteratorTemplate<TWorld, TEntity, Types...> m_lastItr;
 	};
 }

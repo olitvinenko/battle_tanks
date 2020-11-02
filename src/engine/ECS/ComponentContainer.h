@@ -11,14 +11,14 @@ namespace Internal
 		virtual ~ComponentContainerInternalBase() = default;
 
 		// This should only ever be called by the entity itself.
-		virtual void destroy(TWorld* world) = 0;
+		virtual void Destroy(TWorld* world) = 0;
 
 		// This will be called by the entity itself
-		virtual void removed(TEntity* ent) = 0;
+		virtual void Removed(TEntity* ent) = 0;
 	};
 
 	template<typename TComponent, typename TWorld, typename TEntity>
-	struct ComponentContainerInternal : public ComponentContainerInternalBase<TWorld, TEntity>
+	struct ComponentContainerInternal : ComponentContainerInternalBase<TWorld, TEntity>
 	{
 		ComponentContainerInternal() {}
 		ComponentContainerInternal(const TComponent& data) : data(data) {}
@@ -26,19 +26,19 @@ namespace Internal
 		TComponent data;
 
 	protected:
-		void destroy(TWorld* world) override
+		void Destroy(TWorld* world) override
 		{
 			using ComponentAllocator = typename std::allocator_traits<typename TWorld::EntityAllocator>::template rebind_alloc<ComponentContainerInternal<TComponent, TWorld, TEntity>>;
 
-			ComponentAllocator alloc(world->getPrimaryAllocator());
+			ComponentAllocator alloc(world->GetPrimaryAllocator());
 			std::allocator_traits<ComponentAllocator>::destroy(alloc, this);
 			std::allocator_traits<ComponentAllocator>::deallocate(alloc, this, 1);
 		}
 
-		void removed(TEntity* ent) override
+		void Removed(TEntity* ent) override
 		{
-			auto handle = ComponentHandle<TComponent>(&data);
-			ent->getWorld()->template emit<OnComponentRemoved<TComponent>>({ ent, handle });
+			auto handle = Component<TComponent>(&data);
+			ent->GetWorld()->template Emit<OnComponentRemoved<TComponent>>({ ent, handle });
 		}
 	};
 }

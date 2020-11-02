@@ -28,7 +28,7 @@ namespace Internal
 #define ECS_DEFINE_TYPE(TypeName) type_id_t TypeName::GetStaticId() { return Internal::TypeFamily<TypeName>::GetId(); }
 
 template<typename T, typename = decltype(T::GetStaticId)>
-type_id_t getTypeIndex()
+type_id_t GetTypeIndex()
 {
     return T::GetStaticId();
 }

@@ -9,26 +9,26 @@ namespace Internal
 	{
 	public:
 		EntityViewTemplate(const EntityIteratorTemplate<TWorld, TEntity>& first, const EntityIteratorTemplate<TWorld, TEntity>& last)
-			: firstItr(first), lastItr(last)
+			: m_firstItr(first), m_lastItr(last)
 		{
-			if (firstItr.get() == nullptr || (firstItr.get()->isPendingDestroy() && !firstItr.includePendingDestroy()))
+			if (m_firstItr.Get() == nullptr || (m_firstItr.Get()->IsPendingDestroy() && !m_firstItr.IncludePendingDestroy()))
 			{
-				++firstItr;
+				++m_firstItr;
 			}
 		}
 
 		const EntityIteratorTemplate<TWorld, TEntity>& begin() const
 		{
-			return firstItr;
+			return m_firstItr;
 		}
 
 		const EntityIteratorTemplate<TWorld, TEntity>& end() const
 		{
-			return lastItr;
+			return m_lastItr;
 		}
 
 	private:
-		EntityIteratorTemplate<TWorld, TEntity> firstItr;
-		EntityIteratorTemplate<TWorld, TEntity> lastItr;
+		EntityIteratorTemplate<TWorld, TEntity> m_firstItr;
+		EntityIteratorTemplate<TWorld, TEntity> m_lastItr;
 	};
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TypeRegistry.h"
-#include "ComponentHandle.h"
+#include "Component.h"
 
 class Entity;
 
@@ -27,7 +27,7 @@ struct OnComponentAssigned
 	ECS_DECLARE_TYPE;
 
 	Entity* entity;
-	ComponentHandle<T> component;
+	Component<T> component;
 };
 
 // Called when a component is removed
@@ -37,7 +37,7 @@ struct OnComponentRemoved
 	ECS_DECLARE_TYPE;
 
 	Entity* entity;
-	ComponentHandle<T> component;
+	Component<T> component;
 };
 
 template<typename T>
