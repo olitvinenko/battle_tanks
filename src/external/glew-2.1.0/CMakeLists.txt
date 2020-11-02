@@ -107,17 +107,19 @@ if(BUILD_GLEW_STATIC_LIBS)
   target_compile_definitions (glew_s PRIVATE "GLEW_STATIC;VC_EXTRALEAN")
 else()
   target_compile_definitions (glew PRIVATE "GLEW_BUILD;VC_EXTRALEAN")
-endif()
   target_link_libraries (glew LINK_PRIVATE -BASE:0x62AA0000)
+endif()
+
   # kill security checks which are dependent on stdlib
 if(BUILD_GLEW_STATIC_LIBS)
   target_compile_options (glew_s PRIVATE -GS-)
 else()
   target_compile_options (glew PRIVATE -GS-)
-endif()
   # remove stdlib dependency
   target_link_libraries (glew LINK_PRIVATE -nodefaultlib -noentry)
   string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_C_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+endif()
+  
 elseif (WIN32 AND ((CMAKE_C_COMPILER_ID MATCHES "GNU") OR (CMAKE_C_COMPILER_ID MATCHES "Clang")))
   # remove stdlib dependency on windows with GCC and Clang (for similar reasons
   # as to MSVC - to allow it to be used with any Windows compiler)
@@ -201,11 +203,13 @@ install(FILES ${GLEW_DIR}/glew.pc
 )
 
 if(WIN32 AND MSVC AND (NOT MSVC_VERSION LESS 1600) AND (NOT CMAKE_VERSION VERSION_LESS "3.1"))
-    install(
-        FILES $<TARGET_PDB_FILE:glew>
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        CONFIGURATIONS Debug RelWithDebInfo
-    )
+	if(NOT DEFINED BUILD_GLEW_STATIC_LIBS)
+		install(
+			FILES $<TARGET_PDB_FILE:glew>
+			DESTINATION ${CMAKE_INSTALL_LIBDIR}
+			CONFIGURATIONS Debug RelWithDebInfo
+		)
+	endif()
 endif()
 
 install (FILES
