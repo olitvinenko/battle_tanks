@@ -10,6 +10,7 @@ include_directories(
 	${box2d_SOURCE_DIR}
 	${jsoncpp_SOURCE_DIR}
 	${engine_SOURCE_DIR}
+	${glew_SOURCE_DIR}/include
 )
 #########################################################################
 
@@ -46,8 +47,6 @@ if(WIN32)
 	add_definitions(-D_WIN32_WINNT=0x0501)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-DNOMINMAX)
-	
-	include_directories(${glew_SOURCE_DIR}/include)
 	
 	list(APPEND tanks_SOURCES Main.cpp)
 	

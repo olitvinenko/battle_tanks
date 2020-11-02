@@ -16,6 +16,7 @@ include_directories(
 	${audio_SOURCE_DIR}
 	${soil_SOURCE_DIR}/src
 	${glm_SOURCE_DIR}
+	${glew_SOURCE_DIR}/include
 )
 
 ############################ FILE SYSTEM ################################
@@ -91,15 +92,7 @@ if(WIN32)
 		${GLFW_LIBRARIES}
 		${OPENGL_LIBRARIES}
 	)
-	
-	include_directories(${glew_SOURCE_DIR}/include)
-	target_link_libraries(engine glew_s)
  
-     if(BUILD_GLM_STATIC_LIBS)
-        target_link_libraries(engine glm_static)
-     else()
-        target_link_libraries(engine glm_shared)
-     endif()
 elseif(UNIX)
 	find_package(OpenGL REQUIRED)
 	include_directories(${OPENGL_INCLUDE_DIR})
@@ -116,11 +109,16 @@ elseif(UNIX)
 		${OPENGL_LIBRARIES}
 	)
  
-     if(BUILD_GLM_STATIC_LIBS)
-        target_link_libraries(engine glm_static)
-     else()
-        target_link_libraries(engine glm_shared)
-     endif()
- 
 endif()
 
+if(BUILD_GLM_STATIC_LIBS)
+    target_link_libraries(engine glm_static)
+else()
+    target_link_libraries(engine glm_shared)
+endif()
+
+if(BUILD_GLEW_STATIC_LIBS)
+	target_link_libraries(engine glew_s)
+else()
+	target_link_libraries(engine glew)
+endif()

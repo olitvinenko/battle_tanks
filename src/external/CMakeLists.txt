@@ -18,10 +18,8 @@ add_subdirectory(box2d)
 add_subdirectory(pluto)
 add_subdirectory(soil)
 add_subdirectory(glm)
+add_subdirectory(glew-2.1.0)
 
-if(WIN32)
-	add_subdirectory(glew-2.1.0)
-endif()
 
 if(UNIX)
 	add_subdirectory(audio)
