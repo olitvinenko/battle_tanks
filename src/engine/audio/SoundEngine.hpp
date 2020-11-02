@@ -17,8 +17,8 @@ public:
     SoundEngine();
     ~SoundEngine();
     
-    float GetMaxMem() const { return mMaxMem; };
-    float GetCurMem() const { return mCurMem; };
+    float GetMaxMem() const { return m_maxMem; };
+    float GetCurMem() const { return m_curMem; };
     
     void Update(float dt);
     
@@ -45,6 +45,6 @@ private:
 
     bool m_initialized;
     
-    float     mMaxMem;
-    float     mCurMem;
+    float m_maxMem;
+    float m_curMem;
 };

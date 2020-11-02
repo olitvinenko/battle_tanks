@@ -1,5 +1,5 @@
 #include "WavDecoder.hpp"
-#include "tinysndfile.h"
+#include "tinysndfile.h" // external
 
 CWavDecoder::CWavDecoder(const std::string& fileName)
     :CAudioDecoder(fileName)

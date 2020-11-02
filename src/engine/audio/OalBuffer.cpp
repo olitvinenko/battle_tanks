@@ -109,14 +109,8 @@ void OalBuffer::UnloadMem()
         if (alIsBuffer(m_bufferID))
             alDeleteBuffers(1, &m_bufferID);
 //        else
-//            ALOG("Error: alIsBuffer(m_bufferID)");
-        
-        //m_soundEngine->DecrementMemory(SizeMem());
+//            throw ("Error: alIsBuffer(m_bufferID)");
     }
-    
-    //mIsLoad = false;
-//    ALOG("<--- Object %s: Unload mem %f,    cur_mem %f",GetFileName().data(),SizeMem(),GetCurMem());
-    //m_fSize = 0.0f;
     
     m_bufferID = 0;
 }
@@ -131,11 +125,11 @@ ALuint OalBuffer::GetSource(OalSound* soundOAL)
         return it->second;
     }
     
-    const static int MAX_SOURCE = 8;
-    if (m_sourcesCount >= MAX_SOURCE)// || CBufferOALManager::Get().GetCounterSource() >= SOURCE_OA)
+    const static int MAX_SOURCE = 8; //TODO::
+    if (m_sourcesCount >= MAX_SOURCE)
     {
         std::cout << "m_CounterSource >= MAX_SOURCE" << std::endl;
-        //ALOG("Error!! m_CounterSource = %i,     g_CounterSource= %i", m_CounterSource, CBufferOALManager::Get().GetCounterSource());
+        //throw ("m_CounterSource >= MAX_SOURCE");
         return 0;
     }
     
@@ -147,19 +141,19 @@ ALuint OalBuffer::GetSource(OalSound* soundOAL)
     ALenum error = AL_NO_ERROR;
     error = alGetError();
     
-    // grab a source ID from openAL, this will be the base source ID
     alGenSources(1, &sourceID);
     error = alGetError();
-    // attach the buffer to the source
+    //TODO:: error handling
     alSourcei(sourceID, AL_BUFFER, m_bufferID);
     error = alGetError();
 
     if ((error = alGetError()) != AL_NO_ERROR || sourceID == 0)
     {
-        //ALOG("error: %i create sourceID: %i\n", error, sourceID);
+        //throw ("error: %i create sourceID: %i\n", error, sourceID");
         return 0;
     }
-    else{
+    else
+    {
         m_sourcesCount++;
         m_mapSources[soundOAL] = sourceID;
     }
@@ -184,7 +178,7 @@ bool OalBuffer::RemoveSource(OalSound* soundOAL)
     alDeleteSources(1, &sourceID);
     if((error = alGetError()) != AL_NO_ERROR || sourceID==0)
     {
-        //ALOG("error: %i Delete sourceID: %i\n", error, sourceID);
+        //throw ("error: %i Delete sourceID: %i\n", error, sourceID);
     }
     
 

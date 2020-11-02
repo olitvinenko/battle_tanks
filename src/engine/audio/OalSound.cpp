@@ -5,10 +5,10 @@ OalSound::OalSound(std::shared_ptr<OalBuffer> buffer, bool isAutoDelete, SoundEn
         : m_buffer(buffer)
         , m_engine(engine)
         , m_sourceID(0)
-        , mCurrentTime(0)
+        , m_currentTime(0)
         , m_saveCurrentTime(0)
         , m_isLoop(false)
-        , mVolume(1)
+        , m_volume(1)
         , m_isAutoDelete(isAutoDelete)
 {
 }
@@ -35,16 +35,14 @@ void OalSound::UnloadBuffer()
         //alGetSourcef(m_sourceID, AL_SEC_OFFSET, &m_saveCurrentTime);
     }
     m_sourceID = 0;
-    mCurrentTime = 0;
-   // mIsUnloadBuffer = true;
+    m_currentTime = 0;
 }
 
 
 OalSound* OalSound::SetVolume(float volume)
 {
-    mVolume = std::max(std::min(volume, 1.0f), 0.0f);
-    // Volume(mVolume * m_UserTypeVolume);
-    Volume(mVolume);
+    m_volume = std::max(std::min(volume, 1.0f), 0.0f);
+    Volume(m_volume);
     return this;
 }
     
@@ -58,8 +56,8 @@ bool OalSound::Play()
         m_sourceID = m_buffer->GetSource(this);
         Loop(m_isLoop);
         
-        mVolume = 100;
-        SetVolume(mVolume);
+        m_volume = 100;
+        SetVolume(m_volume);
     }
 
     if (m_sourceID)
@@ -82,7 +80,7 @@ bool OalSound::Stop()
         alSourceStop(m_sourceID);
         if(alGetError() != AL_NO_ERROR)
         {
-            //ALOG("error stop file:%s\n", m_file.data());
+            //throw("error stop file:%s\n", m_file.data());
             return false;
         }
         if (m_buffer)
@@ -129,7 +127,7 @@ bool OalSound::Pause()
         alSourcePause(m_sourceID);
         if(alGetError() != AL_NO_ERROR)
         {
-            //ALOG("error pause file:%s\n", m_file.data());
+            //throw ("error pause file:%s\n", m_file.data());
             return false;
         }
         
@@ -141,10 +139,11 @@ bool OalSound::Pause()
 float OalSound::GetCurrentTime ()
 {
     if (m_sourceID)
-        alGetSourcef(m_sourceID, AL_SEC_OFFSET, &mCurrentTime);
+        alGetSourcef(m_sourceID, AL_SEC_OFFSET, &m_currentTime);
     else
-        mCurrentTime = 0;
-    return mCurrentTime;
+        m_currentTime = 0;
+    
+    return m_currentTime;
 }
     
 bool OalSound::SetCurrentTime(float currentTime)
@@ -152,14 +151,14 @@ bool OalSound::SetCurrentTime(float currentTime)
     if (m_sourceID)
     {
         if (currentTime < 0) currentTime=0;
-        else if (currentTime > mDuration) currentTime = mDuration;
-        mCurrentTime = currentTime;
+        else if (currentTime > m_duration) currentTime = m_duration;
+        m_currentTime = currentTime;
         
         alGetError();
-        alSourcef(m_sourceID, AL_SEC_OFFSET, mCurrentTime);
+        alSourcef(m_sourceID, AL_SEC_OFFSET, m_currentTime);
         if(alGetError() != AL_NO_ERROR)
         {
-            //ALOG("error SetCurrentTime file:%s\n", m_file.data());
+            //throw ("error SetCurrentTime file:%s\n", m_file.data());
             return false;
         }
         return true;
@@ -200,7 +199,7 @@ bool OalSound::Volume(float volume)
         alSourcef(m_sourceID, AL_GAIN, vol);
         if(alGetError() != AL_NO_ERROR)
         {
-            //ALOG("error SetVolume file:%s\n", m_file.data());
+            //throw ("error SetVolume file:%s\n", m_file.data());
             return false;
         }
         return true;

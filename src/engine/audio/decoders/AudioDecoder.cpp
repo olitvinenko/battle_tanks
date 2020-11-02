@@ -14,7 +14,7 @@ size_t CAudioDecoder::fileRead(void* ptr, size_t size, size_t nmemb, void* datas
         memcpy(ptr, (unsigned char*) thiz->m_data + thiz->m_fileCurrPos, toReadBytes);
         thiz->m_fileCurrPos += toReadBytes;
     }
-    // ALOGD("File size: %d, After fileRead _fileCurrPos %d", (int)thiz->_fileData.getSize(), thiz->_fileCurrPos);
+
     return toReadBytes;
 }
 

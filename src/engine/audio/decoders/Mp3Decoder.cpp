@@ -1,5 +1,5 @@
 #include "Mp3Decoder.hpp"
-#include "mp3reader.h"
+#include "mp3reader.h" // external
 
 CMp3Decoder::CMp3Decoder(const std::string& fileName)
  : CAudioDecoder(fileName)

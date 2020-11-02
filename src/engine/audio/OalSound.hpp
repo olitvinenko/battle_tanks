@@ -38,13 +38,13 @@ private:
     bool Volume(float volume);
     
 private:
-    ALfloat mCurrentTime;
+    ALfloat m_currentTime;
     ALfloat m_saveCurrentTime;
     
     bool m_isLoop;
-    float mVolume;
+    float m_volume;
     
-    float   mDuration;
+    float m_duration;
     bool m_isAutoDelete;
     
     ALuint m_sourceID;

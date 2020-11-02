@@ -5,20 +5,21 @@
 #include "OalBuffer.hpp"
 #include "SoundHandle.hpp"
 
+#include <algorithm>
+
 SoundEngine::SoundEngine()
     : m_device(nullptr)
     , m_context(nullptr)
     , m_initialized(false)
-    , mMaxMem(15.f)
-    , mCurMem (0.f)
+    , m_maxMem(15.f)
+    , m_curMem (0.f)
 {
     m_device = alcOpenDevice(NULL);
     if (!m_device)
         return;
        
     assert(alGetError() == AL_NO_ERROR);
-       
-    // Создаем контекст рендеринга
+    
     m_context = alcCreateContext(m_device, NULL);
     if (!m_context)
     {
@@ -44,13 +45,13 @@ SoundEngine::~SoundEngine()
 
 void SoundEngine::IncrementMemory(float sizeMem)
 {
-    mCurMem += sizeMem;
+    m_curMem += sizeMem;
 }
 
 void SoundEngine::DecrementMemory(float sizeMem)
 {
-    mCurMem -= sizeMem;
-    assert(mCurMem >= 0);
+    m_curMem -= sizeMem;
+    assert(m_curMem >= 0);
 }
 
 void SoundEngine::Update(float dt)
@@ -70,7 +71,7 @@ void SoundEngine::Update(float dt)
             {
                 sound->m_buffer->RemoveSource(sound.get());
                 sound->m_sourceID = 0;
-                sound->mCurrentTime = 0;
+                sound->m_currentTime = 0;
                 
                 ++jt;
             }
@@ -159,7 +160,6 @@ bool SoundEngine::DeactivateBuffer(std::shared_ptr<OalBuffer> buffer)
     
     return true;
 }
-#include <algorithm>
 
 bool SoundEngine::ActivateBuffer(std::shared_ptr<OalBuffer> buffer)
 {
