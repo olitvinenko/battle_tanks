@@ -33,10 +33,16 @@ if(WIN32)
 elseif(UNIX)
 
 	find_package(OpenAL REQUIRED)
-	include_directories(${OPENAL_INCLUDE_DIR})
 
-	target_link_libraries(audio
-		${OPENAL_LIBRARY}
-	)
+	if (OPENAL_FOUND)
+		include_directories(${OPENAL_INCLUDE_DIR})
+
+		target_link_libraries(audio
+			${OPENAL_LIBRARY}
+		)
+	else()
+		message("can't find OpenAL library")
+	endif()
+
 	
 endif()
